@@ -1,6 +1,13 @@
+# build
 **/bin/
 **/obj/
+
+# visual studio
 .vs/
 
+# frontend
 frontend/node_modules/
 frontend/.next/
+
+# local development settings
+**/appsettings.Development.json
