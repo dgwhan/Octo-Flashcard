@@ -1,16 +1,32 @@
-using Microsoft.EntityFrameworkCore;
-using OctoFlashcardStudy.API.Data;
-using Scalar.AspNetCore;
-using OctoFlashcardStudy.API.Services.Auth;
-using OctoFlashcardStudy.API.Services;
-using OctoFlashcardStudy.API.Middlewares;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OctoFlashcardStudy.API.Contracts.Common;
+using OctoFlashcardStudy.API.Data;
+using OctoFlashcardStudy.API.Extensions;
+using OctoFlashcardStudy.API.Extensions.DependencyInjection;
+using OctoFlashcardStudy.API.Middlewares;
+using OctoFlashcardStudy.API.Services.Auth;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//mvc
 builder.Services.AddControllers();
 
+//module(DI configuration: Extensions/DependencyInjection/)
+builder.Services.AddAuthModule();
+
+//infrastructure
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+//authentication
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+//api behavior
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -37,15 +53,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<PasswordHasherService>();
-
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -63,6 +70,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapControllers();
 

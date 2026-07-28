@@ -22,5 +22,12 @@ namespace OctoFlashcardStudy.API.Controllers
 
             return StatusCode(StatusCodes.Status201Created, response);
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAsync(LoginRequest request)
+        {
+            var respone = await _authService.LoginAsync(request);
+            return StatusCode(StatusCodes.Status200OK, respone);
+        }
     }
 }

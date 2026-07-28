@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OctoFlashcardStudy.API.Contracts.Auth;
 using OctoFlashcardStudy.API.Data;
 using OctoFlashcardStudy.API.Domain.Entities;
 using OctoFlashcardStudy.API.Exceptions;
+using OctoFlashcardStudy.API.Validators;
 
 namespace OctoFlashcardStudy.API.Services.Auth
 {
@@ -10,15 +11,19 @@ namespace OctoFlashcardStudy.API.Services.Auth
     {
         private readonly ApplicationDbContext _context;
         private readonly PasswordHasherService _passwordHasher;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public AuthService (ApplicationDbContext context, PasswordHasherService passwordHasher)
+        public AuthService (ApplicationDbContext context, PasswordHasherService passwordHasher, IJwtTokenService jwtTokenService)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _jwtTokenService = jwtTokenService;
         }
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest request)
         {
+            AuthValidator.ValidateRegister(request);
+
             //normalize email
             var email = request.Email.Trim().ToLowerInvariant();
 
@@ -32,33 +37,88 @@ namespace OctoFlashcardStudy.API.Services.Auth
                     StatusCodes.Status409Conflict);      
             }
 
-            //create user
-            var user = new User
+            using var tx = await _context.Database.BeginTransactionAsync();
+
+            try
             {
-                Username = request.Username,
-                Email = email,
-                IsActive = true,
-                CreateAt = DateTime.UtcNow,
-                UpdateAt = DateTime.UtcNow
-            };
+                //create user
+                var user = new User
+                {
+                    Username = request.Username,
+                    Email = email,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
 
-            //hash password
-            user.PasswordHash = _passwordHasher.HashPassword(
-                user, request.Password);
+                //hash password
+                user.PasswordHash = _passwordHasher.HashPassword(
+                    user, request.Password);
 
-            //save database
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+                //save database
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
 
-            //return respone
-            return new RegisterResponse
+                await tx.CommitAsync();
+
+                //return respone
+                return new RegisterResponse
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    CreatedAt = user.CreatedAt
+                };
+
+            }
+            catch (Exception ex) 
             {
-                Id = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                CreatedAt = user.CreateAt
-            };
-                    
+                await tx.RollbackAsync();
+                throw;
+            }
         }
+
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
+        {
+            AuthValidator.ValidateLogin(request);
+
+            //normalize identifier
+            var normalizedIdentifier = request.Identifier
+                .Trim()
+                .ToLowerInvariant();
+
+            //find user
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Username == normalizedIdentifier || x.Email == normalizedIdentifier);
+
+            if (user == null)
+            {
+                throw new ApiException("Invalid credentials", StatusCodes.Status401Unauthorized);
+            }
+
+            //check password
+            var isPasswordValid = _passwordHasher.VerifyPassword(user, user.PasswordHash, request.Password);
+
+            if (!isPasswordValid)
+            {
+                throw new ApiException(
+                    "Invalid credentials.",
+                    StatusCodes.Status401Unauthorized);
+            }
+
+            //generate jwt
+            var token = _jwtTokenService.GenerateToken(user);
+
+            return new LoginResponse
+            {
+                AccessToken = token.AccessToken,
+                ExpiresAt = token.ExpiresAt,
+                UserId = user.Id,
+                Username = user.Username,
+                Email = user.Email
+            };
+        }
+
     }
 }

@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using OctoFlashcardStudy.API.Domain.Entities;
 
-namespace OctoFlashcardStudy.API.Services
+namespace OctoFlashcardStudy.API.Services.Auth
 {
     public class PasswordHasherService
     {
         private readonly PasswordHasher<User> _passwordHasher = new();
 
-        public string HashPassword(User user, String password)
+        public string HashPassword(User user, string password)
         {
             return _passwordHasher.HashPassword(user, password);
         }
 
-        public bool VerifyPassword(User user, String password, string passwordHash)
+        public bool VerifyPassword(User user, string passwordHash, string password)
         {
             var result = _passwordHasher.VerifyHashedPassword(
                 user,
@@ -20,7 +20,7 @@ namespace OctoFlashcardStudy.API.Services
                 password);
 
             return result == PasswordVerificationResult.Success
-                || result == PasswordVerificationResult.Failed;
+                || result == PasswordVerificationResult.SuccessRehashNeeded;
         }
     }
 }
