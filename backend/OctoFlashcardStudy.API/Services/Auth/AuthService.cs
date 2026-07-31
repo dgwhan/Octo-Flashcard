@@ -34,48 +34,37 @@ namespace OctoFlashcardStudy.API.Services.Auth
             if (emailExists)
             {
                 throw new ApiException("Email already exists",
-                    StatusCodes.Status409Conflict);      
+                    StatusCodes.Status409Conflict);
             }
 
-            using var tx = await _context.Database.BeginTransactionAsync();
-
-            try
+            //create user
+            var user = new User
             {
-                //create user
-                var user = new User
-                {
-                    Username = request.Username,
-                    Email = email,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                Username = request.Username,
+                Email = email,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-                //hash password
-                user.PasswordHash = _passwordHasher.HashPassword(
-                    user, request.Password);
+            //hash password
+            user.PasswordHash = _passwordHasher.HashPassword(
+                user, request.Password);
 
-                //save database
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+            //save database
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
 
-                await tx.CommitAsync();
 
-                //return respone
-                return new RegisterResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Email = user.Email,
-                    CreatedAt = user.CreatedAt
-                };
-
-            }
-            catch (Exception ex) 
+            //return respone
+            return new RegisterResponse
             {
-                await tx.RollbackAsync();
-                throw;
-            }
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                CreatedAt = user.CreatedAt
+            };
+
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
