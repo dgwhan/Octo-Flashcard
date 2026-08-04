@@ -1,9 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OctoFlashcardStudy.API.Contracts.Auth;
 using OctoFlashcardStudy.API.Exceptions;
+using OctoFlashcardStudy.API.Extensions;
 using OctoFlashcardStudy.API.Services.Auth;
 
 namespace OctoFlashcardStudy.API.Controllers
@@ -38,12 +38,11 @@ namespace OctoFlashcardStudy.API.Controllers
         [HttpGet("me")]
         public ActionResult<CurrentUserResponse> GetCurrentUser()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.GetUserId();
             var username = User.FindFirstValue(ClaimTypes.Name);
             var email = User.FindFirstValue(ClaimTypes.Email);
             
-            if (string.IsNullOrWhiteSpace(userId) ||
-                string.IsNullOrWhiteSpace(username) ||
+            if (string.IsNullOrWhiteSpace(username) ||
                 string.IsNullOrWhiteSpace(email))
             {
                 throw new ApiException("Invalid credentials", StatusCodes.Status500InternalServerError);
@@ -51,7 +50,7 @@ namespace OctoFlashcardStudy.API.Controllers
 
             var response = new CurrentUserResponse
             {
-                Id = Guid.Parse(userId),
+                Id = userId,
                 Username = username,
                 Email = email
             };

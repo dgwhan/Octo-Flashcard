@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OctoFlashcardStudy.API.Contracts.Common;
@@ -5,16 +7,23 @@ using OctoFlashcardStudy.API.Data;
 using OctoFlashcardStudy.API.Extensions;
 using OctoFlashcardStudy.API.Extensions.DependencyInjection;
 using OctoFlashcardStudy.API.Middlewares;
-using OctoFlashcardStudy.API.Services.Auth;
+using System.Text.Json.Nodes;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //mvc
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    });
 
 //module(DI configuration: Extensions/DependencyInjection/)
 builder.Services.AddAuthModule();
+builder.Services.AddDeckModule();
 
 //infrastructure
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,9 +58,23 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+//openapi
+builder.Services.AddOpenApi(options =>
+{
+    options.AddSchemaTransformer((schema, context, cancellationToken) =>
+    {
+        var type = context.JsonTypeInfo.Type;
+        if (type.IsEnum)
+        {
+            schema.Enum = Enum.GetNames(type)
+                .Select(name => (JsonNode)JsonValue.Create(name)!)
+                .ToList();
+            schema.Type = Microsoft.OpenApi.JsonSchemaType.String;
+        }
+        return Task.CompletedTask;
+    });
+});
 
 var app = builder.Build();
 
