@@ -57,6 +57,14 @@ namespace OctoFlashcardStudy.API.Controllers
             return StatusCode(StatusCodes.Status200OK, response);
         }
 
+        [HttpDelete("{deckId:guid}")]
+        public async Task<IActionResult> DeleteAsync(Guid deckId)
+        {
+            var ownerId = User.GetUserId();
 
+            await _deckService.DeleteAsync(deckId, ownerId);
+
+            return NoContent();
+        }
     }
 }
