@@ -10,7 +10,7 @@ namespace OctoFlashcardStudy.API.Contracts.Decks
 
         public string? Description { get; init; }
 
-        public DeckVisibility Visibility { get; init; } = DeckVisibility.Private;
+        public DeckVisibility Visibility { get; init; }
 
         public DateTime CreatedAt { get; init; }
     }
