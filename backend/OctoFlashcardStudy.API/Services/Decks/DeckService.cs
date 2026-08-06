@@ -12,7 +12,7 @@ namespace OctoFlashcardStudy.API.Services.Decks
     {
         private readonly ApplicationDbContext _context;
 
-        public DeckService (ApplicationDbContext context)
+        public DeckService(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -24,13 +24,6 @@ namespace OctoFlashcardStudy.API.Services.Decks
 
             //normalize name
             var normalizedName = request.Name.Trim();
-
-            //check duplicate
-            var nameExists = await _context.Decks.AnyAsync(deck => deck.OwnerId == ownerId && deck.Name == normalizedName);
-
-            if (nameExists) {
-                throw new ApiException("A deck with the same name already exists", StatusCodes.Status409Conflict);
-            }
 
             //create entity
             var deck = new Deck
@@ -127,5 +120,23 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 UpdatedAt = deck.UpdatedAt
             };
         }
+
+        public async Task DeleteAsync(Guid deckId, Guid ownerId)
+        {
+            var deck = await _context.Decks
+                .FirstOrDefaultAsync(deck => deck.Id == deckId && deck.OwnerId == ownerId);
+
+            if (deck == null)
+            {
+                throw new ApiException(
+                    "Deck not found",
+                    StatusCodes.Status404NotFound);
+            }
+
+            _context.Decks.Remove(deck);
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

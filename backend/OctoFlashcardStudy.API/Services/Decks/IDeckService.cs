@@ -11,5 +11,7 @@ namespace OctoFlashcardStudy.API.Services.Decks
         Task<GetDeckResponse> GetByIdAsync(Guid deckId, Guid ownerId);
 
         Task<GetDeckResponse> UpdateAsync(Guid deckId, Guid ownerId, UpdateDeckRequest request);
+
+        Task DeleteAsync(Guid deckId, Guid ownerId);
     }
 }
