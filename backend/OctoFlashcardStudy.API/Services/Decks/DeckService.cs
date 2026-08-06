@@ -77,5 +77,27 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 .ToListAsync();
             
         }
+
+        public async Task<GetDeckResponse> GetByIdAsync(Guid deckId, Guid ownerId)
+        {
+            var result = await _context.Decks
+                .AsNoTracking()
+                .Where(deck => deck.Id == deckId && deck.OwnerId == ownerId)
+                .Select(deck => new GetDeckResponse
+                {
+                    Id = deck.Id,
+                    Name = deck.Name,
+                    Description = deck.Description,
+                    Visibility = deck.Visibility,
+                    CreatedAt = deck.CreatedAt,
+                    UpdatedAt = deck.UpdatedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (result == null)
+                throw new ApiException("Deck not found", StatusCodes.Status404NotFound);
+
+            return result;
+        }
     }
 }

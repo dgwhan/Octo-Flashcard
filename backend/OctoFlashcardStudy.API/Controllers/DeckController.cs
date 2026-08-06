@@ -30,7 +30,7 @@ namespace OctoFlashcardStudy.API.Controllers
             return StatusCode(StatusCodes.Status201Created, response);
         }
 
-        [HttpGet("mydeck")]
+        [HttpGet]
         public async Task<ActionResult<IReadOnlyList<DeckResponse>>> GetAllAsync()
         {
             var ownerId = User.GetUserId();
@@ -38,5 +38,16 @@ namespace OctoFlashcardStudy.API.Controllers
              
             return Ok(response);
         }
+
+        [HttpGet("{deckId:guid}")]
+        public async Task<ActionResult<GetDeckResponse>> GetByIdAsync(Guid deckId)
+        {
+            Console.WriteLine("Controller reached");
+            var ownerId = User.GetUserId();
+            var response = await _deckService.GetByIdAsync(deckId, ownerId);
+
+            return Ok(response);
+        }
+
     }
 }
