@@ -42,12 +42,21 @@ namespace OctoFlashcardStudy.API.Controllers
         [HttpGet("{deckId:guid}")]
         public async Task<ActionResult<GetDeckResponse>> GetByIdAsync(Guid deckId)
         {
-            Console.WriteLine("Controller reached");
             var ownerId = User.GetUserId();
             var response = await _deckService.GetByIdAsync(deckId, ownerId);
 
             return Ok(response);
         }
+
+        [HttpPut("{deckId:guid}")]
+        public async Task<ActionResult<GetDeckResponse>> UpdateAsync(Guid deckId, UpdateDeckRequest request)
+        {
+            var ownerId = User.GetUserId();
+            var response = await _deckService.UpdateAsync(deckId, ownerId, request);
+
+            return StatusCode(StatusCodes.Status200OK, response);
+        }
+
 
     }
 }

@@ -9,5 +9,7 @@ namespace OctoFlashcardStudy.API.Services.Decks
         Task<IReadOnlyList<DeckResponse>> GetAllAsync(Guid ownerId);
 
         Task<GetDeckResponse> GetByIdAsync(Guid deckId, Guid ownerId);
+
+        Task<GetDeckResponse> UpdateAsync(Guid deckId, Guid ownerId, UpdateDeckRequest request);
     }
 }

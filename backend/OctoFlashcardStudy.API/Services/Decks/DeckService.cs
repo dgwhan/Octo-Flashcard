@@ -26,7 +26,7 @@ namespace OctoFlashcardStudy.API.Services.Decks
             var normalizedName = request.Name.Trim();
 
             //check duplicate
-            var nameExists = await _context.Decks.AnyAsync(x => x.OwnerId == ownerId && x.Name == normalizedName);
+            var nameExists = await _context.Decks.AnyAsync(deck => deck.OwnerId == ownerId && deck.Name == normalizedName);
 
             if (nameExists) {
                 throw new ApiException("A deck with the same name already exists", StatusCodes.Status409Conflict);
@@ -98,6 +98,34 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 throw new ApiException("Deck not found", StatusCodes.Status404NotFound);
 
             return result;
+        }
+
+        public async Task<GetDeckResponse> UpdateAsync(Guid deckId, Guid ownerId, UpdateDeckRequest request)
+        {
+            DeckValidator.ValidateUpdate(request);
+
+            var deck = await _context.Decks
+                .FirstOrDefaultAsync(deck => deck.Id == deckId && deck.OwnerId == ownerId);
+
+            if (deck == null)
+                throw new ApiException("Deck not found", StatusCodes.Status404NotFound);
+
+            deck.Name = request.Name.Trim();
+            deck.Description = request.Description?.Trim();
+            deck.Visibility = request.Visibility;
+            deck.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new GetDeckResponse
+            {
+                Id = deck.Id,
+                Name = deck.Name,
+                Description = deck.Description,
+                Visibility = deck.Visibility,
+                CreatedAt = deck.CreatedAt,
+                UpdatedAt = deck.UpdatedAt
+            };
         }
     }
 }

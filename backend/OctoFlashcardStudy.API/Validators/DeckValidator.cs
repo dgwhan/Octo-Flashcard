@@ -7,20 +7,36 @@ namespace OctoFlashcardStudy.API.Validators
     {
         public static void ValidateCreate(CreateDeckRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.Name))
+            Validate(request.Name, request.Description);
+        }
+
+        public static void ValidateUpdate(UpdateDeckRequest request)
+        {
+            Validate(request.Name, request.Description);
+        }
+
+        private static void Validate(string name, string? description)
+        {
+            if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ApiException("Deck name is required.", StatusCodes.Status400BadRequest);
+                throw new ApiException(
+                    "Deck name is required.",
+                    StatusCodes.Status400BadRequest);
             }
 
-            if (request.Name.Length > 100)
+            if (name.Length > 100)
             {
-                throw new ApiException("Deck name must not exceed 100 characters.", StatusCodes.Status400BadRequest);
+                throw new ApiException(
+                    "Deck name must not exceed 100 characters.",
+                    StatusCodes.Status400BadRequest);
             }
 
-            if (!string.IsNullOrWhiteSpace(request.Description) &&
-                request.Description.Length > 500)
+            if (!string.IsNullOrWhiteSpace(description) &&
+                description.Length > 500)
             {
-                throw new ApiException("Description must not exceed 500 characters.", StatusCodes.Status400BadRequest);
+                throw new ApiException(
+                    "Description must not exceed 500 characters.",
+                    StatusCodes.Status400BadRequest);
             }
         }
     }
