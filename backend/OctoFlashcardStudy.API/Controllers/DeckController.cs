@@ -18,7 +18,7 @@ namespace OctoFlashcardStudy.API.Controllers
             _deckService = deckService;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult<CreateDeckResponse>> Create(
             CreateDeckRequest request)
         {
@@ -28,6 +28,15 @@ namespace OctoFlashcardStudy.API.Controllers
             var response = await _deckService.CreateAsync(ownerId, request);
 
             return StatusCode(StatusCodes.Status201Created, response);
+        }
+
+        [HttpGet("mydeck")]
+        public async Task<ActionResult<IReadOnlyList<DeckResponse>>> GetAllAsync()
+        {
+            var ownerId = User.GetUserId();
+            var response = await _deckService.GetAllAsync(ownerId);
+             
+            return Ok(response);
         }
     }
 }

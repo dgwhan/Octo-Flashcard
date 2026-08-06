@@ -60,5 +60,22 @@ namespace OctoFlashcardStudy.API.Services.Decks
 
 
         }
+
+        public async Task<IReadOnlyList<DeckResponse>> GetAllAsync(Guid ownerId)
+        {
+            return await _context.Decks
+                .AsNoTracking()
+                .Where(deck => deck.OwnerId == ownerId)
+                .OrderByDescending(deck => deck.CreatedAt)
+                .Select(deck => new DeckResponse
+                {
+                    Id = deck.Id,
+                    Name = deck.Name,
+                    Visibility = deck.Visibility,
+                    CreatedAt = deck.CreatedAt,
+                })
+                .ToListAsync();
+            
+        }
     }
 }
