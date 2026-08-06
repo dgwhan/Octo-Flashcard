@@ -1,34 +1,37 @@
 # Octo Flashcard Study
 
-Octo Flashcard Study is a full-stack web application that enables users to create, organize, and study flashcards. The project is built with a modern technology stack and follows Clean Architecture principles to ensure scalability, maintainability, and a clear separation of concerns.
+A full-stack flashcard learning application built with **ASP.NET Core Web API** and **Next.js**. The project follows **Clean Architecture** principles to provide a scalable, maintainable, and well-structured codebase.
 
 ## Features
 
-- User Registration and Login
-- JWT Authentication and Authorization
-- Flashcard Deck Management
-- Flashcard Management
-- Public and Private Decks
-- Responsive Web Interface
-- RESTful API
-- Scalar API Documentation
+* User Registration & Login
+* JWT Authentication & Authorization
+* Flashcard Deck Management
+* Flashcard Management
+* Public & Private Decks
+* RESTful API
+* Responsive Web Interface
+* Scalar API Documentation
 
 ## Technology Stack
 
 ### Frontend
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
 
 ### Backend
 
-- ASP.NET Core Web API (.NET 10)
-- Entity Framework Core
-- SQL Server
-- JWT Bearer Authentication
-- Scalar API Reference
+* ASP.NET Core Web API (.NET 10)
+* Entity Framework Core
+* JWT Bearer Authentication
+* Scalar API Reference
+
+> **Note**
+>
+> The project uses Entity Framework Core. A sample SQL Server configuration may be used for local development, but you can configure any EF Core-supported database by updating your own connection string.
 
 ## Project Structure
 
@@ -38,8 +41,7 @@ octo-flashcardstudy
 ├── frontend
 │   ├── app
 │   ├── components
-│   ├── public
-│   └── package.json
+│   └── public
 │
 ├── backend
 │   ├── Controllers
@@ -74,6 +76,8 @@ dotnet ef database update
 dotnet run
 ```
 
+> Before running the application, configure your own database connection string in `appsettings.json` or `appsettings.Development.json`.
+
 API Documentation
 
 ```
@@ -102,7 +106,7 @@ This project is licensed under the MIT License.
 
 ## Author
 
-DuongNgocHan
+**Duong Ngoc Han**
 
 GitHub: https://github.com/dgwhan
 
