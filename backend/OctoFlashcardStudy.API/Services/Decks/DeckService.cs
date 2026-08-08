@@ -64,6 +64,7 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 {
                     Id = deck.Id,
                     Name = deck.Name,
+                    Description = deck.Description,
                     Visibility = deck.Visibility,
                     CreatedAt = deck.CreatedAt,
                 })
