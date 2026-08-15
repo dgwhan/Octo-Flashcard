@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OctoFlashcardStudy.API.Contracts.Decks;
 using OctoFlashcardStudy.API.Data;
 using OctoFlashcardStudy.API.Domain.Entities;

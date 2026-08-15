@@ -1,4 +1,4 @@
-﻿using OctoFlashcardStudy.API.Contracts.Auth;
+using OctoFlashcardStudy.API.Contracts.Auth;
 using OctoFlashcardStudy.API.Exceptions;
 
 namespace OctoFlashcardStudy.API.Validators
