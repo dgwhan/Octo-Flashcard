@@ -79,69 +79,95 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="auth-form-box">
-      <h2>Register</h2>
+    <div className="auth-form-card">
+      <h1 className="auth-title">Register</h1>
 
       {errorMessage && <div className="alert-error">{errorMessage}</div>}
       {successMessage && <div className="alert-success">{successMessage}</div>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="auth-form">
         <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            className="form-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+          <label htmlFor="username" className="form-label">
+            Username
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="username"
+              type="text"
+              className="form-input"
+              placeholder="Choose a username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <label htmlFor="email" className="form-label">
+            E-mail
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="email"
+              type="email"
+              className="form-input"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="password">Password (min 8 chars)</label>
-          <input
-            id="password"
-            type="password"
-            className="form-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <label htmlFor="password" className="form-label">
+            Password
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="password"
+              type="password"
+              className="form-input"
+              placeholder="8+ Characters, 1 Capital letter"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </div>
         </div>
 
         <div className="form-group">
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            className="form-input"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+          <label htmlFor="confirmPassword" className="form-label">
+            Confirm Password
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="confirmPassword"
+              type="password"
+              className="form-input"
+              placeholder="Repeat your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </div>
         </div>
 
-        <button type="submit" disabled={isLoading} className="btn-submit">
-          {isLoading ? "Loading..." : "Register"}
+        <button type="submit" disabled={isLoading} className="btn-submit" style={{ marginTop: "6px" }}>
+          {isLoading ? <span className="spinner" /> : "Sign Up"}
         </button>
       </form>
 
-      <div className="auth-switch">
-        <span>Already have an account? </span>
-        <Link href="/auth/login">Login</Link>
+      <div className="auth-footer">
+        <span>Already have an account?</span>
+        <Link href="/auth/login" className="auth-link">
+          Sign In
+        </Link>
       </div>
     </div>
   );
