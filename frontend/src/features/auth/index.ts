@@ -4,5 +4,5 @@ export { default as LoginForm } from "./components/LoginForm";
 export { default as RegisterForm } from "./components/RegisterForm";
 export { default as AuthHeader } from "./components/AuthHeader";
 export * from "./api/auth.api";
-export * from "./hooks/useRequireAuth";
 
+export * from "./hooks/useRequireAuth";
