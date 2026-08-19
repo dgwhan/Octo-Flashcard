@@ -22,7 +22,7 @@ export default function DecksPage() {
                 if (isMounted && Array.isArray(data)) {
                     // Lọc chỉ lấy các bộ thẻ Public
                     const publicDecks = data.filter(
-                        (deck) => deck.visibility === DeckVisibility.Public
+                        (deck) => deck.visibility === "public"
                     );
                     setDecks(publicDecks);
                 }
@@ -56,7 +56,7 @@ export default function DecksPage() {
                         <DeckCard
                             key={deck.id}
                             name={deck.name}
-                            author="by author"
+                            author={deck.ownerName}
                         />
                     ))
                 )}

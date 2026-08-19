@@ -63,7 +63,6 @@
   fill: currentColor;
 }
 
-.auhor,
 .author {
   grid-row: 3;
   grid-column: 2;

@@ -1,6 +1,6 @@
 export enum DeckVisibility {
-    Private = 0,
-    Public = 1,
+    Private = "private",
+    Public = "public",
 }
 
 export interface CreateDeckRequest {
@@ -25,15 +25,19 @@ export interface CreateDeckResponse {
 
 export interface DeckResponse {
     id: string;
+    ownerId: string;
+    ownerName: string;
     name: string;
     description: string | null;
     visibility: DeckVisibility;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 }
 
 export interface GetDeckResponse {
     id: string;
+    ownerId: string;
+    ownerName: string;
     name: string;
     description: string | null;
     visibility: DeckVisibility;

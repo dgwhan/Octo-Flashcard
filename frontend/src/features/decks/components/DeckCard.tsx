@@ -16,9 +16,9 @@ export default function DeckCard({
             <h3 className={styles.title}>{name}</h3>
 
             <span className={styles.icon}>
-                <DotIcon/>
+                <DotIcon />
             </span>
-            <span className={styles.auhor}>{author}</span>
+            <span className={styles.author}>{author}</span>
         </div>
     );
 }

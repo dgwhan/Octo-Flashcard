@@ -63,6 +63,8 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 .Select(deck => new DeckResponse
                 {
                     Id = deck.Id,
+                    OwnerId = deck.OwnerId,
+                    OwnerName = deck.Owner.Username,
                     Name = deck.Name,
                     Description = deck.Description,
                     Visibility = deck.Visibility,
@@ -80,6 +82,8 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 .Select(deck => new GetDeckResponse
                 {
                     Id = deck.Id,
+                    OwnerId = deck.OwnerId,
+                    OwnerName = deck.Owner.Username,
                     Name = deck.Name,
                     Description = deck.Description,
                     Visibility = deck.Visibility,
@@ -99,6 +103,7 @@ namespace OctoFlashcardStudy.API.Services.Decks
             DeckValidator.ValidateUpdate(request);
 
             var deck = await _context.Decks
+                .Include(deck => deck.Owner)
                 .FirstOrDefaultAsync(deck => deck.Id == deckId && deck.OwnerId == ownerId);
 
             if (deck == null)
@@ -114,6 +119,8 @@ namespace OctoFlashcardStudy.API.Services.Decks
             return new GetDeckResponse
             {
                 Id = deck.Id,
+                OwnerId = deck.OwnerId,
+                OwnerName = deck.Owner.Username,
                 Name = deck.Name,
                 Description = deck.Description,
                 Visibility = deck.Visibility,
