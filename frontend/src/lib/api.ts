@@ -44,6 +44,13 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
         const data = isJson ? await response.json() : await response.text();
 
         if (!response.ok) {
+            if (response.status === 401 && typeof window !== "undefined") {
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("user");
+                sessionStorage.removeItem("accessToken");
+                sessionStorage.removeItem("user");
+            }
+
             let errorMessage = `Request failed with status ${response.status}`;
             if (typeof data === "object" && data !== null) {
                 const d = data as Record<string, unknown>;
