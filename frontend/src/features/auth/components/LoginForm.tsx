@@ -1,5 +1,9 @@
 "use client";
 
+
+import React, { useState, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,8 +12,10 @@ import { authApi } from "../api/auth.api";
 import { ApiError } from "@/src/lib/api";
 import "../auth.css";
 
-export default function LoginForm() {
+function LoginFormInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTarget = searchParams.get("redirect") || "/";
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -45,7 +51,7 @@ export default function LoginForm() {
 
       setSuccessMessage("Signed in successfully! Redirecting...");
       setTimeout(() => {
-        router.push("/");
+        router.push(redirectTarget);
         router.refresh();
       }, 500);
     } catch (err) {
@@ -142,5 +148,13 @@ export default function LoginForm() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function LoginForm() {
+  return (
+    <Suspense fallback={<div className="auth-form-card"><h1 className="auth-title">Sign In</h1><div style={{ textAlign: "center", padding: "40px" }}><span className="spinner" /></div></div>}>
+      <LoginFormInner />
+    </Suspense>
   );
 }
