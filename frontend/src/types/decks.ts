@@ -1,3 +1,5 @@
+import { CreateFlashCardRequest } from "./flashCard";
+
 export enum DeckVisibility {
     Private = "private",
     Public = "public",
@@ -7,6 +9,7 @@ export interface CreateDeckRequest {
     name: string;
     description?: string | null;
     visibility: DeckVisibility;
+    flashCards: CreateFlashCardRequest[];
 }
 
 export interface UpdateDeckRequest {

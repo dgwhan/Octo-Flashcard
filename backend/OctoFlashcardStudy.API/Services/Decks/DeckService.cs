@@ -19,26 +19,52 @@ namespace OctoFlashcardStudy.API.Services.Decks
 
         public async Task<CreateDeckResponse> CreateAsync(Guid ownerId, CreateDeckRequest request)
         {
-            //validate 
+            // validate deck
             DeckValidator.ValidateCreate(request);
 
-            //normalize name
+            // validate flashcards
+            foreach (var requestCard in request.FlashCards)
+            {
+                FlashCardValidator.ValidateCreate(requestCard);
+            }
+
+            // normalize deck
             var normalizedName = request.Name.Trim();
 
-            //create entity
+            //create deck
             var deck = new Deck
             {
                 Id = Guid.NewGuid(),
                 OwnerId = ownerId,
                 Name = normalizedName,
                 Description = request.Description?.Trim(),
-                Visibility = DeckVisibility.Private,
+                Visibility = request.Visibility,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
-            //save db 
+            //add deck
             _context.Decks.Add(deck);
+
+            // create flashcards
+            foreach (var requestCard in request.FlashCards)
+            {
+                var flashCard = new FlashCard
+                {
+                    Id = Guid.NewGuid(),
+                    DeckId = deck.Id,
+                    Term = requestCard.Term.Trim(),
+                    TermLanguage = requestCard.TermLanguage.Trim(),
+                    Definition = requestCard.Definition.Trim(),
+                    DefinitionLanguage = requestCard.DefinitionLanguage.Trim(),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _context.FlashCards.Add(flashCard);
+            }
+
+            //save db
             await _context.SaveChangesAsync();
 
             //return response
@@ -50,8 +76,6 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 Visibility = deck.Visibility,
                 CreatedAt = deck.CreatedAt
             };
-
-
         }
 
         public async Task<IReadOnlyList<DeckResponse>> GetAllAsync(Guid ownerId)

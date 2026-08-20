@@ -12,6 +12,7 @@ namespace OctoFlashcardStudy.API.Data
 
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Deck> Decks { get; set; } = null!;
+        public DbSet<FlashCard> FlashCards { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

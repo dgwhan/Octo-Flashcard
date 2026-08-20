@@ -4,8 +4,8 @@ import styles from "./DecksPage.module.css";
 import { useEffect, useState } from "react";
 import DeckCard from "../components/DeckCard";
 import DeckEmptyState from "../components/DeckEmptyState";
-import { DeckResponse, DeckVisibility } from "@/src/types/decks";
-import { deckApi } from "../api/desk.api";
+import { DeckResponse } from "@/src/types/decks";
+import { deckApi } from "../api/deck.api";
 import TopProgressBar from "@/src/components/ui/TopProgressBar";
 
 export default function DecksPage() {
@@ -20,14 +20,9 @@ export default function DecksPage() {
                 setLoading(true);
                 const data = await deckApi.getAll();
                 if (isMounted && Array.isArray(data)) {
-                    // Lọc chỉ lấy các bộ thẻ Public
-                    const publicDecks = data.filter(
-                        (deck) => deck.visibility === "public"
-                    );
-                    setDecks(publicDecks);
+                    setDecks(data);
                 }
             } catch {
-                // Xử lý an toàn khi chưa đăng nhập (401) hoặc lỗi kết nối, không để crash trang
                 if (isMounted) {
                     setDecks([]);
                 }
@@ -46,8 +41,13 @@ export default function DecksPage() {
     }, []);
 
     return (
-        <>
+        <div className={styles.container}>
             <TopProgressBar isLoading={loading} />
+
+            <div className={styles.headerContainer}>
+                <h1 className={styles.title}>My Decks</h1>
+            </div>
+
             <div className={styles.card}>
                 {!loading && decks.length === 0 ? (
                     <DeckEmptyState />
@@ -61,6 +61,6 @@ export default function DecksPage() {
                     ))
                 )}
             </div>
-        </>
+        </div>
     );
 }

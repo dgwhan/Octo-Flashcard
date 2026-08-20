@@ -1,0 +1,66 @@
+/* color system & css variables token definitions */
+:root {
+  /* brand / primary palette */
+  --color-primary: #7c5ac7;
+  --color-primary-hover: #6d4eb5;
+  --color-primary-light: #ece8f7;
+  --color-primary-ring: rgba(124, 90, 199, 0.25);
+
+  /* accent palette */
+  --color-accent: #f2c75c;
+  --color-accent-hover: #e5b84d;
+  --color-accent-light: #fff4cf;
+
+  /* secondary / supporting palette */
+  --color-secondary: #9a8bdd;
+  --color-secondary-hover: #8878cc;
+  --color-secondary-light: #f1edfb;
+
+  /* neutrals & backgrounds */
+  --color-bg-main: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-muted: #eeeff3;
+  --color-bg-subtle: #f8f7fb;
+
+  /* typography */
+  --color-text-primary: #000000;
+  --color-text-secondary: #9099a0;
+  --color-text-muted: #9099a0;
+  --color-text-inverse: #ffffff;
+
+  /* borders & dividers */
+  --color-border: #eeeff3;
+  --color-border-hover: #d9d5e2;
+  --color-border-focus: #7c5ac7;
+
+  /* status colors */
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-light: #fef2f2;
+  --color-danger-border: #fca5a5;
+
+  --color-success: #10b981;
+  --color-success-hover: #059669;
+  --color-success-light: #ecfdf5;
+
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-light: #fffbeb;
+
+  /* shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  --shadow-md:
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 2px 4px -2px rgb(0 0 0 / 0.08);
+
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.08),
+    0 4px 6px -4px rgb(0 0 0 / 0.08);
+
+  /* border radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}

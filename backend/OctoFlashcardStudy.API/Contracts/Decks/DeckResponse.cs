@@ -1,4 +1,4 @@
-﻿using OctoFlashcardStudy.API.Domain.Enums;
+using OctoFlashcardStudy.API.Domain.Enums;
 
 namespace OctoFlashcardStudy.API.Contracts.Decks
 {
@@ -9,7 +9,7 @@ namespace OctoFlashcardStudy.API.Contracts.Decks
         public string OwnerName { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public DeckVisibility Visibility { get; set; } = DeckVisibility.Private;
+        public DeckVisibility Visibility { get; set; }
         public DateTime CreatedAt { get; set; }
 
     }

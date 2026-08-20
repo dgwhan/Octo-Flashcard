@@ -8,6 +8,12 @@ namespace OctoFlashcardStudy.API.Validators
         public static void ValidateCreate(CreateDeckRequest request)
         {
             Validate(request.Name, request.Description);
+            if (request.FlashCards.Count < 2)
+            {
+                throw new ApiException(
+                    "Deck must contain at least 2 flashcards.",
+                    StatusCodes.Status400BadRequest);
+            }
         }
 
         public static void ValidateUpdate(UpdateDeckRequest request)
