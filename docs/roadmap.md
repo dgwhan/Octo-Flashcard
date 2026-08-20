@@ -31,7 +31,7 @@ The first milestone focuses on delivering the minimum set of features required f
 | Request validation | Complete |
 | Global exception handling | Complete |
 | Entity Framework Core migrations | Complete |
-| Flashcard Management — CRUD | Not started |
+| Flashcard Management — CRUD | Complete |
 | Study Session API | Not started |
 
 ### Frontend
@@ -39,9 +39,9 @@ The first milestone focuses on delivering the minimum set of features required f
 | Feature | Status |
 |---------|--------|
 | Project structure setup | In Progress |
-| Authentication pages | Not started |
-| Deck management interface | Not started |
-| Flashcard management interface | Not started |
+| Authentication pages | Complete |
+| Deck management interface | In Progress |
+| Flashcard management interface | In Progress |
 | Study interface | Not started |
 | Responsive layout | Not started |
 | API integration | Not started |
