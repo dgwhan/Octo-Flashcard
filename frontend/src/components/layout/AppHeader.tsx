@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Plus, LogOut, Menu, User } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
+import { AuthModal } from "@/src/features/auth";
 import styles from "./AppHeader.module.css";
 
 interface AppHeaderProps {
@@ -38,6 +39,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const user = useCurrentUser();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -59,6 +61,14 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
     setIsDropdownOpen(false);
     authApi.logout();
     router.push("/auth/login");
+  };
+
+  const handleAddDeckClick = () => {
+    if (!user) {
+      setIsAuthModalOpen(true);
+    } else {
+      router.push("/decks/create");
+    }
   };
 
   return (
@@ -95,7 +105,12 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
       {/* Right section: Add deck action & User profile */}
       <div className={styles.rightSection}>
-        <button type="button" className={styles.addDeckBtn} title="Add Deck">
+        <button
+          type="button"
+          className={styles.addDeckBtn}
+          title="Add Deck"
+          onClick={handleAddDeckClick}
+        >
           <Plus className={styles.headerIcon} />
           <span className={styles.addDeckText}>Add Deck</span>
         </button>
@@ -144,6 +159,15 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           )}
         </div>
       </div>
+
+      {/* Auth Modal Popup khi khách click vào Add Deck */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        title="Đăng nhập hoặc đăng ký để tiếp tục"
+        description="Đăng nhập hoặc tạo tài khoản để bắt đầu tạo bộ thẻ Flashcard của bạn."
+        redirectUrl="/decks/create"
+      />
     </header>
   );
 }

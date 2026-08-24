@@ -2,6 +2,7 @@
 
 import styles from "./DecksPage.module.css";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import DeckCard from "../components/DeckCard";
 import DeckEmptyState from "../components/DeckEmptyState";
 import { DeckResponse } from "@/src/types/decks";
@@ -9,6 +10,7 @@ import { deckApi } from "../api/deck.api";
 import TopProgressBar from "@/src/components/ui/TopProgressBar";
 
 export default function DecksPage() {
+    const router = useRouter();
     const [decks, setDecks] = useState<DeckResponse[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -50,7 +52,7 @@ export default function DecksPage() {
 
             <div className={styles.card}>
                 {!loading && decks.length === 0 ? (
-                    <DeckEmptyState />
+                    <DeckEmptyState onCreateClick={() => router.push("/decks/create")} />
                 ) : (
                     decks.map((deck) => (
                         <DeckCard

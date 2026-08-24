@@ -3,4 +3,5 @@ export { default as RegisterPage } from "./pages/RegisterPage";
 export { default as LoginForm } from "./components/LoginForm";
 export { default as RegisterForm } from "./components/RegisterForm";
 export { default as AuthHeader } from "./components/AuthHeader";
+export * from "./components/AuthModal";
 export * from "./api/auth.api";

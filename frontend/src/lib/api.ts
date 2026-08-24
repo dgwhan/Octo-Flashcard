@@ -12,7 +12,10 @@ export class ApiError extends Error {
 }
 
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    const token =
+        typeof window !== "undefined"
+            ? localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken")
+            : null;
 
     const headers: HeadersInit = {
         "Content-Type": "application/json",
@@ -54,7 +57,10 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
                 }
             }
 
-            let errorMessage = `Request failed with status ${response.status}`;
+            let errorMessage =
+                response.status === 401
+                    ? "Your session has expired or you are not logged in. Please log in to continue."
+                    : `Request failed with status ${response.status}`;
             if (typeof data === "object" && data !== null) {
                 const d = data as Record<string, unknown>;
                 const msg = d.message || d.Message || d.error || d.Error || d.title || d.Title;
