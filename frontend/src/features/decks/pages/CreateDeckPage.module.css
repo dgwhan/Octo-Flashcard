@@ -1,27 +1,27 @@
 .pageWrapper {
-  max-width: 920px;
+  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 32px 24px 80px;
+  padding: 16px 24px 80px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
 /* Sticky top bar */
 .topBar {
   position: sticky;
-  top: 0;
-  z-index: 20;
+  top: 64px;
+  z-index: 30;
   background-color: var(--color-bg-main);
   padding: 16px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--color-border);
 }
 
 .pageTitle {
-  font-size: 1.625rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-text-primary);
 }
@@ -35,8 +35,8 @@
   color: var(--color-text-inverse);
   font-size: 0.9375rem;
   font-weight: 600;
-  padding: 10px 24px;
-  border-radius: var(--radius-md);
+  padding: 10px 15px;
+  border-radius: var(--radius-full);
   border: none;
   cursor: pointer;
   transition: background-color 0.2s, opacity 0.2s;
@@ -51,115 +51,26 @@
   cursor: not-allowed;
 }
 
-/* Error Banner */
-.errorBanner {
-  background-color: var(--color-danger-light);
-  border: 1px solid var(--color-danger-border);
-  color: var(--color-danger);
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* Section Card (Deck Details) */
-.sectionCard {
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-sm);
+/* General Error Wrapper - Không viền, không background */
+.generalErrorWrapper {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.fieldGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.required {
-  color: var(--color-danger);
-  margin-left: 2px;
-}
-
-.textInput,
-.selectInput,
-.textareaInput {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-bg-main);
-  color: var(--color-text-primary);
-  font-size: 0.9375rem;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.textareaInput {
-  min-height: 80px;
-  resize: vertical;
-}
-
-.textInput:focus,
-.selectInput:focus,
-.textareaInput:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-ring);
-}
-
-.inputError {
-  border-color: var(--color-danger) !important;
-}
-
-.fieldError {
-  font-size: 0.8125rem;
-  color: var(--color-danger);
-  margin-top: 2px;
+  align-items: center;
+  margin-top: -12px;
+  margin-bottom: -8px;
 }
 
 /* Flashcards Section */
 .flashcardsSection {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sectionTitle {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.cardCountBadge {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  background-color: var(--color-bg-subtle);
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-weight: 600;
-}
-
 .cardList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 /* Add Flashcard Button */

@@ -1,0 +1,31 @@
+.errorContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-danger);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin-top: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.errorIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

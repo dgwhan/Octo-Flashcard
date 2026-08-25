@@ -103,16 +103,14 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
         </div>
       </div>
 
-      {/* Right section: Add deck action & User profile */}
+      {/* Right section: Add flashcard action & User profile */}
       <div className={styles.rightSection}>
         <button
           type="button"
           className={styles.addDeckBtn}
-          title="Add Deck"
           onClick={handleAddDeckClick}
         >
           <Plus className={styles.headerIcon} />
-          <span className={styles.addDeckText}>Add Deck</span>
         </button>
 
         <div className={styles.profileContainer} ref={dropdownRef}>
@@ -164,8 +162,8 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        title="Đăng nhập hoặc đăng ký để tiếp tục"
-        description="Đăng nhập hoặc tạo tài khoản để bắt đầu tạo bộ thẻ Flashcard của bạn."
+        title="Login or Register to Continue"
+        description="Login or create an account to start creating your Flashcard sets."
         redirectUrl="/decks/create"
       />
     </header>

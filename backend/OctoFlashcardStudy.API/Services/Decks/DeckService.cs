@@ -31,6 +31,13 @@ namespace OctoFlashcardStudy.API.Services.Decks
             // normalize deck
             var normalizedName = request.Name.Trim();
 
+            // check if deck with the same name already exists for this owner
+            var isExist = await _context.Decks.AnyAsync(d => d.OwnerId == ownerId && d.Name.ToLower() == normalizedName.ToLower());
+            if (isExist)
+            {
+                throw new ApiException("Name set existed", StatusCodes.Status400BadRequest);
+            }
+
             //create deck
             var deck = new Deck
             {
@@ -133,7 +140,14 @@ namespace OctoFlashcardStudy.API.Services.Decks
             if (deck == null)
                 throw new ApiException("Deck not found", StatusCodes.Status404NotFound);
 
-            deck.Name = request.Name.Trim();
+            var normalizedName = request.Name.Trim();
+            var isExist = await _context.Decks.AnyAsync(d => d.OwnerId == ownerId && d.Id != deckId && d.Name.ToLower() == normalizedName.ToLower());
+            if (isExist)
+            {
+                throw new ApiException("Name set existed", StatusCodes.Status400BadRequest);
+            }
+
+            deck.Name = normalizedName;
             deck.Description = request.Description?.Trim();
             deck.Visibility = request.Visibility;
             deck.UpdatedAt = DateTime.UtcNow;

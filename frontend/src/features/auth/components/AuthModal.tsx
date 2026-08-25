@@ -16,8 +16,8 @@ export interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  title = "Đăng nhập hoặc đăng ký để tiếp tục",
-  description = "Tạo tài khoản hoặc đăng nhập để lưu và chia sẻ bộ thẻ Flashcard của bạn.",
+  title = "Login or Register to Continue",
+  description = "Login or create an account to start creating your Flashcard sets.",
   redirectUrl = "/decks/create",
 }) => {
   // Đóng modal khi bấm phím Escape
@@ -49,7 +49,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           type="button"
           className={styles.closeBtn}
           onClick={onClose}
-          aria-label="Đóng popup"
+          aria-label="Close popup"
         >
           <X size={20} />
         </button>
@@ -69,13 +69,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             href={`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`}
             className={styles.loginBtn}
           >
-            Đăng nhập
+            Login
           </Link>
           <Link
             href={`/auth/register?redirect=${encodeURIComponent(redirectUrl)}`}
-            className={styles.registerBtn}
-          >
-            Đăng ký tài khoản
+            className={styles.registerBtn}>
+            Register
           </Link>
         </div>
       </div>
