@@ -151,7 +151,7 @@ export const CreateDeckPage: React.FC = () => {
         setGeneralError(null);
 
         try {
-            const res = await deckApi.create({
+            await deckApi.create({
                 name: deckName.trim(),
                 description: deckDescription.trim() || undefined,
                 visibility,

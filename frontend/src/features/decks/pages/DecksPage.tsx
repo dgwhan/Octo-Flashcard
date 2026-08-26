@@ -57,6 +57,7 @@ export default function DecksPage() {
                     decks.map((deck) => (
                         <DeckCard
                             key={deck.id}
+                            id={deck.id}
                             name={deck.name}
                             author={deck.ownerName}
                         />

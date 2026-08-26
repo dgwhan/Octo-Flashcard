@@ -1,4 +1,10 @@
 /* DeckCard.module.css */
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .card {
   position: relative;
   background: var(--color-bg-card);
