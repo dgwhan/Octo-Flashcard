@@ -3,4 +3,6 @@ export { default as DeckCard } from "./components/DeckCard";
 export { default as DeckEmptyState } from "./components/DeckEmptyState";
 export * from "./pages/CreateDeckPage";
 export * from "./pages/DeckDetailPage";
+export * from "./components/actions/EditDeckModal";
+export * from "./components/actions/DeleteDeckModal";
 export * from "./api/deck.api";

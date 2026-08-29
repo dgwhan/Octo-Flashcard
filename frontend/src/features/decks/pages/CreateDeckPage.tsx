@@ -19,8 +19,17 @@ const EMPTY_CARD: CreateFlashCardRequest = {
     definitionLanguage: "English",
 };
 
+import { authApi } from "@/src/features/auth/api/auth.api";
+
 export const CreateDeckPage: React.FC = () => {
     const router = useRouter();
+
+    React.useEffect(() => {
+        const token = authApi.getStoredToken();
+        if (!token) {
+            router.push("/auth/login?redirect=/decks/create");
+        }
+    }, [router]);
 
     // Deck States
     const [deckName, setDeckName] = useState("");

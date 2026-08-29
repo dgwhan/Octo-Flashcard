@@ -1,12 +1,25 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Globe, Lock, Calendar, User } from "lucide-react";
-import { GetDeckResponse, DeckVisibility } from "@/src/types/decks";
+import {
+  ArrowLeft,
+  MoreHorizontal,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { GetDeckResponse } from "@/src/types/decks";
 import { FlashCardResponse } from "@/src/types/flashCard";
 import { deckApi } from "../api/deck.api";
-import { flashCardApi, FlashCardViewer } from "@/src/features/flashCards";
+import {
+  flashCardApi,
+  FlashCardViewer,
+  EditFlashCardModal,
+  DeleteFlashCardModal,
+} from "@/src/features/flashCards";
+import { EditDeckModal } from "../components/actions/EditDeckModal";
+import { DeleteDeckModal } from "../components/actions/DeleteDeckModal";
 import styles from "./DeckDetailPage.module.css";
 
 export interface DeckDetailPageProps {
@@ -18,8 +31,54 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
 
   const [deck, setDeck] = useState<GetDeckResponse | null>(null);
   const [flashCards, setFlashCards] = useState<FlashCardResponse[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Deck level modals & menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isEditDeckOpen, setIsEditDeckOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+
+  // Flashcard level modals & active menu
+  const [activeCardMenuId, setActiveCardMenuId] = useState<string | null>(null);
+  const [editingCard, setEditingCard] = useState<FlashCardResponse | null>(null);
+  const [deletingCard, setDeletingCard] = useState<FlashCardResponse | null>(null);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleDeckUpdated = (updatedDeck: GetDeckResponse) => {
+    setDeck(updatedDeck);
+  };
+
+  const handleCardUpdated = (updatedCard: FlashCardResponse) => {
+    setFlashCards((prev) =>
+      prev.map((c) => (c.id === updatedCard.id ? updatedCard : c))
+    );
+  };
+
+  const handleCardDeleted = (deletedCardId: string) => {
+    setFlashCards((prev) => prev.filter((c) => c.id !== deletedCardId));
+    setDeletingCard(null);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setIsMenuOpen(false);
+      }
+
+      if (!target.closest(`.${styles.cardMenuWrapper}`)) {
+        setActiveCardMenuId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -46,7 +105,7 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
         }
       } finally {
         if (isMounted) {
-          setLoading(false);
+          setIsLoading(false);
         }
       }
     };
@@ -59,7 +118,7 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
   }, [deckId]);
 
   const handleRetry = () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     Promise.all([
       deckApi.getById(deckId),
@@ -73,11 +132,11 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
         setError(err instanceof Error ? err.message : "Failed to load deck details.");
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.loadingState}>
@@ -89,26 +148,47 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
   }
 
   if (error || !deck) {
+    const isAuthError =
+      error?.includes("session has expired") ||
+      error?.includes("not logged in") ||
+      error?.includes("401");
+
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.errorState}>
-          <h2 className={styles.errorTitle}>Deck Not Found</h2>
+          <h2 className={styles.errorTitle}>
+            {isAuthError ? "Authentication Required" : "Deck Not Found"}
+          </h2>
           <p className={styles.errorMsg}>
             {error || "Unable to find the requested deck."}
           </p>
-          <button type="button" className={styles.retryBtn} onClick={handleRetry}>
-            Try Again
-          </button>
+          {isAuthError ? (
+            <button
+              type="button"
+              className={styles.retryBtn}
+              onClick={() =>
+                router.push(`/auth/login?redirect=/decks/${deckId}`)
+              }
+            >
+              Log In to Continue
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={styles.retryBtn}
+              onClick={handleRetry}
+            >
+              Try Again
+            </button>
+          )}
         </div>
       </div>
     );
   }
 
-  const isPrivate = deck.visibility === DeckVisibility.Private;
-
   return (
     <div className={styles.pageWrapper}>
-      {/* Header & Meta Section */}
+      {/* Header Section */}
       <header className={styles.headerSection}>
         <button
           type="button"
@@ -119,27 +199,50 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
           <span>Back to Decks</span>
         </button>
 
-        <h1 className={styles.deckTitle}>{deck.name}</h1>
+        <div className={styles.headerSectionTop}>
+          <h1 className={styles.deckTitle}>{deck.name}</h1>
 
-        <div className={styles.metaRow}>
-          <span className={styles.metaItem}>
-            <User size={14} />
-            <span className={styles.ownerBadge}>{deck.ownerName || "Unknown"}</span>
-          </span>
+          {/* Deck 3-dots Menu */}
+          <div className={styles.menuWrapper} ref={menuRef}>
+            <button
+              type="button"
+              className={`${styles.moreBtn} ${isMenuOpen ? styles.menuActive : ""}`}
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-label="Options"
+            >
+              <MoreHorizontal size={18} />
+            </button>
 
-          <span className={styles.metaItem}>
-            <Calendar size={14} />
-            <span>{new Date(deck.createdAt).toLocaleDateString()}</span>
-          </span>
+            {isMenuOpen && (
+              <div className={styles.dropdownMenu}>
+                {/* Edit Deck */}
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsEditDeckOpen(true);
+                  }}
+                >
+                  <Pencil size={15} />
+                  <span>Edit Set</span>
+                </button>
 
-          <span className={styles.visibilityBadge}>
-            {isPrivate ? <Lock size={12} /> : <Globe size={12} />}
-            <span>{isPrivate ? "Private" : "Public"}</span>
-          </span>
-
-          <span className={styles.cardCountBadge}>
-            {flashCards.length} {flashCards.length === 1 ? "card" : "cards"}
-          </span>
+                {/* Delete Deck */}
+                <button
+                  type="button"
+                  className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setIsDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 size={15} />
+                  <span>Delete Set</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {deck.description && (
@@ -180,10 +283,106 @@ export const DeckDetailPage: React.FC<DeckDetailPageProps> = ({ deckId }) => {
                 </span>
                 <span className={styles.colValue}>{card.definition}</span>
               </div>
+
+              {/* Nút 3 chấm dọc cho từng Flashcard */}
+              <div className={styles.cardMenuWrapper}>
+                <button
+                  type="button"
+                  className={`${styles.cardMenuBtn} ${
+                    activeCardMenuId === card.id ? styles.menuActive : ""
+                  }`}
+                  onClick={() =>
+                    setActiveCardMenuId(
+                      activeCardMenuId === card.id ? null : card.id
+                    )
+                  }
+                  title="Card options"
+                  aria-label={`Options for card ${index + 1}`}
+                >
+                  <MoreVertical size={16} />
+                </button>
+
+                {activeCardMenuId === card.id && (
+                  <div className={styles.cardDropdownMenu}>
+                    <button
+                      type="button"
+                      className={styles.menuItem}
+                      onClick={() => {
+                        setActiveCardMenuId(null);
+                        setEditingCard(card);
+                      }}
+                    >
+                      <Pencil size={14} />
+                      <span>Edit</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                      onClick={() => {
+                        setActiveCardMenuId(null);
+                        setDeletingCard(card);
+                      }}
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Edit Deck Info Modal */}
+      {isEditDeckOpen && deck && (
+        <EditDeckModal
+          deckId={deckId}
+          initialData={{
+            name: deck.name,
+            description: deck.description,
+            visibility: deck.visibility,
+          }}
+          onClose={() => setIsEditDeckOpen(false)}
+          onUpdated={handleDeckUpdated}
+        />
+      )}
+
+      {/* Delete Deck Modal */}
+      {isDeleteOpen && deck && (
+        <DeleteDeckModal
+          deckId={deckId}
+          deckName={deck.name}
+          onClose={() => setIsDeleteOpen(false)}
+          onDeleted={() => {
+            setIsDeleteOpen(false);
+            router.push("/decks");
+          }}
+        />
+      )}
+
+      {/* Edit FlashCard Modal */}
+      {editingCard && (
+        <EditFlashCardModal
+          key={editingCard.id}
+          deckId={deckId}
+          card={editingCard}
+          onClose={() => setEditingCard(null)}
+          onUpdated={handleCardUpdated}
+        />
+      )}
+
+      {/* Delete FlashCard Modal */}
+      {deletingCard && (
+        <DeleteFlashCardModal
+          key={deletingCard.id}
+          deckId={deckId}
+          card={deletingCard}
+          onClose={() => setDeletingCard(null)}
+          onDeleted={handleCardDeleted}
+        />
+      )}
     </div>
   );
 };
