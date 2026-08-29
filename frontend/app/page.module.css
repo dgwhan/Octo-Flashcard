@@ -1,18 +1,321 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 16px 0 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
 }
 
-.title {
-  font-size: 1.75rem;
+/* 1. Hero Section - Flat Minimalist */
+.heroSection {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl, 16px);
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 800px;
+}
+
+.heroTitle {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.gradientText {
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.heroDescription {
+  font-size: 1.0625rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Quick Action Buttons */
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.primaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse, #ffffff);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 8px);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.primaryActionBtn:hover {
+  background-color: var(--color-primary-hover, #6d28d9);
+  transform: translateY(-1px);
+}
+
+.secondaryActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.secondaryActionBtn:hover {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border-hover);
+  transform: translateY(-1px);
+}
+
+/* 2. Features Grid */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.featureCard {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.featureCard:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+}
+
+.featureIconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-subtle);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.featureTitle {
+  font-size: 1.0625rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.featureDesc {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 3. Study Sets Section */
+.decksSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sectionTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
+  margin: 0;
 }
 
-.description {
+.sectionSubtitle {
+  font-size: 0.875rem;
   color: var(--color-text-secondary);
-  margin-bottom: 1.5rem;
+  margin: 0;
+}
+
+.viewAllLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: gap 0.2s;
+}
+
+.viewAllLink:hover {
+  gap: 8px;
+}
+
+/* Decks Grid */
+.decksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.deckItemCard {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+  min-height: 150px;
+}
+
+.deckItemCard:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.deckCardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.deckCardTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.deckCardDesc {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.deckCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.authorGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.authorAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.emptyState {
+  background-color: var(--color-bg-card);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.emptyTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.emptyDesc {
   font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  max-width: 400px;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .heroTitle {
+    font-size: 1.875rem;
+  }
 }

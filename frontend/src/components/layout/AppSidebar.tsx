@@ -31,7 +31,7 @@ export default function AppSidebar({
 
   const navItems = [
     {
-      label: "Explore",
+      label: "Home",
       href: "/",
       icon: Home,
     },
