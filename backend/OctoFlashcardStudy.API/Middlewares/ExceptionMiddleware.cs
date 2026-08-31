@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
 using OctoFlashcardStudy.API.Contracts.Common;
 using OctoFlashcardStudy.API.Exceptions;
@@ -47,7 +47,12 @@ public class ExceptionMiddleware
             Message = message
         };
 
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         await context.Response.WriteAsync(
-            JsonSerializer.Serialize(response));
+            JsonSerializer.Serialize(response, options));
     }
 }

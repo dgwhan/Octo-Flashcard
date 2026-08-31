@@ -36,6 +36,7 @@ builder.Services
 //module(DI configuration: Extensions/DependencyInjection/)
 builder.Services.AddAuthModule();
 builder.Services.AddDeckModule();
+builder.Services.AddFlashCardModule();
 
 //infrastructure
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

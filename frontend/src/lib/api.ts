@@ -12,7 +12,10 @@ export class ApiError extends Error {
 }
 
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    const token =
+        typeof window !== "undefined"
+            ? localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken")
+            : null;
 
     const headers: HeadersInit = {
         "Content-Type": "application/json",
@@ -45,21 +48,24 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
 
         if (!response.ok) {
             if (response.status === 401 && typeof window !== "undefined") {
-                localStorage.removeItem("accessToken");
-                localStorage.removeItem("user");
-                sessionStorage.removeItem("accessToken");
-                sessionStorage.removeItem("user");
+                const isAuthRoute = window.location.pathname.startsWith("/auth");
+                if (!isAuthRoute) {
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("user");
+                    sessionStorage.removeItem("accessToken");
+                    sessionStorage.removeItem("user");
+                }
             }
 
-            let errorMessage = `Request failed with status ${response.status}`;
+            let errorMessage =
+                response.status === 401
+                    ? "Your session has expired or you are not logged in. Please log in to continue."
+                    : `Request failed with status ${response.status}`;
             if (typeof data === "object" && data !== null) {
                 const d = data as Record<string, unknown>;
-                if (typeof d.message === "string") {
-                    errorMessage = d.message;
-                } else if (typeof d.error === "string") {
-                    errorMessage = d.error;
-                } else if (typeof d.title === "string") {
-                    errorMessage = d.title;
+                const msg = d.message || d.Message || d.error || d.Error || d.title || d.Title;
+                if (typeof msg === "string") {
+                    errorMessage = msg;
                 } else if (d.errors && typeof d.errors === "object") {
                     const errList = Object.values(d.errors).flat();
                     if (errList.length > 0) {

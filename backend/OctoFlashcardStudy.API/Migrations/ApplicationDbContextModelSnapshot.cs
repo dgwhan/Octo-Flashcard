@@ -61,6 +61,47 @@ namespace OctoFlashcardStudy.API.Migrations
                     b.ToTable("Decks", (string)null);
                 });
 
+            modelBuilder.Entity("OctoFlashcardStudy.API.Domain.Entities.FlashCard", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DeckId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Definition")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("DefinitionLanguage")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Term")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("TermLanguage")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeckId");
+
+                    b.ToTable("FlashCard", (string)null);
+                });
+
             modelBuilder.Entity("OctoFlashcardStudy.API.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -112,6 +153,22 @@ namespace OctoFlashcardStudy.API.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("OctoFlashcardStudy.API.Domain.Entities.FlashCard", b =>
+                {
+                    b.HasOne("OctoFlashcardStudy.API.Domain.Entities.Deck", "Deck")
+                        .WithMany("FlashCards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deck");
+                });
+
+            modelBuilder.Entity("OctoFlashcardStudy.API.Domain.Entities.Deck", b =>
+                {
+                    b.Navigation("FlashCards");
                 });
 
             modelBuilder.Entity("OctoFlashcardStudy.API.Domain.Entities.User", b =>

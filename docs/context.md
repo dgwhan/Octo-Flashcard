@@ -56,6 +56,8 @@ Current features include:
 - Flashcard Management
 - Study Sessions
 
+For detailed business rules and persistence constraints, refer to [Business Rules](file:///d:/MyProject/octo-flashcardstudy/docs/business.md).
+
 Future versions may introduce additional capabilities as the product evolves.
 
 ---
@@ -67,7 +69,7 @@ The following terms should be used consistently across the project.
 | Term | Definition |
 |------|------------|
 | **Deck** | A named collection of flashcards created by a user. |
-| **Flashcard** | A study item containing a front side and a back side. |
+| **Flashcard** | A study item containing a Term, TermLanguage, Definition, and DefinitionLanguage (does not use front/back terminology). |
 | **Study Session** | A learning session where users review flashcards within a deck. |
 | **Library** | The page displaying all decks owned by the current user. It is a UI concept rather than a database entity. |
 

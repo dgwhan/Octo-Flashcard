@@ -24,8 +24,19 @@ namespace OctoFlashcardStudy.API.Services.Auth
         {
             AuthValidator.ValidateRegister(request);
 
-            //normalize email
+            //normalize username and email
+            var username = request.Username.Trim();
             var email = request.Email.Trim().ToLowerInvariant();
+
+            //check username exists
+            var usernameExists = await _context.Users
+                .AnyAsync(x => x.Username == username);
+
+            if (usernameExists)
+            {
+                throw new ApiException("Username already exists",
+                    StatusCodes.Status409Conflict);
+            }
 
             //check email exsits
             var emailExists = await _context.Users
@@ -40,7 +51,7 @@ namespace OctoFlashcardStudy.API.Services.Auth
             //create user
             var user = new User
             {
-                Username = request.Username,
+                Username = username,
                 Email = email,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,

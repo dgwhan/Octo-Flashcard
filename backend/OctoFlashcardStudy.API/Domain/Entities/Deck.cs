@@ -13,5 +13,7 @@ namespace OctoFlashcardStudy.API.Domain.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public User Owner { get; set; } = null!;
+
+        public ICollection<FlashCard> FlashCards { get; set; } = new List<FlashCard>();
     }
 }

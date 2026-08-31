@@ -19,26 +19,59 @@ namespace OctoFlashcardStudy.API.Services.Decks
 
         public async Task<CreateDeckResponse> CreateAsync(Guid ownerId, CreateDeckRequest request)
         {
-            //validate 
+            // validate deck
             DeckValidator.ValidateCreate(request);
 
-            //normalize name
+            // validate flashcards
+            foreach (var requestCard in request.FlashCards)
+            {
+                FlashCardValidator.ValidateCreate(requestCard);
+            }
+
+            // normalize deck
             var normalizedName = request.Name.Trim();
 
-            //create entity
+            // check if deck with the same name already exists for this owner
+            var isExist = await _context.Decks.AnyAsync(d => d.OwnerId == ownerId && d.Name.ToLower() == normalizedName.ToLower());
+            if (isExist)
+            {
+                throw new ApiException("Name set existed", StatusCodes.Status400BadRequest);
+            }
+
+            //create deck
             var deck = new Deck
             {
                 Id = Guid.NewGuid(),
                 OwnerId = ownerId,
                 Name = normalizedName,
                 Description = request.Description?.Trim(),
-                Visibility = DeckVisibility.Private,
+                Visibility = request.Visibility,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
-            //save db 
+            //add deck
             _context.Decks.Add(deck);
+
+            // create flashcards
+            foreach (var requestCard in request.FlashCards)
+            {
+                var flashCard = new FlashCard
+                {
+                    Id = Guid.NewGuid(),
+                    DeckId = deck.Id,
+                    Term = requestCard.Term.Trim(),
+                    TermLanguage = requestCard.TermLanguage.Trim(),
+                    Definition = requestCard.Definition.Trim(),
+                    DefinitionLanguage = requestCard.DefinitionLanguage.Trim(),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _context.FlashCards.Add(flashCard);
+            }
+
+            //save db
             await _context.SaveChangesAsync();
 
             //return response
@@ -50,8 +83,6 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 Visibility = deck.Visibility,
                 CreatedAt = deck.CreatedAt
             };
-
-
         }
 
         public async Task<IReadOnlyList<DeckResponse>> GetAllAsync(Guid ownerId)
@@ -63,6 +94,8 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 .Select(deck => new DeckResponse
                 {
                     Id = deck.Id,
+                    OwnerId = deck.OwnerId,
+                    OwnerName = deck.Owner.Username,
                     Name = deck.Name,
                     Description = deck.Description,
                     Visibility = deck.Visibility,
@@ -80,6 +113,8 @@ namespace OctoFlashcardStudy.API.Services.Decks
                 .Select(deck => new GetDeckResponse
                 {
                     Id = deck.Id,
+                    OwnerId = deck.OwnerId,
+                    OwnerName = deck.Owner.Username,
                     Name = deck.Name,
                     Description = deck.Description,
                     Visibility = deck.Visibility,
@@ -99,12 +134,20 @@ namespace OctoFlashcardStudy.API.Services.Decks
             DeckValidator.ValidateUpdate(request);
 
             var deck = await _context.Decks
+                .Include(deck => deck.Owner)
                 .FirstOrDefaultAsync(deck => deck.Id == deckId && deck.OwnerId == ownerId);
 
             if (deck == null)
                 throw new ApiException("Deck not found", StatusCodes.Status404NotFound);
 
-            deck.Name = request.Name.Trim();
+            var normalizedName = request.Name.Trim();
+            var isExist = await _context.Decks.AnyAsync(d => d.OwnerId == ownerId && d.Id != deckId && d.Name.ToLower() == normalizedName.ToLower());
+            if (isExist)
+            {
+                throw new ApiException("Name set existed", StatusCodes.Status400BadRequest);
+            }
+
+            deck.Name = normalizedName;
             deck.Description = request.Description?.Trim();
             deck.Visibility = request.Visibility;
             deck.UpdatedAt = DateTime.UtcNow;
@@ -114,6 +157,8 @@ namespace OctoFlashcardStudy.API.Services.Decks
             return new GetDeckResponse
             {
                 Id = deck.Id,
+                OwnerId = deck.OwnerId,
+                OwnerName = deck.Owner.Username,
                 Name = deck.Name,
                 Description = deck.Description,
                 Visibility = deck.Visibility,

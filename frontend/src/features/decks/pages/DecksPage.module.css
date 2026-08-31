@@ -1,24 +1,21 @@
-/* DecksPage.module.css */
-
-.card,
-.container,
-.deckGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 28px;
-  padding: 40px 24px;
-  max-width: 1280px;
+.container {
+  max-width: 1200px;
   margin: 0 auto;
-  box-sizing: border-box;
-  font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-@media (max-width: 640px) {
-  .card,
-  .container,
-  .deckGrid {
-    grid-template-columns: 1fr;
-    padding: 20px 16px;
-    gap: 20px;
-  }
+.headerContainer {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.card {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
