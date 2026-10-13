@@ -1,4 +1,4 @@
-export interface CreateFlashCardRequest{
+export interface CreateFlashCardRequest {
     term: string;
     termLanguage: string;
     definition: string;
@@ -19,6 +19,6 @@ export interface FlashCardResponse {
     termLanguage: string;
     definition: string;
     definitionLanguage: string
-    createAt: string;
-    updateAt: string;
+    createdAt: string;
+    updatedAt: string;
 }

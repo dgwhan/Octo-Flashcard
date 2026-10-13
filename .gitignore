@@ -11,3 +11,6 @@ frontend/.next/
 
 # local development settings
 **/appsettings.Development.json
+.env
+.env.*
+!.env.example

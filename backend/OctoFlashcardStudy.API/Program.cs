@@ -13,12 +13,15 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 //cors
+var allowedOrigins = builder.Configuration
+                          .GetSection("AllowedCorsOrigins")
+                          .Get<string[]>() ?? [];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
         policy
-        .WithOrigins("http://localhost:3000")
+        .WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
@@ -39,10 +42,10 @@ builder.Services.AddDeckModule();
 builder.Services.AddFlashCardModule();
 
 //infrastructure
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseMySQL(connectionString!);
 });
 
 //authentication
