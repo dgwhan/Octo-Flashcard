@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
-import HomePageClient from "@/src/features/home/HomePageClient";
+import { LandingPage } from "@/src/features/landing";
 
 export const metadata: Metadata = constructMetadata({
-  title: "Trang chủ - Học Từ Vựng Flashcard Thông Minh",
+  title: "Octo Flashcard - Nền tảng học tiếng Anh dựa trên Khoa học Não bộ & Học liệu Mở",
   description:
-    "Nền tảng học từ vựng Flashcard tiếng Anh thông minh với phương pháp lật thẻ 2 mặt 3D, phát âm Audio AI bản xứ và kiểm tra phản xạ ghi nhớ spaced repetition.",
+    "Chinh phục tiếng Anh toàn diện với Flashcard 3D thông minh (Active Recall & Spaced Repetition), kết hợp học liệu mở chất lượng cao từ VOA Learning English, LibriVox Audiobooks và Tatoeba Project.",
   path: "/",
 });
 
 export default function HomePage() {
-  return <HomePageClient />;
+  return <LandingPage />;
 }
