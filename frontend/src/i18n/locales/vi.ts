@@ -20,6 +20,12 @@ export const vi: TranslationSchema = {
     home: "Khám phá",
     flashcards: "Flashcards",
     createFlashcard: "Tạo Flashcard",
+    voa: "Học VOA (Level)",
+    vocabulary: "Từ vựng (CEFR/NGSL/AWL)",
+    audiobooks: "Sách nói LibriVox",
+    sentences: "Câu ví dụ Tatoeba",
+    ipa: "Bảng IPA & Phát âm",
+    dictionary: "Tra từ điển",
     toggleMenu: "Đóng/Mở menu điều hướng",
   },
   header: {

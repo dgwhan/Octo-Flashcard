@@ -27,6 +27,27 @@ export const CreateFlashCardPage: React.FC = () => {
     }
   }, [router]);
 
+  // Pre-fill from query params (e.g. from Dictionary or VOA lessons)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const word = params.get("word");
+      const def = params.get("definition");
+      const phonetic = params.get("phonetic");
+      if (word) {
+        setTitle(`Từ vựng mới: ${word}`);
+        const front = phonetic ? `${word} [${phonetic}]` : word;
+        setCards([
+          { question: front, answer: def || "" },
+          { question: "", answer: "" },
+        ]);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const [title, setTitle] = useState("");
   const [cards, setCards] = useState<CardInput[]>([
     { question: "", answer: "" },

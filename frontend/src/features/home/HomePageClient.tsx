@@ -2,7 +2,16 @@
 
 import React from "react";
 import Link from "next/link";
-import { Layers, PlusCircle, Sparkles, Volume2, CheckCircle2 } from "lucide-react";
+import {
+  Layers,
+  PlusCircle,
+  Sparkles,
+  Volume2,
+  CheckCircle2,
+  GraduationCap,
+  BookOpen,
+  MessageSquare,
+} from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
 import styles from "@/app/page.module.css";
@@ -24,14 +33,14 @@ export default function HomePageClient() {
           {t("home.heroSubtitle")}
         </p>
 
-        <div style={{ display: "flex", gap: "14px", marginTop: "8px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "12px", marginTop: "8px", flexWrap: "wrap" }}>
           <Link
             href={ROUTES.FLASHCARDS}
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "14px 28px",
+              padding: "14px 24px",
               borderRadius: "12px",
               backgroundColor: "var(--color-primary)",
               color: "#ffffff",
@@ -47,12 +56,112 @@ export default function HomePageClient() {
           </Link>
 
           <Link
-            href={ROUTES.FLASHCARDS_CREATE}
+            href={ROUTES.VOA}
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "14px 24px",
+              padding: "14px 22px",
+              borderRadius: "12px",
+              backgroundColor: "rgba(59, 130, 246, 0.12)",
+              color: "#3b82f6",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+              border: "1px solid rgba(59, 130, 246, 0.25)",
+            }}
+          >
+            <Sparkles size={20} />
+            <span>Học VOA theo Level</span>
+          </Link>
+
+          <Link
+            href={ROUTES.IPA}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "14px 22px",
+              borderRadius: "12px",
+              backgroundColor: "var(--color-bg-card)",
+              color: "var(--color-text-primary)",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            <Volume2 size={20} />
+            <span>Bảng IPA & Audio</span>
+          </Link>
+
+          <Link
+            href={ROUTES.VOCABULARY}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "14px 22px",
+              borderRadius: "12px",
+              backgroundColor: "rgba(16, 185, 129, 0.12)",
+              color: "var(--color-primary)",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+              border: "1px solid rgba(16, 185, 129, 0.25)",
+            }}
+          >
+            <GraduationCap size={20} />
+            <span>Từ vựng CEFR / NGSL</span>
+          </Link>
+
+          <Link
+            href={ROUTES.AUDIOBOOKS}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "14px 22px",
+              borderRadius: "12px",
+              backgroundColor: "var(--color-bg-card)",
+              color: "var(--color-text-primary)",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            <BookOpen size={20} />
+            <span>Sách nói LibriVox</span>
+          </Link>
+
+          <Link
+            href={ROUTES.TATOEBA}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "14px 22px",
+              borderRadius: "12px",
+              backgroundColor: "var(--color-bg-card)",
+              color: "var(--color-text-primary)",
+              fontWeight: 600,
+              fontSize: "0.95rem",
+              textDecoration: "none",
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            <MessageSquare size={20} />
+            <span>Câu ví dụ Tatoeba</span>
+          </Link>
+
+          <Link
+            href={ROUTES.DICTIONARY}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "14px 22px",
               borderRadius: "12px",
               backgroundColor: "var(--color-bg-card)",
               color: "var(--color-text-primary)",
@@ -63,7 +172,7 @@ export default function HomePageClient() {
             }}
           >
             <PlusCircle size={20} />
-            <span>{t("home.createNewSet")}</span>
+            <span>Tra từ điển</span>
           </Link>
         </div>
 

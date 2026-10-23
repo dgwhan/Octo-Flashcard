@@ -77,8 +77,10 @@ export function clearAuthStorage(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem("accessToken");
   localStorage.removeItem("user");
+  localStorage.removeItem("_octo_sec_p_enc");
   sessionStorage.removeItem("accessToken");
   sessionStorage.removeItem("user");
+  sessionStorage.removeItem("_octo_sec_p_enc");
 }
 
 /**

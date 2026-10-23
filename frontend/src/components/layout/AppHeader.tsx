@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, Plus, LogOut, Menu, User } from "lucide-react";
+import { Search, Plus, LogOut, Menu, User, BookA } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { AuthModal } from "@/src/features/auth";
+import { QuickLookupModal } from "@/src/features/dictionary";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
+import { Button } from "@/src/components/ui";
 import LanguageSwitcher from "./LanguageSwitcher";
 import styles from "./AppHeader.module.css";
 
@@ -19,7 +21,11 @@ function useCurrentUser() {
   const userJson = React.useSyncExternalStore(
     (callback) => {
       window.addEventListener("storage", callback);
-      return () => window.removeEventListener("storage", callback);
+      window.addEventListener("octo-auth-change", callback);
+      return () => {
+        window.removeEventListener("storage", callback);
+        window.removeEventListener("octo-auth-change", callback);
+      };
     },
     () => {
       const stored = authApi.getStoredUser();
@@ -44,6 +50,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isDictModalOpen, setIsDictModalOpen] = useState(false);
   const user = useCurrentUser();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -109,6 +116,29 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
       {/* Right section: Action Buttons & User Menu */}
       <div className={styles.rightSection}>
+        {/* Quick Dictionary Lookup Button */}
+        <button
+          type="button"
+          onClick={() => setIsDictModalOpen(true)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "8px 12px",
+            borderRadius: "10px",
+            background: "rgba(16, 185, 129, 0.1)",
+            color: "var(--color-primary)",
+            border: "1px solid rgba(16, 185, 129, 0.25)",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+          title="Tra từ điển nhanh"
+        >
+          <BookA size={16} />
+          <span className="hidden sm:inline">Tra từ điển</span>
+        </button>
+
         {/* Language Switcher */}
         <LanguageSwitcher />
 
@@ -148,12 +178,20 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           </div>
         ) : (
           <div className={styles.authButtons}>
-            <Link href={ROUTES.AUTH.LOGIN} className={styles.loginBtn}>
+            <Button
+              variant="outline"
+              onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+              className={styles.loginBtn}
+            >
               {t("header.login")}
-            </Link>
-            <Link href={ROUTES.AUTH.REGISTER} className={styles.registerBtn}>
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => router.push(ROUTES.AUTH.REGISTER)}
+              className={styles.registerBtn}
+            >
               {t("header.register")}
-            </Link>
+            </Button>
           </div>
         )}
       </div>
@@ -165,6 +203,12 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
         title={t("auth.authRequiredTitle")}
         description={t("auth.authRequiredDesc")}
         redirectUrl={ROUTES.FLASHCARDS_CREATE}
+      />
+
+      {/* Global Quick Dictionary Lookup Modal */}
+      <QuickLookupModal
+        isOpen={isDictModalOpen}
+        onClose={() => setIsDictModalOpen(false)}
       />
     </header>
   );

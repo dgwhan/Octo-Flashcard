@@ -20,6 +20,12 @@ export const en: TranslationSchema = {
     home: "Explore",
     flashcards: "Flashcards",
     createFlashcard: "Create Flashcard",
+    voa: "VOA Learning (Levels)",
+    vocabulary: "Wordlists (CEFR/NGSL/AWL)",
+    audiobooks: "LibriVox Audiobooks",
+    sentences: "Tatoeba Sentences",
+    ipa: "IPA Phonetics Chart",
+    dictionary: "Dictionary Lookup",
     toggleMenu: "Toggle navigation menu",
   },
   header: {

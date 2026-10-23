@@ -12,6 +12,26 @@ export const ROUTES = {
   FLASHCARDS_CREATE: "/flashcards/create",
   FLASHCARDS_DETAIL: (id: string | number) => `/flashcards/${id}`,
 
+  // VOA Learning English (Phân cấp theo Level)
+  VOA: "/voa",
+  VOA_DETAIL: (slug: string) => `/voa/${slug}`,
+
+  // Bộ từ vựng chuẩn hóa CEFR / NGSL / AWL
+  VOCABULARY: "/vocabulary",
+
+  // Sách nói LibriVox (Public Domain Audiobooks)
+  AUDIOBOOKS: "/audiobooks",
+  AUDIOBOOKS_DETAIL: (slug: string) => `/audiobooks/${slug}`,
+
+  // Tatoeba Project (Câu ví dụ audio người thật)
+  TATOEBA: "/sentences",
+
+  // Bảng phiên âm IPA
+  IPA: "/ipa",
+
+  // Tra cứu từ điển Dictionary
+  DICTIONARY: "/dictionary",
+
   // Xác thực (Auth)
   AUTH: {
     LOGIN: "/auth/login",
@@ -26,6 +46,12 @@ export const ROUTE_PATH_MAP: Record<string, string> = {
   "/": "HOME",
   "/flashcards": "FLASHCARDS",
   "/flashcards/create": "FLASHCARDS_CREATE",
+  "/voa": "VOA",
+  "/vocabulary": "VOCABULARY",
+  "/audiobooks": "AUDIOBOOKS",
+  "/sentences": "TATOEBA",
+  "/ipa": "IPA",
+  "/dictionary": "DICTIONARY",
   "/auth/login": "LOGIN",
   "/auth/register": "REGISTER",
 };

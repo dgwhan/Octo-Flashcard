@@ -7,6 +7,12 @@ import {
   RegisterRequest,
   RegisterResponse,
 } from "@/src/types/auth";
+import {
+  saveSecureUser,
+  getSecureUser,
+  clearSecureUser,
+  purgeLegacyPlaintextStorage,
+} from "@/src/utils/secureStorage";
 
 export const authApi = {
   async login(data: LoginRequest): Promise<LoginResponse> {
@@ -16,21 +22,25 @@ export const authApi = {
     );
 
     if (typeof window !== "undefined" && res?.accessToken) {
-      const userPayload = JSON.stringify({
-        userId: res.userId,
-        username: res.username,
-        email: res.email,
-      });
+      // Clean up any legacy plaintext user info
+      purgeLegacyPlaintextStorage();
+
+      // Store sensitive user profile in obfuscated secure storage
+      saveSecureUser(
+        {
+          userId: res.userId,
+          username: res.username,
+          email: res.email,
+        },
+        data.rememberMe
+      );
 
       if (data.rememberMe) {
         localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", userPayload);
+        sessionStorage.removeItem("accessToken");
       } else {
         sessionStorage.setItem("accessToken", res.accessToken);
-        sessionStorage.setItem("user", userPayload);
-        // Also keep in localStorage for consistency
-        localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", userPayload);
+        localStorage.removeItem("accessToken");
       }
     }
 
@@ -50,23 +60,38 @@ export const authApi = {
 
   logout(): void {
     if (typeof window !== "undefined") {
+      clearSecureUser();
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
       sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("user");
+      purgeLegacyPlaintextStorage();
     }
   },
 
   getStoredUser(): { userId: string; username: string; email: string } | null {
     if (typeof window === "undefined") return null;
-    const userStr =
-      localStorage.getItem("user") || sessionStorage.getItem("user");
-    if (!userStr) return null;
-    try {
-      return JSON.parse(userStr);
-    } catch {
-      return null;
+
+    // Check secure obfuscated storage first
+    const secureUser = getSecureUser();
+    if (secureUser) {
+      return secureUser;
     }
+
+    // Auto-migrate legacy plaintext if present and immediately purge plaintext
+    try {
+      const legacyUserStr = localStorage.getItem("user") || sessionStorage.getItem("user");
+      if (legacyUserStr) {
+        const parsed = JSON.parse(legacyUserStr);
+        purgeLegacyPlaintextStorage();
+        if (parsed?.userId && parsed?.username) {
+          saveSecureUser(parsed, true);
+          return parsed;
+        }
+      }
+    } catch {
+      purgeLegacyPlaintextStorage();
+    }
+
+    return null;
   },
 
   getStoredToken(): string | null {
