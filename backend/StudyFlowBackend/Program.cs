@@ -155,6 +155,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var exceptionFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var errorMessage = exceptionFeature?.Error?.Message ?? "Internal server error occurred.";
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            success = false,
+            message = errorMessage,
+            errors = exceptionFeature?.Error?.GetType().Name
+        });
+    });
+});
+
 app.UseCors("AllowFrontend");
 
 app.UseAuthentication();

@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Library, X } from "lucide-react";
+import { Home, Layers, PlusCircle, X } from "lucide-react";
+import { ROUTES } from "@/src/config/routes";
 import styles from "./AppSidebar.module.css";
 
 interface AppSidebarProps {
@@ -20,25 +21,33 @@ export default function AppSidebar({
   const pathname = usePathname();
 
   const isNavActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
+    if (href === ROUTES.HOME) {
+      return pathname === "/" || pathname === "/home";
     }
-    if (href === "/decks") {
-      return pathname === "/decks" || pathname.startsWith("/decks/");
+    if (href === ROUTES.FLASHCARDS) {
+      return pathname === "/flashcards" || (pathname.startsWith("/flashcards/") && pathname !== "/flashcards/create");
+    }
+    if (href === ROUTES.FLASHCARDS_CREATE) {
+      return pathname === "/flashcards/create";
     }
     return pathname === href;
   };
 
   const navItems = [
     {
-      label: "Explore",
-      href: "/",
+      label: "Khám phá",
+      href: ROUTES.HOME,
       icon: Home,
     },
     {
-      label: "My Decks",
-      href: "/decks",
-      icon: Library,
+      label: "Flashcards",
+      href: ROUTES.FLASHCARDS,
+      icon: Layers,
+    },
+    {
+      label: "Tạo Flashcard",
+      href: ROUTES.FLASHCARDS_CREATE,
+      icon: PlusCircle,
     },
   ];
 

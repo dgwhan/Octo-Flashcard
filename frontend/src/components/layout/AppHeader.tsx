@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, Plus, LogOut, Menu, User } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { AuthModal } from "@/src/features/auth";
+import { ROUTES } from "@/src/config/routes";
 import styles from "./AppHeader.module.css";
 
 interface AppHeaderProps {
@@ -60,14 +61,14 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const handleLogout = () => {
     setIsDropdownOpen(false);
     authApi.logout();
-    router.push("/auth/login");
+    router.push(ROUTES.AUTH.LOGIN);
   };
 
-  const handleAddDeckClick = () => {
+  const handleAddFlashcardClick = () => {
     if (!user) {
       setIsAuthModalOpen(true);
     } else {
-      router.push("/decks/create");
+      router.push(ROUTES.FLASHCARDS_CREATE);
     }
   };
 
@@ -84,7 +85,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           <Menu className={styles.headerIcon} />
         </button>
 
-        <Link href="/" className={styles.brandLink}>
+        <Link href={ROUTES.HOME} className={styles.brandLink}>
           <span className={styles.brandName}>Octo Flashcard</span>
         </Link>
       </div>
@@ -96,75 +97,79 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="Search decks..."
+            placeholder="Tìm kiếm flashcards..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
 
-      {/* Right section: Add flashcard action & User profile */}
+      {/* Right section: Action Buttons & User Menu */}
       <div className={styles.rightSection}>
-        <button
+        {/* Create Flashcard Button */}
+        {/* <button
           type="button"
-          className={styles.addDeckBtn}
-          onClick={handleAddDeckClick}
+          className={styles.createBtn}
+          onClick={handleAddFlashcardClick}
+          aria-label="Tạo Flashcard mới"
         >
-          <Plus className={styles.headerIcon} />
-        </button>
+          <Plus size={18} />
+          <span className={styles.createBtnText}>Tạo mới</span>
+        </button> */}
 
-        <div className={styles.profileContainer} ref={dropdownRef}>
-          <button
-            type="button"
-            className={styles.avatarBtn}
-            onClick={() => setIsDropdownOpen((prev) => !prev)}
-            aria-label="User menu"
-            aria-expanded={isDropdownOpen}
-          >
-            <User className={styles.avatarIcon} />
-          </button>
+        {/* User Profile / Auth State */}
+        {user ? (
+          <div className={styles.userMenuContainer} ref={dropdownRef}>
+            <button
+              type="button"
+              className={styles.avatarBtn}
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+              aria-label="User menu"
+            >
+              <div className={styles.avatar}>
+                {user.username ? user.username.charAt(0).toUpperCase() : "U"}
+              </div>
+            </button>
 
-          {isDropdownOpen && (
-            <div className={styles.dropdown}>
-              {user ? (
-                <>
-                  <div className={styles.userInfo}>
-                    <p className={styles.userName}>{user.username}</p>
-                    <p className={styles.userEmail}>{user.email}</p>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.logoutBtn}
-                    onClick={handleLogout}
-                  >
-                    <LogOut className={styles.logoutIcon} />
-                    <span>Logout</span>
-                  </button>
-                </>
-              ) : (
+            {isDropdownOpen && (
+              <div className={styles.dropdown}>
                 <div className={styles.userInfo}>
-                  <Link
-                    href="/auth/login"
-                    className={styles.logoutBtn}
-                    style={{ color: "var(--color-primary)", fontWeight: 600 }}
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    <span>Sign In</span>
-                  </Link>
+                  <div className={styles.userName}>{user.username}</div>
+                  <div className={styles.userEmail}>{user.email}</div>
                 </div>
-              )}
-            </div>
-          )}
-        </div>
+
+                <div className={styles.dropdownDivider} />
+
+                <button
+                  type="button"
+                  className={styles.dropdownItem}
+                  onClick={handleLogout}
+                >
+                  <LogOut size={16} />
+                  <span>Đăng xuất</span>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className={styles.authButtons}>
+            <Link href={ROUTES.AUTH.LOGIN} className={styles.loginBtn}>
+              Đăng nhập
+            </Link>
+            <Link href={ROUTES.AUTH.REGISTER} className={styles.registerBtn}>
+              Đăng ký
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* Auth Modal Popup khi khách click vào Add Deck */}
+      {/* Auth Modal for unauthenticated user */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        title="Login or Register to Continue"
-        description="Login or create an account to start creating your Flashcard sets."
-        redirectUrl="/decks/create"
+        title="Đăng nhập để tạo Flashcard"
+        description="Vui lòng đăng nhập hoặc tạo tài khoản để bắt đầu tạo các bộ flashcard của riêng bạn."
+        redirectUrl={ROUTES.FLASHCARDS_CREATE}
       />
     </header>
   );

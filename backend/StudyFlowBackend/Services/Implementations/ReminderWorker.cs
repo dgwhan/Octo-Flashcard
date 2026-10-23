@@ -30,22 +30,29 @@ namespace StudyFlowBackend.Services
         {
             _logger.LogInformation("Reminder Worker started.");
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    using (var scope = _serviceScopeFactory.CreateScope())
+                    try
                     {
-                        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-                        await CheckRemindersAsync(unitOfWork);
+                        using (var scope = _serviceScopeFactory.CreateScope())
+                        {
+                            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                            await CheckRemindersAsync(unitOfWork);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred while running the Reminder Worker.");
-                }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "An error occurred while running the Reminder Worker.");
+                    }
 
-                await Task.Delay(_checkInterval, stoppingToken);
+                    await Task.Delay(_checkInterval, stoppingToken);
+                }
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                // Graceful shutdown requested
             }
 
             _logger.LogInformation("Reminder Worker stopped.");

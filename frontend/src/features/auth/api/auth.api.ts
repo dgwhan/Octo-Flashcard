@@ -1,4 +1,5 @@
 import { apiClient } from "@/src/lib/api";
+import { API_ENDPOINTS } from "@/src/config/routes";
 import {
   CurrentUserResponse,
   LoginRequest,
@@ -9,7 +10,10 @@ import {
 
 export const authApi = {
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const res = await apiClient.post<LoginResponse>("/auth/login", data);
+    const res = await apiClient.post<LoginResponse>(
+      API_ENDPOINTS.AUTH.LOGIN,
+      data
+    );
 
     if (typeof window !== "undefined" && res?.accessToken) {
       const userPayload = JSON.stringify({
@@ -34,11 +38,14 @@ export const authApi = {
   },
 
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    return apiClient.post<RegisterResponse>("/auth/register", data);
+    return apiClient.post<RegisterResponse>(
+      API_ENDPOINTS.AUTH.REGISTER,
+      data
+    );
   },
 
   async getCurrentUser(): Promise<CurrentUserResponse> {
-    return apiClient.get<CurrentUserResponse>("/auth/me");
+    return apiClient.get<CurrentUserResponse>(API_ENDPOINTS.AUTH.ME);
   },
 
   logout(): void {
@@ -52,7 +59,8 @@ export const authApi = {
 
   getStoredUser(): { userId: string; username: string; email: string } | null {
     if (typeof window === "undefined") return null;
-    const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
+    const userStr =
+      localStorage.getItem("user") || sessionStorage.getItem("user");
     if (!userStr) return null;
     try {
       return JSON.parse(userStr);
@@ -63,6 +71,9 @@ export const authApi = {
 
   getStoredToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    return (
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken")
+    );
   },
 };

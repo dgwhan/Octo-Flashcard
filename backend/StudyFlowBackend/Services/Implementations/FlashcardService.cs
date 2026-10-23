@@ -35,15 +35,20 @@ namespace StudyFlowBackend.Services.Implementations
             var existingCount = await GetTotalFlashcardCountAsync(userId);
             var cardLimit = 200;
 
+            var targetDocId = (dto.TargetDocumentId.HasValue && dto.TargetDocumentId.Value != Guid.Empty)
+                ? dto.TargetDocumentId
+                : null;
+
             var set = new FlashcardSet
             {
-                Title = string.IsNullOrEmpty(dto.Title) ? "Learning Materials" : dto.Title,
+                Id = Guid.NewGuid(),
+                Title = string.IsNullOrWhiteSpace(dto.Title) ? "Learning Materials" : dto.Title.Trim(),
                 UserId = userId,
-                TargetDocumentId = dto.TargetDocumentId,
+                TargetDocumentId = targetDocId,
                 CreatedAt = DateTime.UtcNow
             };
 
-            var newCardsCount = dto.Flashcards.Count;
+            var newCardsCount = dto.Flashcards?.Count ?? 0;
             if (existingCount + newCardsCount > cardLimit)
             {
                 var allowedCount = cardLimit - existingCount;
@@ -52,23 +57,109 @@ namespace StudyFlowBackend.Services.Implementations
                     throw new InvalidOperationException("You have reached the maximum limit of 200 flashcards.");
                 }
 
-                dto.Flashcards = dto.Flashcards.Take(allowedCount).ToList();
+                if (dto.Flashcards != null)
+                {
+                    dto.Flashcards = dto.Flashcards.Take(allowedCount).ToList();
+                }
             }
 
-            foreach (var cardDto in dto.Flashcards)
+            if (dto.Flashcards != null)
             {
-                set.Flashcards.Add(new Flashcard
+                foreach (var cardDto in dto.Flashcards)
                 {
-                    Question = cardDto.Question,
-                    Answer = cardDto.Answer,
-                    CreatedAt = DateTime.UtcNow
-                });
+                    set.Flashcards.Add(new Flashcard
+                    {
+                        Id = Guid.NewGuid(),
+                        FlashcardSetId = set.Id,
+                        Question = cardDto.Question?.Trim() ?? string.Empty,
+                        Answer = cardDto.Answer?.Trim() ?? string.Empty,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
             }
 
             await _flashcardRepository.AddSetAsync(set);
             await _flashcardRepository.SaveChangesAsync();
 
             return MapToSetDto(set);
+        }
+
+        public async Task<FlashcardSetDto?> UpdateFlashcardSetAsync(Guid id, string userId, UpdateFlashcardSetDto dto)
+        {
+            var set = await _flashcardRepository.GetSetByIdAsync(id, userId);
+            if (set == null) return null;
+
+            if (!string.IsNullOrWhiteSpace(dto.Title))
+            {
+                set.Title = dto.Title.Trim();
+            }
+
+            if (dto.NewFlashcards != null && dto.NewFlashcards.Count > 0)
+            {
+                var existingCount = await GetTotalFlashcardCountAsync(userId);
+                var cardLimit = 200;
+                var cardsToAdd = dto.NewFlashcards;
+
+                if (existingCount + cardsToAdd.Count > cardLimit)
+                {
+                    var allowedCount = cardLimit - existingCount;
+                    if (allowedCount > 0)
+                    {
+                        cardsToAdd = cardsToAdd.Take(allowedCount).ToList();
+                    }
+                    else
+                    {
+                        cardsToAdd = new List<CreateFlashcardDto>();
+                    }
+                }
+
+                var cardsToAddEntities = new List<Flashcard>();
+                foreach (var cardDto in cardsToAdd)
+                {
+                    cardsToAddEntities.Add(new Flashcard
+                    {
+                        Id = Guid.NewGuid(),
+                        FlashcardSetId = set.Id,
+                        Question = cardDto.Question?.Trim() ?? string.Empty,
+                        Answer = cardDto.Answer?.Trim() ?? string.Empty,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+
+                if (cardsToAddEntities.Count > 0)
+                {
+                    await _flashcardRepository.AddCardsAsync(cardsToAddEntities);
+                }
+            }
+
+            await _flashcardRepository.SaveChangesAsync();
+            return MapToSetDto(set);
+        }
+
+        public async Task<FlashcardDto?> AddFlashcardItemAsync(Guid setId, string userId, CreateFlashcardDto dto)
+        {
+            var set = await _flashcardRepository.GetSetByIdAsync(setId, userId);
+            if (set == null) return null;
+
+            var existingCount = await GetTotalFlashcardCountAsync(userId);
+            if (existingCount >= 200)
+            {
+                throw new InvalidOperationException("You have reached the maximum limit of 200 flashcards.");
+            }
+
+            var card = new Flashcard
+            {
+                Id = Guid.NewGuid(),
+                Question = dto.Question?.Trim() ?? string.Empty,
+                Answer = dto.Answer?.Trim() ?? string.Empty,
+                FlashcardSetId = setId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _flashcardRepository.AddCardAsync(card);
+            await _flashcardRepository.SaveChangesAsync();
+
+            return MapToDto(card);
         }
 
         public async Task<bool> DeleteFlashcardSetAsync(Guid id, string userId)

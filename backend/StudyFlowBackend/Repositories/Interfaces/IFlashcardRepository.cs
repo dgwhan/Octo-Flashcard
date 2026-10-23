@@ -12,6 +12,8 @@ namespace StudyFlowBackend.Repositories.Interfaces
         Task<int> GetTotalFlashcardCountAsync(string userId);
         Task<List<Flashcard>> GetFlashcardsForSearchAsync(string userId);
         Task AddSetAsync(FlashcardSet set);
+        Task AddCardAsync(Flashcard card);
+        Task AddCardsAsync(IEnumerable<Flashcard> cards);
         void RemoveSet(FlashcardSet set);
     }
 }

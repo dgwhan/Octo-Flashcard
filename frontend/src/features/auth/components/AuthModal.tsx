@@ -18,7 +18,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   title = "Login or Register to Continue",
   description = "Login or create an account to start creating your Flashcard sets.",
-  redirectUrl = "/decks/create",
+  redirectUrl = "/flashcards/create",
 }) => {
   // Đóng modal khi bấm phím Escape
   useEffect(() => {
@@ -73,7 +73,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </Link>
           <Link
             href={`/auth/register?redirect=${encodeURIComponent(redirectUrl)}`}
-            className={styles.registerBtn}>
+            className={styles.registerBtn}
+          >
             Register
           </Link>
         </div>

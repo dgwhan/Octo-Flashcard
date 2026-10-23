@@ -31,18 +31,25 @@ namespace StudyFlowBackend.Services
         {
             _logger.LogInformation("TrashCleanupService is starting.");
 
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    await CleanupTrashAsync(stoppingToken);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error occurred while cleaning up trash.");
-                }
+                    try
+                    {
+                        await CleanupTrashAsync(stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error occurred while cleaning up trash.");
+                    }
 
-                await Task.Delay(_checkInterval, stoppingToken);
+                    await Task.Delay(_checkInterval, stoppingToken);
+                }
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                // Graceful shutdown requested
             }
 
             _logger.LogInformation("TrashCleanupService is stopping.");

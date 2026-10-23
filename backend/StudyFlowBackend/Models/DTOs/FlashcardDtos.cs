@@ -34,6 +34,12 @@ namespace StudyFlowBackend.DTOs
         public List<CreateFlashcardDto> Flashcards { get; set; } = new();
     }
 
+    public class UpdateFlashcardSetDto
+    {
+        public string? Title { get; set; }
+        public List<CreateFlashcardDto> NewFlashcards { get; set; } = new();
+    }
+
     public class GenerateFlashcardsRequestDto
     {
         public Guid DocumentId { get; set; }

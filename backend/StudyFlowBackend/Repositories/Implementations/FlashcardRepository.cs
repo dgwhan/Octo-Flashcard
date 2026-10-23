@@ -50,6 +50,16 @@ namespace StudyFlowBackend.Repositories.Implementations
             await _context.FlashcardSets.AddAsync(set);
         }
 
+        public async Task AddCardAsync(Flashcard card)
+        {
+            await _context.Flashcards.AddAsync(card);
+        }
+
+        public async Task AddCardsAsync(IEnumerable<Flashcard> cards)
+        {
+            await _context.Flashcards.AddRangeAsync(cards);
+        }
+
         public void RemoveSet(FlashcardSet set)
         {
             _context.FlashcardSets.Remove(set);
