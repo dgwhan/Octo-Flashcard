@@ -1,0 +1,17 @@
+# Exclude version control and development tool folders
+.git
+.gitignore
+.vs
+.vscode
+.idea
+bin/
+obj/
+out/
+
+# Exclude local settings files that might contain secrets
+appsettings.Development.json
+*.user
+
+# Exclude logs and test results
+*.log
+TestResults/
