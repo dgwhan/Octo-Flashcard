@@ -1,6 +1,6 @@
 /* ==========================================================================
    OCTO FLASHCARD AUTHENTICATION STYLES
-   Font: Inter (via CSS variable) | Theme: Purple #7c5ac7
+   Font: Inter (via CSS variable) | Theme: Emerald #10b981
    ========================================================================== */
 
 .auth-layout {
@@ -11,8 +11,8 @@
   align-items: center;
   background-color: var(--color-bg-subtle);
   background-image:
-    radial-gradient(at 15% 15%, rgba(124, 90, 199, 0.10) 0px, transparent 50%),
-    radial-gradient(at 85% 85%, rgba(124, 90, 199, 0.08) 0px, transparent 50%);
+    radial-gradient(at 15% 15%, var(--color-primary-ring) 0px, transparent 50%),
+    radial-gradient(at 85% 85%, var(--color-primary-ring) 0px, transparent 50%);
   padding: 24px;
 }
 
@@ -39,6 +39,23 @@
 
 .auth-form-card-wide {
   max-width: 680px;
+}
+
+.auth-form-card-register {
+  max-width: 520px;
+}
+
+.auth-row-passwords {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 18px;
+}
+
+@media (max-width: 580px) {
+  .auth-row-passwords {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+  }
 }
 
 .auth-grid-2cols {

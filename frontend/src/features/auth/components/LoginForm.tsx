@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Check, Eye, EyeOff } from "lucide-react";
 import { authApi } from "../api/auth.api";
 import { ApiError } from "@/src/lib/api";
+import { useTranslation } from "@/src/i18n";
 import "../auth.css";
 
 interface FormErrors {
@@ -17,6 +18,7 @@ function LoginFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTarget = searchParams.get("redirect") || "/";
+  const { t } = useTranslation();
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -33,10 +35,10 @@ function LoginFormInner() {
 
     const newErrors: FormErrors = {};
     if (!identifier.trim()) {
-      newErrors.identifier = "E-mail is required";
+      newErrors.identifier = t("auth.emailLabel") + " is required";
     }
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = t("auth.passwordLabel") + " is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -73,21 +75,24 @@ function LoginFormInner() {
 
   return (
     <div className="auth-form-card">
-      <h1 className="auth-title">Sign In</h1>
+      <h1 className="auth-title">{t("auth.loginTitle")}</h1>
+      <p style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem", marginBottom: "20px" }}>
+        {t("auth.loginSubtitle")}
+      </p>
 
       {generalError && <div className="general-error-text">{generalError}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form" noValidate>
         <div className="form-group">
           <label htmlFor="identifier" className="form-label">
-            E-mail
+            {t("auth.emailLabel")} / {t("auth.usernameLabel")}
           </label>
           <div className="input-wrapper">
             <input
               id="identifier"
               type="text"
               className={`form-input ${errors.identifier ? "input-error" : ""}`}
-              placeholder="Enter your name or username"
+              placeholder="user@example.com"
               value={identifier}
               onChange={(e) => {
                 setIdentifier(e.target.value);
@@ -105,14 +110,14 @@ function LoginFormInner() {
 
         <div className="form-group">
           <label htmlFor="password" className="form-label">
-            Password
+            {t("auth.passwordLabel")}
           </label>
           <div className="input-wrapper">
             <input
               id="password"
               type={showPassword ? "text" : "password"}
               className={`form-input ${errors.password ? "input-error" : ""}`}
-              placeholder="8+ Characters"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -152,18 +157,18 @@ function LoginFormInner() {
           <div className={`custom-checkbox ${rememberMe ? "checked" : ""}`}>
             {rememberMe && <Check size={14} strokeWidth={3} color="#ffffff" />}
           </div>
-          <span className="remember-label">Remember me</span>
+          <span className="remember-label">Ghi nhớ đăng nhập / Remember me</span>
         </div>
 
         <button type="submit" formNoValidate disabled={isLoading} className="btn-submit">
-          {isLoading ? <span className="spinner" /> : "Sign in"}
+          {isLoading ? <span className="spinner" /> : t("auth.loginBtn")}
         </button>
       </form>
 
       <div className="auth-footer">
-        <span>Don&apos;t have account?</span>
+        <span>{t("auth.dontHaveAccount")}</span>
         <Link href="/auth/register" className="auth-link">
-          Register
+          {t("auth.registerBtn")}
         </Link>
       </div>
     </div>
@@ -175,7 +180,7 @@ export default function LoginForm() {
     <Suspense
       fallback={
         <div className="auth-form-card">
-          <h1 className="auth-title">Sign In</h1>
+          <h1 className="auth-title">Octo Flashcard</h1>
           <div style={{ textAlign: "center", padding: "40px" }}>
             <span className="spinner" />
           </div>

@@ -3,7 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Library, X } from "lucide-react";
+import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, BookOpen, MessageSquare } from "lucide-react";
+import { ROUTES } from "@/src/config/routes";
+import { useTranslation } from "@/src/i18n";
 import styles from "./AppSidebar.module.css";
 
 interface AppSidebarProps {
@@ -18,27 +20,84 @@ export default function AppSidebar({
   onCloseMobile,
 }: AppSidebarProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const isNavActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/";
+    if (href === ROUTES.HOME) {
+      return pathname === "/" || pathname === "/home";
     }
-    if (href === "/decks") {
-      return pathname === "/decks" || pathname.startsWith("/decks/");
+    if (href === ROUTES.FLASHCARDS) {
+      return pathname === "/flashcards" || (pathname.startsWith("/flashcards/") && pathname !== "/flashcards/create");
+    }
+    if (href === ROUTES.FLASHCARDS_CREATE) {
+      return pathname === "/flashcards/create";
+    }
+    if (href === ROUTES.VOA) {
+      return pathname === "/voa" || pathname.startsWith("/voa/");
+    }
+    if (href === ROUTES.VOCABULARY) {
+      return pathname === "/vocabulary";
+    }
+    if (href === ROUTES.AUDIOBOOKS) {
+      return pathname === "/audiobooks" || pathname.startsWith("/audiobooks/");
+    }
+    if (href === ROUTES.TATOEBA) {
+      return pathname === "/sentences";
+    }
+    if (href === ROUTES.IPA) {
+      return pathname === "/ipa";
+    }
+    if (href === ROUTES.DICTIONARY) {
+      return pathname === "/dictionary";
     }
     return pathname === href;
   };
 
   const navItems = [
     {
-      label: "Explore",
-      href: "/",
+      label: t("nav.home"),
+      href: ROUTES.HOME,
       icon: Home,
     },
     {
-      label: "My Decks",
-      href: "/decks",
-      icon: Library,
+      label: t("nav.flashcards"),
+      href: ROUTES.FLASHCARDS,
+      icon: Layers,
+    },
+    {
+      label: t("nav.createFlashcard"),
+      href: ROUTES.FLASHCARDS_CREATE,
+      icon: PlusCircle,
+    },
+    {
+      label: t("nav.voa"),
+      href: ROUTES.VOA,
+      icon: Headphones,
+    },
+    {
+      label: t("nav.vocabulary"),
+      href: ROUTES.VOCABULARY,
+      icon: GraduationCap,
+    },
+    {
+      label: t("nav.audiobooks"),
+      href: ROUTES.AUDIOBOOKS,
+      icon: BookOpen,
+    },
+    {
+      label: t("nav.sentences"),
+      href: ROUTES.TATOEBA,
+      icon: MessageSquare,
+    },
+    {
+      label: t("nav.ipa"),
+      href: ROUTES.IPA,
+      icon: Volume2,
+    },
+    {
+      label: t("nav.dictionary"),
+      href: ROUTES.DICTIONARY,
+      icon: Search,
     },
   ];
 

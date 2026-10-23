@@ -1,4 +1,5 @@
 import { apiClient } from "@/src/lib/api";
+import { API_ENDPOINTS } from "@/src/config/routes";
 import {
   CurrentUserResponse,
   LoginRequest,
@@ -6,36 +7,40 @@ import {
   RegisterRequest,
   RegisterResponse,
 } from "@/src/types/auth";
+import {
+  saveSecureUser,
+  getSecureUser,
+  clearSecureUser,
+  purgeLegacyPlaintextStorage,
+} from "@/src/utils/secureStorage";
 
 export const authApi = {
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const res = await apiClient<LoginResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await apiClient.post<LoginResponse>(
+      API_ENDPOINTS.AUTH.LOGIN,
+      data
+    );
 
-    if (typeof window !== "undefined" && res.accessToken) {
+    if (typeof window !== "undefined" && res?.accessToken) {
+      // Clean up any legacy plaintext user info
+      purgeLegacyPlaintextStorage();
+
+      // Store sensitive user profile in obfuscated secure storage
+      saveSecureUser(
+        {
+          userId: res.userId,
+          username: res.username,
+          email: res.email,
+        },
+        data.rememberMe
+      );
+
       if (data.rememberMe) {
         localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", JSON.stringify({
-          userId: res.userId,
-          username: res.username,
-          email: res.email,
-        }));
+        sessionStorage.removeItem("accessToken");
       } else {
         sessionStorage.setItem("accessToken", res.accessToken);
-        sessionStorage.setItem("user", JSON.stringify({
-          userId: res.userId,
-          username: res.username,
-          email: res.email,
-        }));
-        // Also keep in localStorage for simplicity
-        localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", JSON.stringify({
-          userId: res.userId,
-          username: res.username,
-          email: res.email,
-        }));
+        localStorage.removeItem("accessToken");
       }
     }
 
@@ -43,40 +48,57 @@ export const authApi = {
   },
 
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    return apiClient<RegisterResponse>("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    return apiClient.post<RegisterResponse>(
+      API_ENDPOINTS.AUTH.REGISTER,
+      data
+    );
   },
 
   async getCurrentUser(): Promise<CurrentUserResponse> {
-    return apiClient<CurrentUserResponse>("/auth/me", {
-      method: "GET",
-    });
+    return apiClient.get<CurrentUserResponse>(API_ENDPOINTS.AUTH.ME);
   },
 
   logout(): void {
     if (typeof window !== "undefined") {
+      clearSecureUser();
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
       sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("user");
+      purgeLegacyPlaintextStorage();
     }
   },
 
   getStoredUser(): { userId: string; username: string; email: string } | null {
     if (typeof window === "undefined") return null;
-    const userStr = localStorage.getItem("user") || sessionStorage.getItem("user");
-    if (!userStr) return null;
-    try {
-      return JSON.parse(userStr);
-    } catch {
-      return null;
+
+    // Check secure obfuscated storage first
+    const secureUser = getSecureUser();
+    if (secureUser) {
+      return secureUser;
     }
+
+    // Auto-migrate legacy plaintext if present and immediately purge plaintext
+    try {
+      const legacyUserStr = localStorage.getItem("user") || sessionStorage.getItem("user");
+      if (legacyUserStr) {
+        const parsed = JSON.parse(legacyUserStr);
+        purgeLegacyPlaintextStorage();
+        if (parsed?.userId && parsed?.username) {
+          saveSecureUser(parsed, true);
+          return parsed;
+        }
+      }
+    } catch {
+      purgeLegacyPlaintextStorage();
+    }
+
+    return null;
   },
 
   getStoredToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    return (
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken")
+    );
   },
 };

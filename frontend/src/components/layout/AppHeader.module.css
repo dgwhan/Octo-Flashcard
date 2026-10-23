@@ -263,3 +263,19 @@
     justify-content: center;
   }
 }
+
+.authButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.loginBtn,
+.registerBtn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  height: 38px;
+  padding: 0 1rem;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}

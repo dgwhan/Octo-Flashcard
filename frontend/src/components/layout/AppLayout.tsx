@@ -25,6 +25,7 @@ function useSidebarCollapsed() {
 export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const isAuthPage = pathname?.startsWith("/auth");
+  const isLandingPage = pathname === "/";
 
   const storedIsCollapsed = useSidebarCollapsed();
   const [localCollapsed, setLocalCollapsed] = useState<boolean | null>(null);
@@ -42,8 +43,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
     }
   };
 
-  // Skip AppShell for auth pages (login/register)
-  if (isAuthPage) {
+  // Skip AppShell (sidebar + app header) for auth pages and landing page
+  if (isAuthPage || isLandingPage) {
     return <>{children}</>;
   }
 

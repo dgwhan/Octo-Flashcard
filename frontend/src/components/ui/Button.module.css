@@ -22,8 +22,8 @@
 }
 
 .primary:hover:not(:disabled) {
-    background-color: var(--color-primary-hover, #6d28d9);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+    background-color: var(--color-primary-hover, #059669);
+    box-shadow: 0 4px 12px var(--color-primary-ring, rgba(16, 185, 129, 0.25));
     transform: translateY(-1px);
 }
 

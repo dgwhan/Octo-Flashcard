@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { authApi } from "../api/auth.api";
 import { ApiError } from "@/src/lib/api";
+import { useTranslation } from "@/src/i18n";
 import "../auth.css";
 
 interface RegisterFormErrors {
@@ -17,6 +18,7 @@ interface RegisterFormErrors {
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -36,21 +38,21 @@ export default function RegisterForm() {
     const newErrors: RegisterFormErrors = {};
 
     if (!username.trim()) {
-      newErrors.username = "Username is required";
+      newErrors.username = t("auth.usernameLabel") + " is required";
     }
 
     if (!email.trim()) {
-      newErrors.email = "E-mail is required";
+      newErrors.email = t("auth.emailLabel") + " is required";
     }
 
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = t("auth.passwordLabel") + " is required";
     } else if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Confirm Password is required";
+      newErrors.confirmPassword = t("auth.confirmPasswordLabel") + " is required";
     } else if (password && confirmPassword !== password) {
       newErrors.confirmPassword = "Passwords do not match";
     }
@@ -102,138 +104,138 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="auth-form-card auth-form-card-wide">
-      <h1 className="auth-title">Register</h1>
+    <div className="auth-form-card auth-form-card-register">
+      <h1 className="auth-title">{t("auth.registerTitle")}</h1>
+      <p style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem", marginBottom: "20px" }}>
+        {t("auth.registerSubtitle")}
+      </p>
 
       {generalError && <div className="general-error-text">{generalError}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form" noValidate>
-        <div className="auth-grid-2cols">
-          {/* Left Column: Username & E-mail */}
-          <div className="auth-col">
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">
-                Username
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="username"
-                  type="text"
-                  className={`form-input ${errors.username ? "input-error" : ""}`}
-                  placeholder="Choose a username"
-                  value={username}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    if (errors.username) {
-                      setErrors((prev) => ({ ...prev, username: undefined }));
-                    }
-                  }}
-                  autoComplete="username"
-                />
-              </div>
-              {errors.username && (
-                <span className="field-error">{errors.username}</span>
-              )}
-            </div>
+        {/* Row 1: Username */}
+        <div className="form-group">
+          <label htmlFor="username" className="form-label">
+            {t("auth.usernameLabel")}
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="username"
+              type="text"
+              className={`form-input ${errors.username ? "input-error" : ""}`}
+              placeholder="nguyenvan_a"
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (errors.username) {
+                  setErrors((prev) => ({ ...prev, username: undefined }));
+                }
+              }}
+              autoComplete="username"
+            />
+          </div>
+          {errors.username && (
+            <span className="field-error">{errors.username}</span>
+          )}
+        </div>
 
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                E-mail
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="email"
-                  type="email"
-                  className={`form-input ${errors.email ? "input-error" : ""}`}
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (errors.email) {
-                      setErrors((prev) => ({ ...prev, email: undefined }));
-                    }
-                  }}
-                  autoComplete="email"
-                />
-              </div>
-              {errors.email && (
-                <span className="field-error">{errors.email}</span>
-              )}
+        {/* Row 2: E-mail */}
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            {t("auth.emailLabel")}
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="email"
+              type="email"
+              className={`form-input ${errors.email ? "input-error" : ""}`}
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) {
+                  setErrors((prev) => ({ ...prev, email: undefined }));
+                }
+              }}
+              autoComplete="email"
+            />
+          </div>
+          {errors.email && (
+            <span className="field-error">{errors.email}</span>
+          )}
+        </div>
+
+        {/* Row 3: Password (Left) & Confirm Password (Right) */}
+        <div className="auth-row-passwords">
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">
+              {t("auth.passwordLabel")}
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                className={`form-input ${errors.password ? "input-error" : ""}`}
+                placeholder="8+ characters"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) {
+                    setErrors((prev) => ({ ...prev, password: undefined }));
+                  }
+                }}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
+            {errors.password && (
+              <span className="field-error">{errors.password}</span>
+            )}
           </div>
 
-          {/* Right Column: Password & Confirm Password */}
-          <div className="auth-col">
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  className={`form-input ${errors.password ? "input-error" : ""}`}
-                  placeholder="8+ characters"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (errors.password) {
-                      setErrors((prev) => ({ ...prev, password: undefined }));
-                    }
-                  }}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <span className="field-error">{errors.password}</span>
-              )}
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="form-label">
+              {t("auth.confirmPasswordLabel")}
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                className={`form-input ${errors.confirmPassword ? "input-error" : ""}`}
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (errors.confirmPassword) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: undefined,
+                    }));
+                  }
+                }}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
-                Confirm Password
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  className={`form-input ${errors.confirmPassword ? "input-error" : ""}`}
-                  placeholder="Repeat your password"
-                  value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    if (errors.confirmPassword) {
-                      setErrors((prev) => ({
-                        ...prev,
-                        confirmPassword: undefined,
-                      }));
-                    }
-                  }}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  tabIndex={-1}
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <span className="field-error">{errors.confirmPassword}</span>
-              )}
-            </div>
+            {errors.confirmPassword && (
+              <span className="field-error">{errors.confirmPassword}</span>
+            )}
           </div>
         </div>
 
@@ -244,14 +246,14 @@ export default function RegisterForm() {
           className="btn-submit"
           style={{ marginTop: "10px" }}
         >
-          {isLoading ? <span className="spinner" /> : "Sign Up"}
+          {isLoading ? <span className="spinner" /> : t("auth.registerBtn")}
         </button>
       </form>
 
       <div className="auth-footer">
-        <span>Already have an account?</span>
+        <span>{t("auth.alreadyHaveAccount")}</span>
         <Link href="/auth/login" className="auth-link">
-          Sign In
+          {t("auth.loginBtn")}
         </Link>
       </div>
     </div>
