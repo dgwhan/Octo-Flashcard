@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { X, Plus, Trash2, Check, Layers } from "lucide-react";
 import { FlashcardSet } from "@/src/types/flashCard";
 import { flashCardApi } from "../../api/flashCard.api";
+import { useTranslation } from "@/src/i18n";
 import styles from "./EditFlashcardSetModal.module.css";
 
 export interface EditFlashcardSetModalProps {
@@ -24,6 +25,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
   onClose,
   onUpdated,
 }) => {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(set.title);
   const [newCards, setNewCards] = useState<NewCardItem[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -70,7 +72,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError("Tiêu đề bộ Flashcard không được để trống.");
+      setError(t("editModal.validationTitle"));
       return;
     }
 
@@ -90,7 +92,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
       onUpdated(updated);
       onClose();
     } catch (err: any) {
-      setError(err?.message || "Không thể cập nhật bộ Flashcard. Vui lòng thử lại.");
+      setError(err?.message || t("common.error"));
     } finally {
       setIsSaving(false);
     }
@@ -109,14 +111,14 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
         <div className={styles.modalHeader}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Layers size={20} color="var(--color-primary)" />
-            <h3 className={styles.modalTitle}>Chỉnh sửa bộ Flashcard</h3>
+            <h3 className={styles.modalTitle}>{t("editModal.modalTitle")}</h3>
           </div>
           <button
             type="button"
             className={styles.closeBtn}
             onClick={onClose}
             disabled={isSaving}
-            aria-label="Đóng"
+            aria-label={t("common.close")}
           >
             <X size={18} />
           </button>
@@ -142,7 +144,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
             {/* Set Title */}
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel} htmlFor="edit-set-title">
-                Tên bộ Flashcard *
+                {t("editModal.setTitleLabel")} *
               </label>
               <input
                 id="edit-set-title"
@@ -150,21 +152,21 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
                 className={styles.fieldInput}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Nhập tên bộ Flashcard..."
+                placeholder={t("editModal.setTitlePlaceholder")}
                 required
               />
             </div>
 
             {/* Add New Cards Section */}
             <div className={styles.sectionDivider}>
-              <span className={styles.sectionTitle}>Thêm thẻ mới vào bộ</span>
+              <span className={styles.sectionTitle}>{t("editModal.addNewCards")}</span>
               <button
                 type="button"
                 className={styles.btnAddItem}
                 onClick={handleAddNewCardField}
               >
                 <Plus size={15} />
-                <span>Thêm thẻ</span>
+                <span>{t("editModal.addMoreBtn")}</span>
               </button>
             </div>
 
@@ -173,13 +175,13 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
                 {newCards.map((card, idx) => (
                   <div key={idx} className={styles.newItemBox}>
                     <div className={styles.newItemHeader}>
-                      <span>Thẻ mới #{idx + 1}</span>
+                      <span>{t("study.front")} #{idx + 1}</span>
                       <button
                         type="button"
                         className={styles.btnRemoveItem}
                         onClick={() => handleRemoveNewCardField(idx)}
                       >
-                        Xóa
+                        {t("common.delete")}
                       </button>
                     </div>
 
@@ -187,7 +189,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
                       <input
                         type="text"
                         className={styles.fieldInput}
-                        placeholder="Mặt trước (Thuật ngữ / Câu hỏi)..."
+                        placeholder={t("editModal.termPlaceholder")}
                         value={card.question}
                         onChange={(e) =>
                           handleNewCardChange(idx, "question", e.target.value)
@@ -196,7 +198,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
                       <input
                         type="text"
                         className={styles.fieldInput}
-                        placeholder="Mặt sau (Định nghĩa / Đáp án)..."
+                        placeholder={t("editModal.definitionPlaceholder")}
                         value={card.answer}
                         onChange={(e) =>
                           handleNewCardChange(idx, "answer", e.target.value)
@@ -211,9 +213,9 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
             {/* Existing Cards Preview */}
             <div className={styles.existingListSection}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className={styles.fieldLabel}>Các thẻ hiện có trong bộ</span>
+                <span className={styles.fieldLabel}>{t("editModal.existingCards")}</span>
                 <span className={styles.existingCountBadge}>
-                  {set.flashcards?.length || 0} thẻ
+                  {set.flashcards?.length || 0} {t("flashcards.cardsCount")}
                 </span>
               </div>
 
@@ -227,7 +229,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
                   ))
                 ) : (
                   <p style={{ fontSize: "0.8125rem", color: "var(--color-text-muted)", fontStyle: "italic" }}>
-                    Chưa có thẻ nào trong bộ này.
+                    {t("study.noCardsNotice")}
                   </p>
                 )}
               </div>
@@ -241,7 +243,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
               onClick={onClose}
               disabled={isSaving}
             >
-              Hủy
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
@@ -249,7 +251,7 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
               disabled={isSaving}
             >
               <Check size={16} />
-              <span>{isSaving ? "Đang lưu..." : "Lưu thay đổi"}</span>
+              <span>{isSaving ? t("editModal.saving") : t("editModal.saveBtn")}</span>
             </button>
           </div>
         </form>

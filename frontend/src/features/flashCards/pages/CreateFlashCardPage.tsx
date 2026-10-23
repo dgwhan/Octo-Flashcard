@@ -7,6 +7,7 @@ import { Plus, Trash2, ArrowLeft, Layers } from "lucide-react";
 import { flashCardApi } from "../api/flashCard.api";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
+import { useTranslation } from "@/src/i18n";
 import styles from "./CreateFlashCardPage.module.css";
 
 interface CardInput {
@@ -16,6 +17,7 @@ interface CardInput {
 
 export const CreateFlashCardPage: React.FC = () => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   // Auth check
   useEffect(() => {
@@ -51,7 +53,7 @@ export const CreateFlashCardPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError("Vui lòng nhập tiêu đề bộ Flashcard.");
+      setError(t("createSet.validationTitle"));
       return;
     }
 
@@ -60,7 +62,7 @@ export const CreateFlashCardPage: React.FC = () => {
     );
 
     if (validCards.length === 0) {
-      setError("Vui lòng nhập ít nhất 1 thẻ có đủ Câu hỏi (Thuật ngữ) và Câu trả lời (Định nghĩa).");
+      setError(t("createSet.validationCardFields"));
       return;
     }
 
@@ -75,7 +77,7 @@ export const CreateFlashCardPage: React.FC = () => {
 
       router.push(`/flashcards?setId=${created.id}`);
     } catch (err: any) {
-      setError(err?.message || "Không thể tạo bộ Flashcard. Vui lòng thử lại.");
+      setError(err?.message || t("common.error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -97,9 +99,9 @@ export const CreateFlashCardPage: React.FC = () => {
             }}
           >
             <ArrowLeft size={16} />
-            <span>Quay lại Flashcards</span>
+            <span>{t("createSet.backBtn")}</span>
           </Link>
-          <h1 className={styles.pageTitle}>Tạo bộ Flashcard mới</h1>
+          <h1 className={styles.pageTitle}>{t("createSet.pageTitle")}</h1>
         </div>
       </header>
 
@@ -123,13 +125,13 @@ export const CreateFlashCardPage: React.FC = () => {
         <div className={styles.formCard}>
           <div className={styles.fieldGroup}>
             <label className={styles.fieldLabel} htmlFor="flashcard-title">
-              Tiêu đề bộ Flashcard *
+              {t("createSet.setTitleLabel")} *
             </label>
             <input
               id="flashcard-title"
               type="text"
               className={styles.fieldInput}
-              placeholder="Ví dụ: Từ vựng Tiếng Anh chủ đề Du lịch..."
+              placeholder={t("createSet.setTitlePlaceholder")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -142,13 +144,13 @@ export const CreateFlashCardPage: React.FC = () => {
           {cards.map((card, idx) => (
             <div key={idx} className={styles.cardItemRow}>
               <div className={styles.cardItemHeader}>
-                <span className={styles.cardItemIndex}>Thẻ số {idx + 1}</span>
+                <span className={styles.cardItemIndex}>{t("study.cardCount", { current: idx + 1, total: cards.length })}</span>
                 {cards.length > 1 && (
                   <button
                     type="button"
                     className={styles.btnDeleteCard}
                     onClick={() => handleRemoveCard(idx)}
-                    title="Xóa thẻ này"
+                    title={t("common.delete")}
                   >
                     <Trash2 size={16} />
                   </button>
@@ -158,12 +160,12 @@ export const CreateFlashCardPage: React.FC = () => {
               <div className={styles.cardFieldsGrid}>
                 <div className={styles.fieldGroup}>
                   <label className={styles.fieldLabel}>
-                    Mặt trước (Thuật ngữ / Câu hỏi)
+                    {t("study.front")}
                   </label>
                   <input
                     type="text"
                     className={styles.fieldInput}
-                    placeholder="Ví dụ: Departure"
+                    placeholder={t("createSet.termPlaceholder")}
                     value={card.question}
                     onChange={(e) =>
                       handleCardChange(idx, "question", e.target.value)
@@ -173,12 +175,12 @@ export const CreateFlashCardPage: React.FC = () => {
 
                 <div className={styles.fieldGroup}>
                   <label className={styles.fieldLabel}>
-                    Mặt sau (Định nghĩa / Giải nghĩa)
+                    {t("study.back")}
                   </label>
                   <input
                     type="text"
                     className={styles.fieldInput}
-                    placeholder="Ví dụ: Sự khởi hành / Giờ bay"
+                    placeholder={t("createSet.definitionPlaceholder")}
                     value={card.answer}
                     onChange={(e) =>
                       handleCardChange(idx, "answer", e.target.value)
@@ -195,14 +197,14 @@ export const CreateFlashCardPage: React.FC = () => {
             onClick={handleAddCard}
           >
             <Plus size={18} />
-            <span>Thêm thẻ mới</span>
+            <span>{t("createSet.addCardBtn")}</span>
           </button>
         </div>
 
         {/* Actions */}
         <div className={styles.actionsBar}>
           <Link href={ROUTES.FLASHCARDS} className={styles.btnCancel}>
-            Hủy
+            {t("common.cancel")}
           </Link>
           <button
             type="submit"
@@ -210,7 +212,7 @@ export const CreateFlashCardPage: React.FC = () => {
             disabled={isSubmitting}
           >
             <Layers size={18} />
-            <span>{isSubmitting ? "Đang tạo..." : "Hoàn tất & Tạo bộ thẻ"}</span>
+            <span>{isSubmitting ? t("createSet.creating") : t("createSet.createSetBtn")}</span>
           </button>
         </div>
       </form>

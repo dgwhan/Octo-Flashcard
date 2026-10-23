@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { FlashCardResponse } from "@/src/types/flashCard";
 import { authApi } from "@/src/features/auth/api/auth.api";
+import { useTranslation } from "@/src/i18n";
 import styles from "./FlashCardViewer.module.css";
 
 export interface FlashCardViewerProps {
@@ -44,6 +45,8 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
   deckTitle,
   onCardMastered,
 }) => {
+  const { t } = useTranslation();
+
   // Check user authentication
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [currentUser, setCurrentUser] = useState<{
@@ -381,9 +384,9 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
           <Trophy size={40} />
         </div>
         <div>
-          <h2 className={styles.completionTitle}>Hoàn thành buổi học!</h2>
+          <h2 className={styles.completionTitle}>{t("study.completedTitle")}</h2>
           <p className={styles.completionDesc}>
-            Chúc mừng bạn đã học hết {totalCards} thẻ trong bộ từ vựng{deckTitle ? ` "${deckTitle}"` : ""}. Tiến độ ghi nhớ đã được lưu vào tài khoản của bạn.
+            {t("study.completedSubtitle")}
           </p>
         </div>
 
@@ -392,19 +395,19 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
             <span className={`${styles.metricValue} ${styles.metricSuccess}`}>
               {masteredCount}
             </span>
-            <span className={styles.metricLabel}>Đã thuộc ({accuracyRate}%)</span>
+            <span className={styles.metricLabel}>{t("study.mastered")} ({accuracyRate}%)</span>
           </div>
 
           <div className={styles.metricBox}>
             <span className={`${styles.metricValue} ${styles.metricReview}`}>
               {reviewCount}
             </span>
-            <span className={styles.metricLabel}>Cần ôn lại</span>
+            <span className={styles.metricLabel}>{t("study.needReview")}</span>
           </div>
 
           <div className={styles.metricBox}>
             <span className={styles.metricValue}>{totalCards}</span>
-            <span className={styles.metricLabel}>Tổng số thẻ</span>
+            <span className={styles.metricLabel}>{t("flashcards.totalCards")}</span>
           </div>
         </div>
 
@@ -416,7 +419,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
               onClick={handleReviewWeakCards}
             >
               <RotateCcw size={18} />
-              <span>Ôn lại {reviewCount} thẻ chưa thuộc</span>
+              <span>{t("study.needReview")} ({reviewCount})</span>
             </button>
           )}
 
@@ -426,7 +429,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
             onClick={handleRestartAll}
           >
             <RotateCw size={18} />
-            <span>Học lại toàn bộ thẻ</span>
+            <span>{t("study.restartStudy")}</span>
           </button>
         </div>
       </div>
@@ -609,11 +612,11 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
           type="button"
           className={styles.btnGradingReview}
           onClick={handleMarkReview}
-          title="Chưa nhớ thẻ này, xếp vào danh sách cần ôn lại (Phím 1)"
-          aria-label="Mark as need review"
+          title={t("study.needReview")}
+          aria-label={t("study.needReview")}
         >
           <XCircle size={18} />
-          <span>Cần ôn lại</span>
+          <span>{t("study.needReview")}</span>
           <span className={styles.shortcutPill}>1</span>
         </button>
 
@@ -621,11 +624,11 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
           type="button"
           className={styles.btnFlipCenter}
           onClick={handleFlip}
-          title="Lật thẻ (Phím Space)"
+          title={t("study.flipHint")}
           aria-label="Flip card"
         >
           <RotateCw size={16} />
-          <span>Lật thẻ</span>
+          <span>{t("study.flipHint")}</span>
           <span className={styles.shortcutPill}>Space</span>
         </button>
 
@@ -633,11 +636,11 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
           type="button"
           className={styles.btnGradingMastered}
           onClick={handleMarkMastered}
-          title="Đã thuộc thẻ này, ghi nhận tiến độ (Phím 2)"
-          aria-label="Mark as mastered"
+          title={t("study.mastered")}
+          aria-label={t("study.mastered")}
         >
           <CheckCircle2 size={18} />
-          <span>Đã thuộc</span>
+          <span>{t("study.mastered")}</span>
           <span className={styles.shortcutPill}>2</span>
         </button>
       </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { authApi } from "../api/auth.api";
 import { ApiError } from "@/src/lib/api";
+import { useTranslation } from "@/src/i18n";
 import "../auth.css";
 
 interface RegisterFormErrors {
@@ -17,6 +18,7 @@ interface RegisterFormErrors {
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -36,21 +38,21 @@ export default function RegisterForm() {
     const newErrors: RegisterFormErrors = {};
 
     if (!username.trim()) {
-      newErrors.username = "Username is required";
+      newErrors.username = t("auth.usernameLabel") + " is required";
     }
 
     if (!email.trim()) {
-      newErrors.email = "E-mail is required";
+      newErrors.email = t("auth.emailLabel") + " is required";
     }
 
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = t("auth.passwordLabel") + " is required";
     } else if (password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
     if (!confirmPassword) {
-      newErrors.confirmPassword = "Confirm Password is required";
+      newErrors.confirmPassword = t("auth.confirmPasswordLabel") + " is required";
     } else if (password && confirmPassword !== password) {
       newErrors.confirmPassword = "Passwords do not match";
     }
@@ -103,7 +105,10 @@ export default function RegisterForm() {
 
   return (
     <div className="auth-form-card auth-form-card-register">
-      <h1 className="auth-title">Register</h1>
+      <h1 className="auth-title">{t("auth.registerTitle")}</h1>
+      <p style={{ color: "var(--color-text-secondary)", fontSize: "0.875rem", marginBottom: "20px" }}>
+        {t("auth.registerSubtitle")}
+      </p>
 
       {generalError && <div className="general-error-text">{generalError}</div>}
 
@@ -111,14 +116,14 @@ export default function RegisterForm() {
         {/* Row 1: Username */}
         <div className="form-group">
           <label htmlFor="username" className="form-label">
-            Username
+            {t("auth.usernameLabel")}
           </label>
           <div className="input-wrapper">
             <input
               id="username"
               type="text"
               className={`form-input ${errors.username ? "input-error" : ""}`}
-              placeholder="Choose a username"
+              placeholder="nguyenvan_a"
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value);
@@ -137,14 +142,14 @@ export default function RegisterForm() {
         {/* Row 2: E-mail */}
         <div className="form-group">
           <label htmlFor="email" className="form-label">
-            E-mail
+            {t("auth.emailLabel")}
           </label>
           <div className="input-wrapper">
             <input
               id="email"
               type="email"
               className={`form-input ${errors.email ? "input-error" : ""}`}
-              placeholder="Enter your email address"
+              placeholder="user@example.com"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -164,7 +169,7 @@ export default function RegisterForm() {
         <div className="auth-row-passwords">
           <div className="form-group">
             <label htmlFor="password" className="form-label">
-              Password
+              {t("auth.passwordLabel")}
             </label>
             <div className="input-wrapper">
               <input
@@ -198,7 +203,7 @@ export default function RegisterForm() {
 
           <div className="form-group">
             <label htmlFor="confirmPassword" className="form-label">
-              Confirm Password
+              {t("auth.confirmPasswordLabel")}
             </label>
             <div className="input-wrapper">
               <input
@@ -241,14 +246,14 @@ export default function RegisterForm() {
           className="btn-submit"
           style={{ marginTop: "10px" }}
         >
-          {isLoading ? <span className="spinner" /> : "Sign Up"}
+          {isLoading ? <span className="spinner" /> : t("auth.registerBtn")}
         </button>
       </form>
 
       <div className="auth-footer">
-        <span>Already have an account?</span>
+        <span>{t("auth.alreadyHaveAccount")}</span>
         <Link href="/auth/login" className="auth-link">
-          Sign In
+          {t("auth.loginBtn")}
         </Link>
       </div>
     </div>

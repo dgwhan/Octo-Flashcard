@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { X, LogIn } from "lucide-react";
+import { useTranslation } from "@/src/i18n";
 import styles from "./AuthModal.module.css";
 
 export interface AuthModalProps {
@@ -16,11 +17,15 @@ export interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  title = "Login or Register to Continue",
-  description = "Login or create an account to start creating your Flashcard sets.",
+  title,
+  description,
   redirectUrl = "/flashcards/create",
 }) => {
-  // Đóng modal khi bấm phím Escape
+  const { t } = useTranslation();
+
+  const modalTitle = title || t("auth.authRequiredTitle");
+  const modalDescription = description || t("auth.authRequiredDesc");
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -49,7 +54,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           type="button"
           className={styles.closeBtn}
           onClick={onClose}
-          aria-label="Close popup"
+          aria-label={t("common.close")}
         >
           <X size={20} />
         </button>
@@ -60,8 +65,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Tiêu đề & Nội dung */}
-        <h2 className={styles.title}>{title}</h2>
-        <p className={styles.description}>{description}</p>
+        <h2 className={styles.title}>{modalTitle}</h2>
+        <p className={styles.description}>{modalDescription}</p>
 
         {/* Nút hành động */}
         <div className={styles.actions}>
@@ -69,13 +74,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             href={`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`}
             className={styles.loginBtn}
           >
-            Login
+            {t("auth.loginBtn")}
           </Link>
           <Link
             href={`/auth/register?redirect=${encodeURIComponent(redirectUrl)}`}
             className={styles.registerBtn}
           >
-            Register
+            {t("auth.registerBtn")}
           </Link>
         </div>
       </div>

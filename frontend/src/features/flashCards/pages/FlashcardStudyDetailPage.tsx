@@ -9,11 +9,13 @@ import { flashCardApi } from "../api/flashCard.api";
 import { FlashCardViewer } from "../components/FlashCardViewer";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
+import { useTranslation } from "@/src/i18n";
 import { EditFlashcardSetModal } from "../components/actions/EditFlashcardSetModal";
 import styles from "./FlashcardStudyDetailPage.module.css";
 
 export const FlashcardStudyDetailPage: React.FC = () => {
   const router = useRouter();
+  const { t, locale } = useTranslation();
   const params = useParams();
   const setId = (params?.id as string) || "";
 
@@ -67,9 +69,9 @@ export const FlashcardStudyDetailPage: React.FC = () => {
       <div className={styles.pageWrapper}>
         <div className={styles.loadingBox}>
           <Lock size={36} color="var(--color-primary)" />
-          <h2>Yêu cầu đăng nhập</h2>
+          <h2>{t("auth.authRequiredTitle")}</h2>
           <p style={{ color: "var(--color-text-secondary)" }}>
-            Vui lòng đăng nhập tài khoản để học bộ Flashcard này.
+            {t("auth.authRequiredDesc")}
           </p>
           <button
             type="button"
@@ -84,7 +86,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
               fontWeight: 600,
             }}
           >
-            Đăng nhập ngay
+            {t("header.login")}
           </button>
         </div>
       </div>
@@ -96,7 +98,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
       <div className={styles.pageWrapper}>
         <div className={styles.loadingBox}>
           <div className={styles.spinner} />
-          <p>Đang chuẩn bị thẻ học...</p>
+          <p>{t("common.loading")}</p>
         </div>
       </div>
     );
@@ -106,9 +108,9 @@ export const FlashcardStudyDetailPage: React.FC = () => {
     return (
       <div className={styles.pageWrapper}>
         <div className={styles.loadingBox}>
-          <h2>Không tìm thấy bộ Flashcard</h2>
+          <h2>{t("flashcards.loadError")}</h2>
           <p style={{ color: "var(--color-text-secondary)" }}>
-            {error || "Bộ flashcard yêu cầu không tồn tại hoặc đã bị xóa."}
+            {error || t("flashcards.loadError")}
           </p>
           <Link
             href={ROUTES.FLASHCARDS}
@@ -121,7 +123,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
               fontWeight: 600,
             }}
           >
-            Về danh sách Flashcard
+            {t("study.backToSets")}
           </Link>
         </div>
       </div>
@@ -134,15 +136,15 @@ export const FlashcardStudyDetailPage: React.FC = () => {
       <header className={styles.headerSection}>
         <Link href={ROUTES.FLASHCARDS} className={styles.backBtn}>
           <ArrowLeft size={16} />
-          <span>Quay lại danh sách các bộ thẻ</span>
+          <span>{t("study.backToSets")}</span>
         </Link>
 
         <div className={styles.headerSectionTop}>
           <div className={styles.titleArea}>
             <h1 className={styles.setTitle}>{set.title}</h1>
             <span className={styles.setMeta}>
-              {set.flashcards.length} thẻ ghi nhớ • Tạo ngày{" "}
-              {new Date(set.createdAt).toLocaleDateString("vi-VN")}
+              {set.flashcards.length} {t("flashcards.cardsCount")} • {t("flashcards.createdDate")}{" "}
+              {new Date(set.createdAt).toLocaleDateString(locale === "en" ? "en-US" : "vi-VN")}
             </span>
           </div>
 
@@ -152,7 +154,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
             onClick={() => setIsEditModalOpen(true)}
           >
             <Pencil size={15} />
-            <span>Sửa & Thêm thẻ mới</span>
+            <span>{t("study.editSet")}</span>
           </button>
         </div>
       </header>
@@ -169,7 +171,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
       ) : (
         <div className={styles.loadingBox}>
           <p style={{ color: "var(--color-text-secondary)" }}>
-            Bộ flashcard này chưa có thẻ nào. Bấm "Sửa & Thêm thẻ mới" để bắt đầu bổ sung từ vựng!
+            {t("study.noCardsNotice")}
           </p>
         </div>
       )}
@@ -178,7 +180,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
       <section className={styles.cardsListSection}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>
-            Danh sách thẻ trong bộ ({set.flashcards.length})
+            {t("study.cardListTitle")} ({set.flashcards.length})
           </h2>
         </div>
 

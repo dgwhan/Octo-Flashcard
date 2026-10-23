@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Layers, PlusCircle, X } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
+import { useTranslation } from "@/src/i18n";
 import styles from "./AppSidebar.module.css";
 
 interface AppSidebarProps {
@@ -19,6 +20,7 @@ export default function AppSidebar({
   onCloseMobile,
 }: AppSidebarProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const isNavActive = (href: string) => {
     if (href === ROUTES.HOME) {
@@ -35,17 +37,17 @@ export default function AppSidebar({
 
   const navItems = [
     {
-      label: "Khám phá",
+      label: t("nav.home"),
       href: ROUTES.HOME,
       icon: Home,
     },
     {
-      label: "Flashcards",
+      label: t("nav.flashcards"),
       href: ROUTES.FLASHCARDS,
       icon: Layers,
     },
     {
-      label: "Tạo Flashcard",
+      label: t("nav.createFlashcard"),
       href: ROUTES.FLASHCARDS_CREATE,
       icon: PlusCircle,
     },

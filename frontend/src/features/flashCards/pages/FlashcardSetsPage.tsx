@@ -19,11 +19,13 @@ import { FlashcardSet } from "@/src/types/flashCard";
 import { flashCardApi } from "../api/flashCard.api";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
+import { useTranslation } from "@/src/i18n";
 import { EditFlashcardSetModal } from "../components/actions/EditFlashcardSetModal";
 import styles from "./FlashcardSetsPage.module.css";
 
 export const FlashcardSetsPage: React.FC = () => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [sets, setSets] = useState<FlashcardSet[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,7 +87,7 @@ export const FlashcardSetsPage: React.FC = () => {
 
   // Handle Delete Set
   const handleDeleteSet = async (id: string, title: string) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn xóa bộ Flashcard "${title}"?`)) {
+    if (!window.confirm(t("flashcards.deleteConfirm"))) {
       return;
     }
 
@@ -93,7 +95,7 @@ export const FlashcardSetsPage: React.FC = () => {
       await flashCardApi.delete(id);
       setSets((prev) => prev.filter((s) => s.id !== id));
     } catch {
-      alert("Không thể xóa bộ Flashcard. Vui lòng thử lại.");
+      alert(t("flashcards.loadError"));
     }
   };
 
@@ -117,10 +119,10 @@ export const FlashcardSetsPage: React.FC = () => {
             <Lock size={32} />
           </div>
           <h2 style={{ fontSize: "1.375rem", fontWeight: 700, margin: 0 }}>
-            Yêu cầu đăng nhập
+            {t("auth.authRequiredTitle")}
           </h2>
           <p style={{ color: "var(--color-text-secondary)", maxWidth: "440px", margin: 0 }}>
-            Vui lòng đăng nhập để xem danh sách tổng hợp các bộ flashcard của bạn, chỉnh sửa và thêm mới từ vựng.
+            {t("auth.authRequiredDesc")}
           </p>
           <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
             <button
@@ -140,7 +142,7 @@ export const FlashcardSetsPage: React.FC = () => {
               }}
             >
               <LogIn size={18} />
-              <span>Đăng nhập ngay</span>
+              <span>{t("header.login")}</span>
             </button>
           </div>
         </div>
@@ -155,7 +157,7 @@ export const FlashcardSetsPage: React.FC = () => {
         <div className={styles.stateContainer}>
           <div className={styles.spinner} />
           <p style={{ color: "var(--color-text-secondary)" }}>
-            Đang tải danh sách các bộ thẻ Flashcard...
+            {t("common.loading")}
           </p>
         </div>
       </div>
@@ -168,15 +170,15 @@ export const FlashcardSetsPage: React.FC = () => {
       <header className={styles.headerSection}>
         <div className={styles.headerTop}>
           <div className={styles.titleGroup}>
-            <h1 className={styles.pageTitle}>Tổng hợp các bộ thẻ Flashcard</h1>
+            <h1 className={styles.pageTitle}>{t("flashcards.hubTitle")}</h1>
             <p className={styles.pageSubtitle}>
-              Quản lý toàn bộ bộ thẻ ghi nhớ, chỉnh sửa thêm từ vựng mới và luyện tập mỗi ngày
+              {t("flashcards.hubSubtitle")}
             </p>
           </div>
 
           <Link href={ROUTES.FLASHCARDS_CREATE} className={styles.btnCreate}>
             <Plus size={18} />
-            <span>Tạo bộ thẻ mới</span>
+            <span>{t("flashcards.createNewSet")}</span>
           </Link>
         </div>
 
@@ -188,7 +190,7 @@ export const FlashcardSetsPage: React.FC = () => {
             </div>
             <div>
               <div className={styles.metricValue}>{sets.length}</div>
-              <div className={styles.metricLabel}>Bộ Flashcard</div>
+              <div className={styles.metricLabel}>{t("flashcards.totalSets")}</div>
             </div>
           </div>
 
@@ -198,7 +200,7 @@ export const FlashcardSetsPage: React.FC = () => {
             </div>
             <div>
               <div className={styles.metricValue}>{totalCardsCount}</div>
-              <div className={styles.metricLabel}>Tổng số thẻ ghi nhớ</div>
+              <div className={styles.metricLabel}>{t("flashcards.totalCards")}</div>
             </div>
           </div>
         </div>
@@ -211,7 +213,7 @@ export const FlashcardSetsPage: React.FC = () => {
               <input
                 type="text"
                 className={styles.searchInput}
-                placeholder="Tìm kiếm bộ Flashcard theo tên..."
+                placeholder={t("flashcards.searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -226,27 +228,27 @@ export const FlashcardSetsPage: React.FC = () => {
           <div className={styles.emptyIconCircle}>
             <Layers size={32} />
           </div>
-          <h3 className={styles.emptyTitle}>Chưa có bộ Flashcard nào</h3>
+          <h3 className={styles.emptyTitle}>{t("flashcards.emptyTitle")}</h3>
           <p className={styles.emptyDesc}>
-            Hãy bắt đầu tạo bộ thẻ ghi nhớ đầu tiên để học tập và rèn luyện từ vựng hiệu quả.
+            {t("flashcards.emptyDesc")}
           </p>
           <Link href={ROUTES.FLASHCARDS_CREATE} className={styles.btnCreate}>
             <Plus size={18} />
-            <span>Tạo bộ thẻ đầu tiên</span>
+            <span>{t("flashcards.createNewSet")}</span>
           </Link>
         </div>
       ) : filteredSets.length === 0 ? (
         <div className={styles.emptyBox}>
-          <h3 className={styles.emptyTitle}>Không tìm thấy bộ Flashcard nào</h3>
+          <h3 className={styles.emptyTitle}>{t("flashcards.fetchEmpty")}</h3>
           <p className={styles.emptyDesc}>
-            Không có bộ thẻ nào khớp với từ khóa "{searchQuery}".
+            {searchQuery}
           </p>
           <button
             type="button"
             className={styles.btnCreate}
             onClick={() => setSearchQuery("")}
           >
-            Xóa tìm kiếm
+            {t("common.all")}
           </button>
         </div>
       ) : (
@@ -263,7 +265,7 @@ export const FlashcardSetsPage: React.FC = () => {
                       <Layers size={20} />
                     </div>
                     <span className={styles.cardCountBadge}>
-                      {cardCount} thẻ
+                      {cardCount} {t("flashcards.cardsCount")}
                     </span>
                   </div>
 
@@ -279,7 +281,7 @@ export const FlashcardSetsPage: React.FC = () => {
                       ))}
                       {cardCount > 3 && (
                         <span className={styles.previewChip} style={{ fontWeight: 700 }}>
-                          +{cardCount - 3} thẻ nữa
+                          +{cardCount - 3} {t("flashcards.cardsCount")}
                         </span>
                       )}
                     </div>
@@ -291,10 +293,10 @@ export const FlashcardSetsPage: React.FC = () => {
                   <Link
                     href={`/flashcards/${set.id}`}
                     className={styles.btnStudyQuick}
-                    title="Bắt đầu học bộ thẻ này"
+                    title={t("flashcards.studyNow")}
                   >
                     <Play size={15} />
-                    <span>Học ngay</span>
+                    <span>{t("flashcards.studyNow")}</span>
                   </Link>
 
                   <div className={styles.cardActionsGroup}>
@@ -302,7 +304,7 @@ export const FlashcardSetsPage: React.FC = () => {
                       type="button"
                       className={styles.btnIconAction}
                       onClick={() => setEditingSet(set)}
-                      title="Chỉnh sửa tên & Thêm thẻ mới vào bộ"
+                      title={t("flashcards.editSet")}
                     >
                       <Pencil size={16} />
                     </button>
@@ -311,7 +313,7 @@ export const FlashcardSetsPage: React.FC = () => {
                       type="button"
                       className={`${styles.btnIconAction} ${styles.btnDangerAction}`}
                       onClick={() => handleDeleteSet(set.id, set.title)}
-                      title="Xóa bộ thẻ"
+                      title={t("flashcards.deleteSet")}
                     >
                       <Trash2 size={16} />
                     </button>

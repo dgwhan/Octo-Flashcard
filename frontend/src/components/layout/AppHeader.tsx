@@ -7,6 +7,8 @@ import { Search, Plus, LogOut, Menu, User } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { AuthModal } from "@/src/features/auth";
 import { ROUTES } from "@/src/config/routes";
+import { useTranslation } from "@/src/i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
 import styles from "./AppHeader.module.css";
 
 interface AppHeaderProps {
@@ -38,6 +40,7 @@ function useCurrentUser() {
 
 export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -97,7 +100,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="Tìm kiếm flashcards..."
+            placeholder={t("header.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -106,16 +109,8 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
 
       {/* Right section: Action Buttons & User Menu */}
       <div className={styles.rightSection}>
-        {/* Create Flashcard Button */}
-        {/* <button
-          type="button"
-          className={styles.createBtn}
-          onClick={handleAddFlashcardClick}
-          aria-label="Tạo Flashcard mới"
-        >
-          <Plus size={18} />
-          <span className={styles.createBtnText}>Tạo mới</span>
-        </button> */}
+        {/* Language Switcher */}
+        <LanguageSwitcher />
 
         {/* User Profile / Auth State */}
         {user ? (
@@ -124,7 +119,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
               type="button"
               className={styles.avatarBtn}
               onClick={() => setIsDropdownOpen((prev) => !prev)}
-              aria-label="User menu"
+              aria-label={t("header.profile")}
             >
               <div className={styles.avatar}>
                 {user.username ? user.username.charAt(0).toUpperCase() : "U"}
@@ -146,7 +141,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
                   onClick={handleLogout}
                 >
                   <LogOut size={16} />
-                  <span>Đăng xuất</span>
+                  <span>{t("header.logout")}</span>
                 </button>
               </div>
             )}
@@ -154,10 +149,10 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
         ) : (
           <div className={styles.authButtons}>
             <Link href={ROUTES.AUTH.LOGIN} className={styles.loginBtn}>
-              Đăng nhập
+              {t("header.login")}
             </Link>
             <Link href={ROUTES.AUTH.REGISTER} className={styles.registerBtn}>
-              Đăng ký
+              {t("header.register")}
             </Link>
           </div>
         )}
@@ -167,8 +162,8 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        title="Đăng nhập để tạo Flashcard"
-        description="Vui lòng đăng nhập hoặc tạo tài khoản để bắt đầu tạo các bộ flashcard của riêng bạn."
+        title={t("auth.authRequiredTitle")}
+        description={t("auth.authRequiredDesc")}
         redirectUrl={ROUTES.FLASHCARDS_CREATE}
       />
     </header>
