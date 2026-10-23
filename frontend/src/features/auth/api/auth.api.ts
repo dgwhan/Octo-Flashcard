@@ -9,33 +9,24 @@ import {
 
 export const authApi = {
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const res = await apiClient<LoginResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await apiClient.post<LoginResponse>("/auth/login", data);
 
-    if (typeof window !== "undefined" && res.accessToken) {
+    if (typeof window !== "undefined" && res?.accessToken) {
+      const userPayload = JSON.stringify({
+        userId: res.userId,
+        username: res.username,
+        email: res.email,
+      });
+
       if (data.rememberMe) {
         localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", JSON.stringify({
-          userId: res.userId,
-          username: res.username,
-          email: res.email,
-        }));
+        localStorage.setItem("user", userPayload);
       } else {
         sessionStorage.setItem("accessToken", res.accessToken);
-        sessionStorage.setItem("user", JSON.stringify({
-          userId: res.userId,
-          username: res.username,
-          email: res.email,
-        }));
-        // Also keep in localStorage for simplicity
+        sessionStorage.setItem("user", userPayload);
+        // Also keep in localStorage for consistency
         localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("user", JSON.stringify({
-          userId: res.userId,
-          username: res.username,
-          email: res.email,
-        }));
+        localStorage.setItem("user", userPayload);
       }
     }
 
@@ -43,16 +34,11 @@ export const authApi = {
   },
 
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    return apiClient<RegisterResponse>("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    return apiClient.post<RegisterResponse>("/auth/register", data);
   },
 
   async getCurrentUser(): Promise<CurrentUserResponse> {
-    return apiClient<CurrentUserResponse>("/auth/me", {
-      method: "GET",
-    });
+    return apiClient.get<CurrentUserResponse>("/auth/me");
   },
 
   logout(): void {
