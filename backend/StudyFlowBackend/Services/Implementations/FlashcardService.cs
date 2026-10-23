@@ -2,46 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using StudyFlowBackend.Data;
 using StudyFlowBackend.DTOs;
 using StudyFlowBackend.Models;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services.Implementations
 {
     public class FlashcardService : IFlashcardService
     {
-        private readonly AppDbContext _context;
+        private readonly IFlashcardRepository _flashcardRepository;
 
-        public FlashcardService(AppDbContext context)
+        public FlashcardService(IFlashcardRepository flashcardRepository)
         {
-            _context = context;
+            _flashcardRepository = flashcardRepository;
         }
 
         public async Task<IEnumerable<FlashcardSetDto>> GetFlashcardSetsByUserIdAsync(string userId)
         {
-            var sets = await _context.FlashcardSets
-                .Include(fs => fs.Flashcards)
-                .Where(fs => fs.UserId == userId)
-                .OrderByDescending(fs => fs.CreatedAt)
-                .ToListAsync();
-
+            var sets = await _flashcardRepository.GetSetsByUserIdAsync(userId);
             return sets.Select(MapToSetDto);
         }
 
         public async Task<FlashcardSetDto?> GetFlashcardSetByIdAsync(Guid id, string userId)
         {
-            var set = await _context.FlashcardSets
-                .Include(fs => fs.Flashcards)
-                .FirstOrDefaultAsync(fs => fs.Id == id && fs.UserId == userId);
-
+            var set = await _flashcardRepository.GetSetByIdAsync(id, userId);
             if (set == null) return null;
             return MapToSetDto(set);
         }
 
         public async Task<FlashcardSetDto> CreateFlashcardSetAsync(string userId, CreateFlashcardSetDto dto)
         {
-            // Kiểm tra số lượng card hiện tại của User
             var existingCount = await GetTotalFlashcardCountAsync(userId);
             var cardLimit = 200;
 
@@ -56,14 +46,12 @@ namespace StudyFlowBackend.Services.Implementations
             var newCardsCount = dto.Flashcards.Count;
             if (existingCount + newCardsCount > cardLimit)
             {
-                // Giới hạn tối đa 200 flashcards, chỉ import số lượng còn lại
                 var allowedCount = cardLimit - existingCount;
                 if (allowedCount <= 0)
                 {
                     throw new InvalidOperationException("You have reached the maximum limit of 200 flashcards.");
                 }
 
-                // Cắt bớt flashcard vượt hạn mức
                 dto.Flashcards = dto.Flashcards.Take(allowedCount).ToList();
             }
 
@@ -77,21 +65,19 @@ namespace StudyFlowBackend.Services.Implementations
                 });
             }
 
-            _context.FlashcardSets.Add(set);
-            await _context.SaveChangesAsync();
+            await _flashcardRepository.AddSetAsync(set);
+            await _flashcardRepository.SaveChangesAsync();
 
             return MapToSetDto(set);
         }
 
         public async Task<bool> DeleteFlashcardSetAsync(Guid id, string userId)
         {
-            var set = await _context.FlashcardSets
-                .FirstOrDefaultAsync(fs => fs.Id == id && fs.UserId == userId);
-
+            var set = await _flashcardRepository.GetSetByIdAsync(id, userId);
             if (set == null) return false;
 
-            _context.FlashcardSets.Remove(set);
-            await _context.SaveChangesAsync();
+            _flashcardRepository.RemoveSet(set);
+            await _flashcardRepository.SaveChangesAsync();
             return true;
         }
 
@@ -103,18 +89,8 @@ namespace StudyFlowBackend.Services.Implementations
             }
 
             var terms = queryText.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var matchedCards = await _flashcardRepository.GetFlashcardsForSearchAsync(userId);
 
-            // Tìm kiếm đơn giản sử dụng keyword matching trên Question & Answer
-            // Lấy tất cả flashcards của user để thực hiện search hoặc query trực tiếp bằng EF
-            // Để tối ưu, chúng ta sẽ query trực tiếp
-            var query = _context.Flashcards
-                .Include(f => f.FlashcardSet)
-                .Where(f => f.FlashcardSet!.UserId == userId);
-
-            // Lọc ra các card khớp từ khóa
-            var matchedCards = await query.ToListAsync();
-
-            // Sắp xếp theo mức độ khớp từ khóa
             var scoredCards = matchedCards
                 .Select(f => new
                 {
@@ -132,8 +108,7 @@ namespace StudyFlowBackend.Services.Implementations
 
         public async Task<int> GetTotalFlashcardCountAsync(string userId)
         {
-            return await _context.Flashcards
-                .CountAsync(f => f.FlashcardSet!.UserId == userId);
+            return await _flashcardRepository.GetTotalFlashcardCountAsync(userId);
         }
 
         private static FlashcardDto MapToDto(Flashcard f)

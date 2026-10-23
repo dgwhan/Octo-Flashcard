@@ -2,54 +2,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using StudyFlowBackend.Data;
 using StudyFlowBackend.DTOs;
 using StudyFlowBackend.Models;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services
 {
     public class NotificationService : INotificationService
     {
-        private readonly AppDbContext _context;
+        private readonly INotificationRepository _notificationRepository;
 
-        public NotificationService(AppDbContext context)
+        public NotificationService(INotificationRepository notificationRepository)
         {
-            _context = context;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<IEnumerable<UserNotificationDto>> GetNotificationsByUserIdAsync(string userId)
         {
-            var notifications = await _context.UserNotifications
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.CreatedAt)
-                .ToListAsync();
-
+            var notifications = await _notificationRepository.GetNotificationsByUserIdAsync(userId);
             return notifications.Select(MapToDto);
         }
 
         public async Task<bool> DeleteNotificationAsync(Guid id, string userId)
         {
-            var notification = await _context.UserNotifications
-                .FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
-
+            var notification = await _notificationRepository.GetByIdAsync(id, userId);
             if (notification == null) return false;
 
-            _context.UserNotifications.Remove(notification);
-            await _context.SaveChangesAsync();
+            _notificationRepository.Remove(notification);
+            await _notificationRepository.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> ClearAllNotificationsAsync(string userId)
         {
-            var notifications = await _context.UserNotifications
-                .Where(n => n.UserId == userId)
-                .ToListAsync();
-
+            var notifications = await _notificationRepository.GetNotificationsByUserIdAsync(userId);
             if (!notifications.Any()) return true;
 
-            _context.UserNotifications.RemoveRange(notifications);
-            await _context.SaveChangesAsync();
+            _notificationRepository.RemoveRange(notifications);
+            await _notificationRepository.SaveChangesAsync();
             return true;
         }
 
@@ -66,8 +56,8 @@ namespace StudyFlowBackend.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.UserNotifications.Add(notification);
-            await _context.SaveChangesAsync();
+            await _notificationRepository.AddAsync(notification);
+            await _notificationRepository.SaveChangesAsync();
 
             return MapToDto(notification);
         }

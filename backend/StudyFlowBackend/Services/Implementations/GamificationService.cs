@@ -2,48 +2,91 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using StudyFlowBackend.Data;
-using StudyFlowBackend.Models;
 using StudyFlowBackend.Constants;
+using StudyFlowBackend.DTOs;
+using StudyFlowBackend.Models;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services
 {
-    /// <summary>
-    /// Implementation of the gamification service for managing user experience (XP), coins, streaks, and badges.
-    /// </summary>
     public class GamificationService : IGamificationService
     {
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly IGamificationRepository _gamificationRepository;
+        private readonly IFocusSessionRepository _focusSessionRepository;
+        private readonly ITaskRepository _taskRepository;
         private readonly INotificationService _notificationService;
 
-        public GamificationService(AppDbContext context, INotificationService notificationService)
+        public GamificationService(
+            IUserRepository userRepository,
+            IGamificationRepository gamificationRepository,
+            IFocusSessionRepository focusSessionRepository,
+            ITaskRepository taskRepository,
+            INotificationService notificationService)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _gamificationRepository = gamificationRepository;
+            _focusSessionRepository = focusSessionRepository;
+            _taskRepository = taskRepository;
             _notificationService = notificationService;
         }
 
-        /// <summary>
-        /// Formula to calculate the XP required to level up: Required XP = Base * Level^Exponent
-        /// </summary>
         private static double GetXpRequiredForLevel(int level)
         {
             return Math.Round(GamificationConstants.LevelUpBaseXp * Math.Pow(level, GamificationConstants.LevelUpExponent));
         }
 
-        /// <summary>
-        /// Adds Experience Points (XP) and Coins to the specified user.
-        /// </summary>
+        public async Task<GamificationSummaryDto?> GetSummaryAsync(string userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId, includeRelations: true);
+            if (user == null) return null;
+
+            var todayUtc = DateTime.UtcNow.Date;
+            var focusedMinutesToday = await _focusSessionRepository.GetFocusedMinutesTodayAsync(userId, todayUtc);
+            double nextLevelXp = Math.Round(100 * Math.Pow(user.Level, 1.5));
+
+            return new GamificationSummaryDto
+            {
+                Level = user.Level,
+                ExpPoints = user.ExpPoints,
+                NextLevelXp = nextLevelXp,
+                Coins = user.Coins,
+                Streak = user.Streak,
+                DailyTargetMinutes = user.DailyTargetMinutes,
+                FocusedMinutesToday = focusedMinutesToday,
+                FeaturedBadgeId = user.FeaturedBadgeId,
+                FeaturedBadgeName = user.FeaturedBadge?.Name ?? string.Empty,
+                FeaturedBadgeIcon = user.FeaturedBadge?.IconUrl ?? string.Empty
+            };
+        }
+
+        public async Task<List<BadgeDto>> GetBadgesAsync(string userId)
+        {
+            var allBadges = await _gamificationRepository.GetAllBadgesAsync();
+            var userBadges = await _gamificationRepository.GetUserBadgesMapAsync(userId);
+
+            return allBadges.Select(b => new BadgeDto
+            {
+                Id = b.Id,
+                Name = b.Name,
+                Description = b.Description,
+                IconUrl = b.IconUrl,
+                MetricType = b.MetricType,
+                ThresholdValue = b.ThresholdValue,
+                IsUnlocked = userBadges.ContainsKey(b.Id),
+                EarnedAt = userBadges.ContainsKey(b.Id) ? userBadges[b.Id] : (DateTime?)null
+            }).ToList();
+        }
+
         public async Task<bool> AddXpAndCoinsAsync(string userId, double xpAmount, int coinsAmount, string reason)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userRepository.GetByIdAsync(userId);
             if (user == null) return false;
 
             bool leveledUp = false;
             user.ExpPoints += xpAmount;
             user.Coins += coinsAmount;
 
-            // Handle level up logic if the user's XP exceeds the required threshold
             double requiredXp = GetXpRequiredForLevel(user.Level);
             while (user.ExpPoints >= requiredXp)
             {
@@ -54,7 +97,8 @@ namespace StudyFlowBackend.Services
             }
 
             user.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            _userRepository.Update(user);
+            await _userRepository.SaveChangesAsync();
 
             await _notificationService.CreateNotificationAsync(
                 userId,
@@ -63,7 +107,6 @@ namespace StudyFlowBackend.Services
                 "Reward"
             );
 
-            // Send notification on leveling up
             if (leveledUp)
             {
                 await _notificationService.CreateNotificationAsync(
@@ -74,40 +117,24 @@ namespace StudyFlowBackend.Services
                 );
             }
 
-            // Check and unlock achievements after rewarding points
             await CheckAndAwardBadgesAsync(userId);
 
             return leveledUp;
         }
 
-        /// <summary>
-        /// Checks and automatically awards badges to the user based on their statistics.
-        /// </summary>
         public async Task CheckAndAwardBadgesAsync(string userId)
         {
-            var user = await _context.Users
-                .Include(u => u.UserBadges)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-            
+            var user = await _userRepository.GetByIdAsync(userId, includeRelations: true);
             if (user == null) return;
 
-            // Fetch all available badges from the database
-            var allBadges = await _context.Badges.ToListAsync();
-            
-            // Filter badges that the user has not yet unlocked
+            var allBadges = await _gamificationRepository.GetAllBadgesAsync();
             var earnedBadgeIds = user.UserBadges.Select(ub => ub.BadgeId).ToHashSet();
             var unearnedBadges = allBadges.Where(b => !earnedBadgeIds.Contains(b.Id)).ToList();
 
             if (!unearnedBadges.Any()) return;
 
-            // Query learning statistics to evaluate unlock criteria
-            var totalFocusMinutes = await _context.FocusSessions
-                .Where(f => f.UserId == userId)
-                .SumAsync(f => (int?)f.DurationMinutes) ?? 0;
-
-            var tasksCompletedCount = await _context.Tasks
-                .CountAsync(t => t.UserId == userId && t.IsCompleted);
-
+            var totalFocusMinutes = await _focusSessionRepository.GetTotalFocusedMinutesAsync(userId);
+            var tasksCompletedCount = await _taskRepository.GetCompletedTaskCountAsync(userId);
             int currentStreak = user.Streak;
 
             bool databaseChanged = false;
@@ -116,7 +143,6 @@ namespace StudyFlowBackend.Services
             {
                 bool isEligible = false;
 
-                // Evaluate unlock criteria based on metric type
                 switch (badge.MetricType)
                 {
                     case "Level":
@@ -135,22 +161,19 @@ namespace StudyFlowBackend.Services
 
                 if (isEligible)
                 {
-                    // Add new earned badge connection to user
                     var userBadge = new UserBadge
                     {
                         UserId = userId,
                         BadgeId = badge.Id,
                         EarnedAt = DateTime.UtcNow
                     };
-                    
-                    _context.UserBadges.Add(userBadge);
+
+                    await _gamificationRepository.AddUserBadgeAsync(userBadge);
                     databaseChanged = true;
 
-                    // Reward bonus coins and XP for unlocking a badge (configured in constants)
                     user.Coins += GamificationConstants.BadgeUnlockedCoinsBonus;
                     user.ExpPoints += GamificationConstants.BadgeUnlockedXpBonus;
 
-                    // Send congratulatory notification
                     await _notificationService.CreateNotificationAsync(
                         userId,
                         $"🏆 New Achievement: {badge.Name}!",
@@ -162,7 +185,6 @@ namespace StudyFlowBackend.Services
 
             if (databaseChanged)
             {
-                // Re-evaluate level up logic in case the badge reward XP triggers a level up
                 double requiredXp = GetXpRequiredForLevel(user.Level);
                 bool secondaryLevelUp = false;
                 while (user.ExpPoints >= requiredXp)
@@ -174,7 +196,8 @@ namespace StudyFlowBackend.Services
                 }
 
                 user.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
 
                 if (secondaryLevelUp)
                 {
@@ -188,82 +211,88 @@ namespace StudyFlowBackend.Services
             }
         }
 
-        /// <summary>
-        /// Updates the daily study duration progress and increments streak count if threshold is met.
-        /// </summary>
         public async Task UpdateDailyTargetProgressAsync(string userId, int focusedMinutesToday)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userRepository.GetByIdAsync(userId);
             if (user == null) return;
 
-            // Get current date representation (excluding timezone hours)
             var todayStr = DateTime.UtcNow.ToString("yyyy-MM-dd");
 
-            // If today is not in streak history yet and daily focus minutes targets are reached
-            if (!user.StreakHistory.Contains(todayStr) && focusedMinutesToday >= user.DailyTargetMinutes)
+            if (focusedMinutesToday >= user.DailyTargetMinutes)
             {
-                var yesterdayStr = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd");
-                
-                // Update streak chain
-                if (user.LastStreakDate.HasValue && user.LastStreakDate.Value.ToString("yyyy-MM-dd") == yesterdayStr)
+                if (user.StreakHistory == null)
                 {
-                    user.Streak += 1;
-                }
-                else if (user.LastStreakDate.HasValue && user.LastStreakDate.Value.ToString("yyyy-MM-dd") == todayStr)
-                {
-                    // Already processed for today, do nothing
-                }
-                else
-                {
-                    user.Streak = 1; // Reset or start new streak chain
+                    user.StreakHistory = new List<string>();
                 }
 
-                user.LastStreakDate = DateTime.UtcNow;
-                user.StreakHistory.Add(todayStr);
-                user.UpdatedAt = DateTime.UtcNow;
+                if (!user.StreakHistory.Contains(todayStr))
+                {
+                    user.StreakHistory.Add(todayStr);
 
-                await _context.SaveChangesAsync();
+                    var yesterdayStr = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd");
+                    if (user.LastStreakDate.HasValue && user.LastStreakDate.Value.ToString("yyyy-MM-dd") == yesterdayStr)
+                    {
+                        user.Streak++;
+                    }
+                    else if (!user.LastStreakDate.HasValue || user.LastStreakDate.Value.ToString("yyyy-MM-dd") != todayStr)
+                    {
+                        user.Streak = 1;
+                    }
 
-                // Add special reward bonus for completing Daily Target
-                await AddXpAndCoinsAsync(
-                    userId, 
-                    GamificationConstants.DailyTargetXpBonus, 
-                    GamificationConstants.DailyTargetCoinsBonus, 
-                    "Completed Daily Target"
-                );
+                    user.LastStreakDate = DateTime.UtcNow;
 
-                await _notificationService.CreateNotificationAsync(
-                    userId,
-                    "🔥 Daily Target Achieved!",
-                    $"Congratulations! You have completed your daily focus target of {user.DailyTargetMinutes} minutes today! Your current streak is: {user.Streak} days.",
-                    "Streak"
-                );
+                    int streakRewardXp = (int)GamificationConstants.DailyTargetXpBonus;
+                    int streakRewardCoins = GamificationConstants.DailyTargetCoinsBonus;
+
+                    user.ExpPoints += streakRewardXp;
+                    user.Coins += streakRewardCoins;
+
+                    await _notificationService.CreateNotificationAsync(
+                        userId,
+                        $"🔥 Streak Maintained! Day {user.Streak}",
+                        $"Great job! You achieved your study goal today. Your current streak is {user.Streak} days! (+{streakRewardXp} XP, +{streakRewardCoins} Coins)",
+                        "Streak"
+                    );
+
+                    double requiredXp = GetXpRequiredForLevel(user.Level);
+                    while (user.ExpPoints >= requiredXp)
+                    {
+                        user.ExpPoints -= requiredXp;
+                        user.Level++;
+                        requiredXp = GetXpRequiredForLevel(user.Level);
+                    }
+
+                    user.UpdatedAt = DateTime.UtcNow;
+                    _userRepository.Update(user);
+                    await _userRepository.SaveChangesAsync();
+
+                    await CheckAndAwardBadgesAsync(userId);
+                }
             }
         }
 
-        /// <summary>
-        /// Sets a specific badge as the user's featured title (displayed alongside their name).
-        /// </summary>
         public async Task<bool> SetFeaturedBadgeAsync(string userId, Guid? badgeId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userRepository.GetByIdAsync(userId);
             if (user == null) return false;
 
-            if (badgeId == null)
+            if (badgeId.HasValue)
+            {
+                var userBadge = await _gamificationRepository.GetUserBadgeAsync(userId, badgeId.Value);
+                if (userBadge == null)
+                {
+                    return false;
+                }
+                user.FeaturedBadgeId = badgeId.Value;
+            }
+            else
             {
                 user.FeaturedBadgeId = null;
-                user.UpdatedAt = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                return true;
             }
 
-            // Verify if the user has unlocked this badge first
-            var hasBadge = await _context.UserBadges.AnyAsync(ub => ub.UserId == userId && ub.BadgeId == badgeId.Value);
-            if (!hasBadge) return false;
-
-            user.FeaturedBadgeId = badgeId;
             user.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            _userRepository.Update(user);
+            await _userRepository.SaveChangesAsync();
             return true;
         }
     }

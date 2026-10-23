@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using StudyFlowBackend.Data;
 using StudyFlowBackend.Models;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services
 {
@@ -27,9 +26,6 @@ namespace StudyFlowBackend.Services
             _logger = logger;
         }
 
-        /// <summary>
-        /// Main background processing loop executed when the application starts.
-        /// </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Reminder Worker started.");
@@ -40,8 +36,8 @@ namespace StudyFlowBackend.Services
                 {
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
-                        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                        await CheckRemindersAsync(context);
+                        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                        await CheckRemindersAsync(unitOfWork);
                     }
                 }
                 catch (Exception ex)
@@ -55,15 +51,11 @@ namespace StudyFlowBackend.Services
             _logger.LogInformation("Reminder Worker stopped.");
         }
 
-        /// <summary>
-        /// Scans user schedules and tasks to send pending custom reminders and daily incomplete task reminders.
-        /// </summary>
-        private async Task CheckRemindersAsync(AppDbContext context)
+        private async Task CheckRemindersAsync(IUnitOfWork unitOfWork)
         {
-            var users = await context.Users.ToListAsync();
+            var users = (await unitOfWork.Users.GetAllAsync()).ToList();
             foreach (var user in users)
             {
-                // Resolve user's timezone, fallback to "Asia/Ho_Chi_Minh"
                 var userTimezoneId = string.IsNullOrEmpty(user.Timezone) ? "Asia/Ho_Chi_Minh" : user.Timezone;
                 TimeZoneInfo userTimeZone;
                 try
@@ -86,14 +78,16 @@ namespace StudyFlowBackend.Services
                 var userTodayStart = userNow.Date;
                 var userTodayEnd = userTodayStart.AddDays(1);
 
-                // Convert local start/end times back to UTC for database queries
                 var userTodayStartUtc = TimeZoneInfo.ConvertTimeToUtc(userTodayStart, userTimeZone);
                 var userTodayEndUtc = TimeZoneInfo.ConvertTimeToUtc(userTodayEnd, userTimeZone);
 
-                // 1. Custom task reminders (ReminderTime is stored in UTC, so we compare with UTC time)
-                var pendingCustomReminders = await context.Tasks
-                    .Where(t => t.UserId == user.Id && t.ReminderTime != null && !t.IsReminderSent && t.ReminderTime <= DateTime.UtcNow && !t.IsCompleted)
-                    .ToListAsync();
+                // 1. Custom task reminders
+                var pendingCustomReminders = (await unitOfWork.Tasks.FindAsync(t =>
+                    t.UserId == user.Id &&
+                    t.ReminderTime != null &&
+                    !t.IsReminderSent &&
+                    t.ReminderTime <= DateTime.UtcNow &&
+                    !t.IsCompleted)).ToList();
 
                 if (pendingCustomReminders.Any())
                 {
@@ -110,15 +104,16 @@ namespace StudyFlowBackend.Services
                             IsRead = false,
                             Type = "CustomTask"
                         };
-                        context.UserNotifications.Add(notification);
+                        await unitOfWork.Notifications.AddAsync(notification);
                         task.IsReminderSent = true;
+                        unitOfWork.Tasks.Update(task);
                     }
                 }
 
                 // 2. Daily reminder at 20:00 (8:00 PM) for incomplete tasks
                 if (userNow.Hour >= 20)
                 {
-                    var hasIncompleteTasks = await context.Tasks.AnyAsync(t =>
+                    var hasIncompleteTasks = await unitOfWork.Tasks.AnyAsync(t =>
                         t.UserId == user.Id &&
                         t.Date >= userTodayStartUtc &&
                         t.Date < userTodayEndUtc &&
@@ -126,7 +121,7 @@ namespace StudyFlowBackend.Services
 
                     if (hasIncompleteTasks)
                     {
-                        var alreadySentToday = await context.UserNotifications.AnyAsync(un =>
+                        var alreadySentToday = await unitOfWork.Notifications.AnyAsync(un =>
                             un.UserId == user.Id &&
                             un.Type == "Daily" &&
                             un.CreatedAt >= userTodayStartUtc &&
@@ -145,13 +140,13 @@ namespace StudyFlowBackend.Services
                                 IsRead = false,
                                 Type = "Daily"
                             };
-                            context.UserNotifications.Add(notification);
+                            await unitOfWork.Notifications.AddAsync(notification);
                         }
                     }
                 }
             }
 
-            await context.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync();
         }
     }
 }

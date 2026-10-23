@@ -503,6 +503,9 @@ namespace StudyFlowBackend.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("integer");
 
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
                     b.Property<long>("StorageQuotaBytes")
                         .HasColumnType("bigint");
 
@@ -529,7 +532,11 @@ namespace StudyFlowBackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email");
+
                     b.HasIndex("FeaturedBadgeId");
+
+                    b.HasIndex("Username");
 
                     b.ToTable("Users");
                 });

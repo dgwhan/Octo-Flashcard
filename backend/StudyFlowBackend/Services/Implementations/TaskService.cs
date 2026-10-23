@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using StudyFlowBackend.Data;
 using StudyFlowBackend.DTOs;
 using StudyFlowBackend.Models;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services
 {
@@ -14,12 +13,12 @@ namespace StudyFlowBackend.Services
     /// </summary>
     public class TaskService : ITaskService
     {
-        private readonly AppDbContext _context;
+        private readonly ITaskRepository _taskRepository;
         private readonly IGamificationService _gamificationService;
 
-        public TaskService(AppDbContext context, IGamificationService gamificationService)
+        public TaskService(ITaskRepository taskRepository, IGamificationService gamificationService)
         {
-            _context = context;
+            _taskRepository = taskRepository;
             _gamificationService = gamificationService;
         }
 
@@ -28,11 +27,7 @@ namespace StudyFlowBackend.Services
         /// </summary>
         public async Task<IEnumerable<TaskDto>> GetTasksByUserIdAsync(string userId)
         {
-            var tasks = await _context.Tasks
-                .Where(t => t.UserId == userId)
-                .OrderByDescending(t => t.Date)
-                .ToListAsync();
-
+            var tasks = await _taskRepository.GetTasksByUserIdAsync(userId);
             return tasks.Select(MapToDto);
         }
 
@@ -41,9 +36,7 @@ namespace StudyFlowBackend.Services
         /// </summary>
         public async Task<TaskDto?> GetTaskByIdAsync(Guid id, string userId)
         {
-            var task = await _context.Tasks
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-
+            var task = await _taskRepository.GetTaskByIdAsync(id, userId);
             if (task == null) return null;
             return MapToDto(task);
         }
@@ -67,8 +60,8 @@ namespace StudyFlowBackend.Services
                 IsReminderSent = false
             };
 
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
+            await _taskRepository.AddAsync(task);
+            await _taskRepository.SaveChangesAsync();
 
             return MapToDto(task);
         }
@@ -78,9 +71,7 @@ namespace StudyFlowBackend.Services
         /// </summary>
         public async Task<TaskDto?> UpdateTaskAsync(Guid id, string userId, UpdateTaskDto dto)
         {
-            var task = await _context.Tasks
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-
+            var task = await _taskRepository.GetTaskByIdAsync(id, userId);
             if (task == null) return null;
 
             bool wasCompleted = task.IsCompleted;
@@ -99,7 +90,8 @@ namespace StudyFlowBackend.Services
                 task.IsReminderSent = false;
             }
 
-            await _context.SaveChangesAsync();
+            _taskRepository.Update(task);
+            await _taskRepository.SaveChangesAsync();
 
             // If the task transitions to Completed status (from not completed)
             if (task.IsCompleted && !wasCompleted)
@@ -115,13 +107,11 @@ namespace StudyFlowBackend.Services
         /// </summary>
         public async Task<bool> DeleteTaskAsync(Guid id, string userId)
         {
-            var task = await _context.Tasks
-                .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-
+            var task = await _taskRepository.GetTaskByIdAsync(id, userId);
             if (task == null) return false;
 
-            _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
+            _taskRepository.Remove(task);
+            await _taskRepository.SaveChangesAsync();
             return true;
         }
 

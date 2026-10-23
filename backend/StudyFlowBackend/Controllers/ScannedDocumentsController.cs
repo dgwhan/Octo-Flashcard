@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using StudyFlowBackend.DTOs;
 using StudyFlowBackend.Services;
 using StudyFlowBackend.Utils;
-using StudyFlowBackend.Data;
 
 namespace StudyFlowBackend.Controllers
 {
@@ -114,18 +113,13 @@ namespace StudyFlowBackend.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetImage(Guid id)
         {
-            // Note: In production, you might want to authenticate this endpoint.
-            // Using AllowAnonymous to simplify Flutter integration without needing custom headers for CachedNetworkImage.
-            var dbContext = HttpContext.RequestServices.GetService(typeof(AppDbContext)) as AppDbContext;
-            if (dbContext == null) return StatusCode(500);
-
-            var document = await dbContext.ScannedDocuments.FindAsync(id);
-            if (document == null || document.ImageData == null || document.ImageData.Length == 0)
+            var imageData = await _scannedDocumentService.GetDocumentImageAsync(id);
+            if (imageData == null || imageData.Length == 0)
             {
                 return NotFound("Image not found");
             }
 
-            return File(document.ImageData, "image/jpeg");
+            return File(imageData, "image/jpeg");
         }
 
         /// <summary>

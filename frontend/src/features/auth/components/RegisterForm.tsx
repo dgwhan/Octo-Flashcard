@@ -102,138 +102,135 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="auth-form-card auth-form-card-wide">
+    <div className="auth-form-card auth-form-card-register">
       <h1 className="auth-title">Register</h1>
 
       {generalError && <div className="general-error-text">{generalError}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form" noValidate>
-        <div className="auth-grid-2cols">
-          {/* Left Column: Username & E-mail */}
-          <div className="auth-col">
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">
-                Username
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="username"
-                  type="text"
-                  className={`form-input ${errors.username ? "input-error" : ""}`}
-                  placeholder="Choose a username"
-                  value={username}
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    if (errors.username) {
-                      setErrors((prev) => ({ ...prev, username: undefined }));
-                    }
-                  }}
-                  autoComplete="username"
-                />
-              </div>
-              {errors.username && (
-                <span className="field-error">{errors.username}</span>
-              )}
-            </div>
+        {/* Row 1: Username */}
+        <div className="form-group">
+          <label htmlFor="username" className="form-label">
+            Username
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="username"
+              type="text"
+              className={`form-input ${errors.username ? "input-error" : ""}`}
+              placeholder="Choose a username"
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                if (errors.username) {
+                  setErrors((prev) => ({ ...prev, username: undefined }));
+                }
+              }}
+              autoComplete="username"
+            />
+          </div>
+          {errors.username && (
+            <span className="field-error">{errors.username}</span>
+          )}
+        </div>
 
-            <div className="form-group">
-              <label htmlFor="email" className="form-label">
-                E-mail
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="email"
-                  type="email"
-                  className={`form-input ${errors.email ? "input-error" : ""}`}
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (errors.email) {
-                      setErrors((prev) => ({ ...prev, email: undefined }));
-                    }
-                  }}
-                  autoComplete="email"
-                />
-              </div>
-              {errors.email && (
-                <span className="field-error">{errors.email}</span>
-              )}
+        {/* Row 2: E-mail */}
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            E-mail
+          </label>
+          <div className="input-wrapper">
+            <input
+              id="email"
+              type="email"
+              className={`form-input ${errors.email ? "input-error" : ""}`}
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) {
+                  setErrors((prev) => ({ ...prev, email: undefined }));
+                }
+              }}
+              autoComplete="email"
+            />
+          </div>
+          {errors.email && (
+            <span className="field-error">{errors.email}</span>
+          )}
+        </div>
+
+        {/* Row 3: Password (Left) & Confirm Password (Right) */}
+        <div className="auth-row-passwords">
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">
+              Password
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                className={`form-input ${errors.password ? "input-error" : ""}`}
+                placeholder="8+ characters"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) {
+                    setErrors((prev) => ({ ...prev, password: undefined }));
+                  }
+                }}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
+            {errors.password && (
+              <span className="field-error">{errors.password}</span>
+            )}
           </div>
 
-          {/* Right Column: Password & Confirm Password */}
-          <div className="auth-col">
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  className={`form-input ${errors.password ? "input-error" : ""}`}
-                  placeholder="8+ characters"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (errors.password) {
-                      setErrors((prev) => ({ ...prev, password: undefined }));
-                    }
-                  }}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <span className="field-error">{errors.password}</span>
-              )}
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="form-label">
+              Confirm Password
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                className={`form-input ${errors.confirmPassword ? "input-error" : ""}`}
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (errors.confirmPassword) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: undefined,
+                    }));
+                  }
+                }}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                tabIndex={-1}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
-                Confirm Password
-              </label>
-              <div className="input-wrapper">
-                <input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  className={`form-input ${errors.confirmPassword ? "input-error" : ""}`}
-                  placeholder="Repeat your password"
-                  value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    if (errors.confirmPassword) {
-                      setErrors((prev) => ({
-                        ...prev,
-                        confirmPassword: undefined,
-                      }));
-                    }
-                  }}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  className="password-toggle-btn"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  tabIndex={-1}
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <span className="field-error">{errors.confirmPassword}</span>
-              )}
-            </div>
+            {errors.confirmPassword && (
+              <span className="field-error">{errors.confirmPassword}</span>
+            )}
           </div>
         </div>
 

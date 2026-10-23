@@ -6,13 +6,18 @@ namespace StudyFlowBackend.Models
     public class User
     {
         /// <summary>
-        /// Firebase UID sẽ được dùng làm Primary Key
+        /// User ID (Primary Key) - supports GUID or custom IDs
         /// </summary>
         public string Id { get; set; } = string.Empty;
         
         public string Username { get; set; } = string.Empty;
         
         public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// BCrypt hashed password
+        /// </summary>
+        public string? PasswordHash { get; set; }
         
         public string FullName { get; set; } = string.Empty;
         public string AvatarUrl { get; set; } = string.Empty;
@@ -75,4 +80,3 @@ namespace StudyFlowBackend.Models
         public ICollection<FlashcardSet> FlashcardSets { get; set; } = new List<FlashcardSet>();
     }
 }
-

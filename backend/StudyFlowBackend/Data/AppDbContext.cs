@@ -30,9 +30,13 @@ namespace StudyFlowBackend.Data
             // modelBuilder.HasPostgresExtension("vector"); // Tạm thời comment vì máy bạn chưa cài pgvector
 
 
-            // Cấu hình khoá chính cho User
-            modelBuilder.Entity<User>()
-                .HasKey(u => u.Id);
+            // Cấu hình khoá chính & chỉ mục cho User
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(u => u.Id);
+                entity.HasIndex(u => u.Email);
+                entity.HasIndex(u => u.Username);
+            });
 
             // Cấu hình khoá chính cho StudyTask
             modelBuilder.Entity<StudyTask>()

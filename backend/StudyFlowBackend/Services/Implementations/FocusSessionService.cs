@@ -2,21 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using StudyFlowBackend.Data;
 using StudyFlowBackend.DTOs;
 using StudyFlowBackend.Models;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services
 {
     public class FocusSessionService : IFocusSessionService
     {
-        private readonly AppDbContext _context;
+        private readonly IFocusSessionRepository _focusSessionRepository;
         private readonly IGamificationService _gamificationService;
 
-        public FocusSessionService(AppDbContext context, IGamificationService gamificationService)
+        public FocusSessionService(
+            IFocusSessionRepository focusSessionRepository,
+            IGamificationService gamificationService)
         {
-            _context = context;
+            _focusSessionRepository = focusSessionRepository;
             _gamificationService = gamificationService;
         }
 
@@ -32,19 +33,17 @@ namespace StudyFlowBackend.Services
                 CreatedAt = DateTime.UtcNow
             };
 
-            _context.FocusSessions.Add(session);
-            await _context.SaveChangesAsync();
+            await _focusSessionRepository.AddAsync(session);
+            await _focusSessionRepository.SaveChangesAsync();
 
-            // Cộng XP và Coins (+2 XP và +2 Coins mỗi phút tập trung)
+            // Reward XP and Coins (+2 XP and +2 Coins per focused minute)
             int earnedXp = session.DurationMinutes * 2;
             int earnedCoins = session.DurationMinutes * 2;
             await _gamificationService.AddXpAndCoinsAsync(userId, earnedXp, earnedCoins, $"The training session has been completed. {session.DurationMinutes} phút ({session.Mode})");
 
-            // Kiểm tra và cập nhật tiến trình Daily Target & Streak
+            // Check and update Daily Target & Streak progress
             var todayUtc = DateTime.UtcNow.Date;
-            var todayMinutes = await _context.FocusSessions
-                .Where(f => f.UserId == userId && f.StartTime >= todayUtc)
-                .SumAsync(f => f.DurationMinutes);
+            var todayMinutes = await _focusSessionRepository.GetFocusedMinutesTodayAsync(userId, todayUtc);
 
             await _gamificationService.UpdateDailyTargetProgressAsync(userId, todayMinutes);
 
@@ -62,27 +61,24 @@ namespace StudyFlowBackend.Services
 
         public async Task<IEnumerable<FocusSessionDto>> GetFocusSessionsByUserIdAsync(string userId)
         {
-            return await _context.FocusSessions
-                .Where(f => f.UserId == userId)
-                .OrderByDescending(f => f.CreatedAt)
-                .Select(f => new FocusSessionDto
-                {
-                    Id = f.Id,
-                    UserId = f.UserId,
-                    StartTime = f.StartTime,
-                    EndTime = f.EndTime,
-                    DurationMinutes = f.DurationMinutes,
-                    Mode = f.Mode,
-                    CreatedAt = f.CreatedAt
-                })
-                .ToListAsync();
+            var sessions = await _focusSessionRepository.GetSessionsByUserIdAsync(userId);
+            return sessions.Select(f => new FocusSessionDto
+            {
+                Id = f.Id,
+                UserId = f.UserId,
+                StartTime = f.StartTime,
+                EndTime = f.EndTime,
+                DurationMinutes = f.DurationMinutes,
+                Mode = f.Mode,
+                CreatedAt = f.CreatedAt
+            });
         }
 
         public async Task<IEnumerable<DailyFocusHeatmapDto>> GetHeatmapDataAsync(string userId, DateTime startDate, DateTime endDate)
         {
-            // Group by Date part of StartTime
-            var heatmapData = await _context.FocusSessions
-                .Where(f => f.UserId == userId && f.StartTime >= startDate && f.StartTime <= endDate)
+            var sessions = await _focusSessionRepository.GetSessionsInDateRangeAsync(userId, startDate, endDate);
+
+            var heatmapData = sessions
                 .GroupBy(f => f.StartTime.Date)
                 .Select(g => new DailyFocusHeatmapDto
                 {
@@ -90,7 +86,7 @@ namespace StudyFlowBackend.Services
                     TotalMinutes = g.Sum(f => f.DurationMinutes)
                 })
                 .OrderBy(h => h.Date)
-                .ToListAsync();
+                .ToList();
 
             return heatmapData;
         }

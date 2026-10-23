@@ -2,11 +2,10 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using StudyFlowBackend.Data;
+using StudyFlowBackend.Repositories.Interfaces;
 
 namespace StudyFlowBackend.Services
 {
@@ -43,7 +42,6 @@ namespace StudyFlowBackend.Services
                     _logger.LogError(ex, "Error occurred while cleaning up trash.");
                 }
 
-                // Wait before running again
                 await Task.Delay(_checkInterval, stoppingToken);
             }
 
@@ -54,22 +52,18 @@ namespace StudyFlowBackend.Services
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var docRepo = scope.ServiceProvider.GetRequiredService<IScannedDocumentRepository>();
                 var storageQuotaService = scope.ServiceProvider.GetRequiredService<IStorageQuotaService>();
 
                 var cutoffDate = DateTime.UtcNow.AddDays(-_retentionDays);
-
-                var documentsToDelete = await context.ScannedDocuments
-                    .IgnoreQueryFilters()
-                    .Where(d => d.IsDeleted && d.DeletedAt != null && d.DeletedAt < cutoffDate)
-                    .ToListAsync(stoppingToken);
+                var documentsToDelete = await docRepo.GetDeletedBeforeAsync(cutoffDate);
 
                 if (documentsToDelete.Any())
                 {
                     var userIdsToUpdate = documentsToDelete.Select(d => d.UserId).Distinct().ToList();
 
-                    context.ScannedDocuments.RemoveRange(documentsToDelete);
-                    await context.SaveChangesAsync(stoppingToken);
+                    docRepo.RemoveRange(documentsToDelete);
+                    await docRepo.SaveChangesAsync();
 
                     // Update storage quota for affected users
                     foreach (var userId in userIdsToUpdate)
