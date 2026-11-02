@@ -201,7 +201,7 @@ using (var scope = app.Services.CreateScope())
         var urls = app.Urls.Any() ? string.Join(", ", app.Urls) : "Unknown URL";
 
         Console.WriteLine("=======================================");
-        Console.WriteLine($" - Server is running at: {urls}");
+        Console.WriteLine($" - Server is running at: 5142 || {urls}");
         Console.WriteLine($" - Environment: {app.Environment.EnvironmentName}");
 
         if (canConnect)

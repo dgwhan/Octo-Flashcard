@@ -22,18 +22,10 @@ import styles from "./landing.module.css";
 export default function LandingHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   const storedUser = typeof window !== "undefined" ? authApi.getStoredUser() : null;
 
   const openLogin = () => {
-    setAuthMode("login");
-    setIsAuthModalOpen(true);
-    setIsMobileMenuOpen(false);
-  };
-
-  const openRegister = () => {
-    setAuthMode("register");
     setIsAuthModalOpen(true);
     setIsMobileMenuOpen(false);
   };
@@ -200,7 +192,7 @@ export default function LandingHeader() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authMode}
+        redirectUrl={ROUTES.FLASHCARDS}
       />
     </>
   );
