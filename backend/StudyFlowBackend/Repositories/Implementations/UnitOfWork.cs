@@ -18,6 +18,7 @@ namespace StudyFlowBackend.Repositories.Implementations
         public IPetRepository Pets { get; }
         public INotificationRepository Notifications { get; }
         public IChatMessageRepository ChatMessages { get; }
+        public IGrammarProgressRepository GrammarProgress { get; }
 
         public UnitOfWork(
             AppDbContext context,
@@ -29,7 +30,8 @@ namespace StudyFlowBackend.Repositories.Implementations
             IGamificationRepository gamification,
             IPetRepository pets,
             INotificationRepository notifications,
-            IChatMessageRepository chatMessages)
+            IChatMessageRepository chatMessages,
+            IGrammarProgressRepository grammarProgress)
         {
             _context = context;
             Users = users;
@@ -41,6 +43,7 @@ namespace StudyFlowBackend.Repositories.Implementations
             Pets = pets;
             Notifications = notifications;
             ChatMessages = chatMessages;
+            GrammarProgress = grammarProgress;
         }
 
         public async Task<int> SaveChangesAsync()

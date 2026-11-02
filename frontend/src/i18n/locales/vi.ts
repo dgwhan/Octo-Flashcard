@@ -26,6 +26,7 @@ export const vi: TranslationSchema = {
     sentences: "Câu ví dụ Tatoeba",
     ipa: "Bảng IPA & Phát âm",
     dictionary: "Tra từ điển",
+    grammar: "Ngữ pháp Roadmap",
     toggleMenu: "Đóng/Mở menu điều hướng",
   },
   header: {

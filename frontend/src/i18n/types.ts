@@ -26,6 +26,7 @@ export interface TranslationSchema {
     sentences: string;
     ipa: string;
     dictionary: string;
+    grammar: string;
     toggleMenu: string;
   };
   header: {

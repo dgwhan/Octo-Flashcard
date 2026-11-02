@@ -121,6 +121,7 @@ builder.Services.AddScoped<IGamificationRepository, GamificationRepository>();
 builder.Services.AddScoped<IPetRepository, PetRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IGrammarProgressRepository, GrammarProgressRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // ==============================================================================
@@ -139,6 +140,7 @@ builder.Services.AddScoped<ILeaderboardService, LeaderboardService>();
 builder.Services.AddScoped<IScannedDocumentService, ScannedDocumentService>();
 builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 builder.Services.AddScoped<IFlashcardService, FlashcardService>();
+builder.Services.AddScoped<IGrammarService, GrammarService>();
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddHostedService<ReminderWorker>();
 builder.Services.AddHostedService<TrashCleanupService>();

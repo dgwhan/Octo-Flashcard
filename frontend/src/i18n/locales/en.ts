@@ -26,6 +26,7 @@ export const en: TranslationSchema = {
     sentences: "Tatoeba Sentences",
     ipa: "IPA Phonetics Chart",
     dictionary: "Dictionary Lookup",
+    grammar: "Grammar Roadmap",
     toggleMenu: "Toggle navigation menu",
   },
   header: {
