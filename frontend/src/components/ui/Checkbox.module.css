@@ -1,0 +1,126 @@
+.checkboxRow {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-xs, 4px);
+  border: 1.5px solid var(--color-border-hover);
+  background-color: var(--color-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast, 0.15s ease);
+  box-sizing: border-box;
+}
+
+.checkboxRow:hover .customCheckbox:not(.checked) {
+  border-color: var(--color-primary);
+}
+
+.customCheckbox.checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.checkIcon {
+  stroke-width: 3;
+}
+
+.hiddenInput:focus-visible + .customCheckbox {
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+.labelCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.labelText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.descText {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+/* Switch Styles */
+.switchRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switchWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.switchTrack {
+  width: 38px;
+  height: 22px;
+  background-color: var(--color-bg-muted);
+  border-radius: var(--radius-full, 9999px);
+  position: relative;
+  transition: background-color var(--transition-normal, 0.2s ease);
+}
+
+.switchThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff;
+  border-radius: var(--radius-full, 9999px);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal, 0.2s ease);
+}
+
+.switchTrack.switchChecked {
+  background-color: var(--color-primary);
+}
+
+.switchTrack.switchChecked .switchThumb {
+  transform: translateX(16px);
+}
+
+.hiddenInput:focus-visible + .switchTrack {
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,130 @@
+/* ==========================================================================
+   OCTO STUDY - CALL TO ACTION (CTA) SECTION
+   Clean, solid, flat section matching the system design:
+   - No borders, no color loang, no blurry opacity backgrounds
+   - System unified primary button without glowing hover effects
+   ========================================================================== */
+
+.ctaSection {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 48px 24px 64px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+}
+
+.ctaContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.ctaTitle {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+.ctaSubtitle {
+  font-size: 1.05rem;
+  max-width: 660px;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* ================= SYSTEM UNIFIED PRIMARY BUTTON ================= */
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 26px;
+  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse, #ffffff);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  margin-top: 6px;
+  transition:
+    background-color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 120ms ease;
+}
+
+.primaryBtn:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: none; /* Khong ho tro hover phat sang */
+  transform: translateY(-1px);
+}
+
+.primaryBtn:active {
+  background-color: var(--color-primary-hover);
+  transform: scale(0.99);
+}
+
+.primaryBtn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ================= FEATURES LIST (CLEAN TEXT & ICONS) ================= */
+.ctaFeaturesList {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.ctaFeatureItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.885rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.checkIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 640px) {
+  .ctaSection {
+    padding: 36px 16px 48px;
+  }
+
+  .ctaTitle {
+    font-size: 1.85rem;
+  }
+
+  .ctaFeaturesList {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .primaryBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,328 @@
+/* ==========================================================================
+   OCTO FLASHCARD - FLOATING NAVBAR (ROUNDED PILL)
+   Design reference: Owlearn AI Online Course Platform Floating Navbar
+   ========================================================================== */
+
+.header {
+  position: sticky;
+  top: 16px;
+  margin-top: 16px;
+  z-index: 100;
+  width: 100%;
+  padding: 0 24px;
+  pointer-events: none;
+  transition: top 0.25s ease, margin-top 0.25s ease, padding 0.25s ease;
+}
+
+.headerContainer {
+  pointer-events: auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 14px 8px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: var(--color-bg-card);
+  background-color: color-mix(in srgb, var(--color-bg-card) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full, 9999px);
+  box-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:global([data-theme="dark"]) .headerContainer,
+:global(.dark) .headerContainer {
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.45), 0 2px 8px -1px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .headerContainer {
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.45), 0 2px 8px -1px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.09);
+  }
+}
+
+/* ================= BRAND LOGO ================= */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  user-select: none;
+  transition: opacity 0.18s ease;
+}
+
+.brand:hover {
+  opacity: 0.9;
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm, 6px);
+}
+
+.brandBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: var(--color-text-inverse, #ffffff);
+  box-shadow: 0 3px 10px var(--color-primary-ring);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand:hover .brandBadge {
+  transform: scale(1.04);
+  box-shadow: 0 4px 14px var(--color-primary-ring);
+}
+
+/* ================= DESKTOP NAVIGATION ================= */
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-full, 9999px);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.885rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition:
+    color 160ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.navLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ================= ACTIONS ================= */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.themeToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full, 9999px);
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  outline: none;
+  transition:
+    color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 180ms ease;
+}
+
+.themeToggleBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  transform: rotate(12deg);
+}
+
+.themeToggleBtn:active {
+  transform: scale(0.92);
+}
+
+.themeToggleBtn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.themeIcon {
+  display: block;
+}
+
+.mobileMenuBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full, 9999px);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.mobileMenuBtn:hover {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border-hover);
+}
+
+.mobileMenuBtn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ================= MOBILE FLOATING DRAWER ================= */
+.mobileDrawer {
+  pointer-events: auto;
+  max-width: 1200px;
+  margin: 8px auto 0;
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--color-bg-card);
+  background-color: color-mix(in srgb, var(--color-bg-card) 96%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.12);
+  animation: mobileDrawerFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:global([data-theme="dark"]) .mobileDrawer,
+:global(.dark) .mobileDrawer {
+  box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .mobileDrawer {
+    box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.09);
+  }
+}
+
+@keyframes mobileDrawerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mobileNavLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 10px);
+  color: var(--color-text-primary);
+  font-size: 0.925rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.mobileNavLink:hover {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-primary);
+}
+
+.mobileDrawerFooter {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.mobileThemeToggleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.mobileThemeToggleBtn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 920px) {
+  .navLinks {
+    display: none;
+  }
+  .mobileMenuBtn {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    top: 10px;
+    margin-top: 10px;
+    padding: 0 12px;
+  }
+  .headerContainer {
+    padding: 7px 12px 7px 14px;
+    gap: 12px;
+  }
+  .brand {
+    font-size: 1.05rem;
+    gap: 8px;
+  }
+  .brandBadge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .themeToggleBtn {
+    width: 34px;
+    height: 34px;
+  }
+}

@@ -66,6 +66,32 @@
   --color-warning-hover: #d97706;
   --color-warning-light: #fffbeb;
 
+  --color-info: #3b82f6;
+  --color-info-hover: #2563eb;
+  --color-info-light: #eff6ff;
+  --color-info-border: #bfdbfe;
+
+  /* Overlays & Backdrops */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Educational / CEFR Level Tokens */
+  --color-cefr-a1: #10b981;
+  --color-cefr-a1-bg: rgba(16, 185, 129, 0.12);
+  --color-cefr-a2: #3b82f6;
+  --color-cefr-a2-bg: rgba(59, 130, 246, 0.12);
+  --color-cefr-b1: #f59e0b;
+  --color-cefr-b1-bg: rgba(245, 158, 11, 0.12);
+  --color-cefr-b2: #f97316;
+  --color-cefr-b2-bg: rgba(249, 115, 22, 0.12);
+  --color-cefr-c1: #8b5cf6;
+  --color-cefr-c1-bg: rgba(139, 92, 246, 0.12);
+  --color-cefr-c2: #ec4899;
+  --color-cefr-c2-bg: rgba(236, 72, 153, 0.12);
+
+  /* Fallback & Compatibility Aliases */
+  --color-bg-primary: var(--color-bg-main);
+  --color-bg-primary-rgb: 243, 244, 246;
+
   /* Elevation & Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md:
@@ -79,11 +105,17 @@
     0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* Border Radii */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================================================
@@ -108,32 +140,32 @@
   --color-secondary-hover: #10b981;
   --color-secondary-light: rgba(52, 211, 153, 0.16);
 
-  /* Neutrals & Backgrounds (Dark Theme) */
-  --color-bg-main: #090d10;          /* backgroundDark (deep premium glass black) */
-  --color-bg-card: #151d24;          /* cardDark */
-  --color-surface: #1f2937;          /* surfaceDark */
-  --color-bg-subtle: #1f2937;        /* surfaceDark / inputFillDark */
-  --color-bg-muted: #1f2937;         /* surfaceDark */
+  /* Neutrals & Backgrounds (Dark Theme: Midnight Navy) */
+  --color-bg-main: #070b14;          /* Midnight Navy background */
+  --color-bg-card: #0f172a;          /* Clean slate navy card */
+  --color-surface: #1e293b;          /* Elevated navy surface */
+  --color-bg-subtle: #1e293b;        /* Subtle navy fill */
+  --color-bg-muted: #334155;         /* Muted slate divider */
 
   /* Typography (Dark Theme) */
-  --color-text-primary: #f3f4f6;     /* textDark */
-  --color-text-secondary: #d0d2d5;   /* subtextDark: Color.fromARGB(255, 208, 210, 213) */
-  --color-text-muted: #9ca3af;
-  --color-text-inverse: #111827;
+  --color-text-primary: #f8fafc;     /* Crisp high-legibility text */
+  --color-text-secondary: #94a3b8;   /* Soft moonlight slate */
+  --color-text-muted: #64748b;
+  --color-text-inverse: #0f172a;
 
   /* Buttons & Inputs (Dark Theme) */
-  --color-btn: #10b981;              /* primaryDark / btn */
+  --color-btn: #10b981;              /* primary */
   --color-btn-hover: #059669;
-  --color-input-fill: #1f2937;        /* inputFillDark */
+  --color-input-fill: #1e293b;
 
   /* Borders & Dividers (Dark Theme) */
-  --color-border: #374151;           /* dividerDark */
-  --color-border-hover: #4b5563;
+  --color-border: #1e293b;
+  --color-border-hover: #334155;
   --color-border-focus: #10b981;
-  --color-divider: #374151;          /* dividerDark */
+  --color-divider: #1e293b;
 
   /* Icons (Dark Theme) */
-  --color-icon: #d1d5db;             /* iconDark */
+  --color-icon: #cbd5e1;
 
   /* Status Colors (Optimized contrast for Dark Mode) */
   --color-danger: #f87171;
@@ -148,6 +180,32 @@
   --color-warning: #fbbf24;
   --color-warning-hover: #f59e0b;
   --color-warning-light: rgba(245, 158, 11, 0.18);
+
+  --color-info: #60a5fa;
+  --color-info-hover: #3b82f6;
+  --color-info-light: rgba(59, 130, 246, 0.18);
+  --color-info-border: rgba(59, 130, 246, 0.35);
+
+  /* Overlays & Backdrops */
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Educational / CEFR Level Tokens (Dark Mode) */
+  --color-cefr-a1: #34d399;
+  --color-cefr-a1-bg: rgba(16, 185, 129, 0.2);
+  --color-cefr-a2: #60a5fa;
+  --color-cefr-a2-bg: rgba(59, 130, 246, 0.2);
+  --color-cefr-b1: #fbbf24;
+  --color-cefr-b1-bg: rgba(245, 158, 11, 0.2);
+  --color-cefr-b2: #fb923c;
+  --color-cefr-b2-bg: rgba(249, 115, 22, 0.2);
+  --color-cefr-c1: #a78bfa;
+  --color-cefr-c1-bg: rgba(139, 92, 246, 0.2);
+  --color-cefr-c2: #f472b6;
+  --color-cefr-c2-bg: rgba(236, 72, 153, 0.2);
+
+  /* Fallback & Compatibility Aliases */
+  --color-bg-primary: var(--color-bg-main);
+  --color-bg-primary-rgb: 9, 13, 16;
 
   /* Elevation & Shadows (Dark Mode) */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
@@ -215,6 +273,29 @@
     --color-warning: #fbbf24;
     --color-warning-hover: #f59e0b;
     --color-warning-light: rgba(245, 158, 11, 0.18);
+
+    --color-info: #60a5fa;
+    --color-info-hover: #3b82f6;
+    --color-info-light: rgba(59, 130, 246, 0.18);
+    --color-info-border: rgba(59, 130, 246, 0.35);
+
+    --color-overlay: rgba(0, 0, 0, 0.7);
+
+    --color-cefr-a1: #34d399;
+    --color-cefr-a1-bg: rgba(16, 185, 129, 0.2);
+    --color-cefr-a2: #60a5fa;
+    --color-cefr-a2-bg: rgba(59, 130, 246, 0.2);
+    --color-cefr-b1: #fbbf24;
+    --color-cefr-b1-bg: rgba(245, 158, 11, 0.2);
+    --color-cefr-b2: #fb923c;
+    --color-cefr-b2-bg: rgba(249, 115, 22, 0.2);
+    --color-cefr-c1: #a78bfa;
+    --color-cefr-c1-bg: rgba(139, 92, 246, 0.2);
+    --color-cefr-c2: #f472b6;
+    --color-cefr-c2-bg: rgba(236, 72, 153, 0.2);
+
+    --color-bg-primary: var(--color-bg-main);
+    --color-bg-primary-rgb: 9, 13, 16;
 
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
     --shadow-md:

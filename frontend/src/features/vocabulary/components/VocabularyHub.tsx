@@ -111,17 +111,17 @@ export default function VocabularyHub() {
   const getLevelBadge = (level: CEFRLevel) => {
     switch (level) {
       case "A1":
-        return { bg: "rgba(16, 185, 129, 0.12)", color: "#10b981", desc: "A1 • Sơ cấp khởi đầu" };
+        return { bg: "var(--color-cefr-a1-bg)", color: "var(--color-cefr-a1)", desc: "A1 • Sơ cấp khởi đầu" };
       case "A2":
-        return { bg: "rgba(59, 130, 246, 0.12)", color: "#3b82f6", desc: "A2 • Sơ cấp mở rộng" };
+        return { bg: "var(--color-cefr-a2-bg)", color: "var(--color-cefr-a2)", desc: "A2 • Sơ cấp mở rộng" };
       case "B1":
-        return { bg: "rgba(245, 158, 11, 0.12)", color: "#f59e0b", desc: "B1 • Trung cấp cơ bản" };
+        return { bg: "var(--color-cefr-b1-bg)", color: "var(--color-cefr-b1)", desc: "B1 • Trung cấp cơ bản" };
       case "B2":
-        return { bg: "rgba(249, 115, 22, 0.12)", color: "#f97316", desc: "B2 • Trung cấp nâng cao" };
+        return { bg: "var(--color-cefr-b2-bg)", color: "var(--color-cefr-b2)", desc: "B2 • Trung cấp nâng cao" };
       case "C1":
-        return { bg: "rgba(139, 92, 246, 0.12)", color: "#8b5cf6", desc: "C1 • Cao cấp học thuật" };
+        return { bg: "var(--color-cefr-c1-bg)", color: "var(--color-cefr-c1)", desc: "C1 • Cao cấp học thuật" };
       case "C2":
-        return { bg: "rgba(236, 72, 153, 0.12)", color: "#ec4899", desc: "C2 • Thành thạo bản ngữ" };
+        return { bg: "var(--color-cefr-c2-bg)", color: "var(--color-cefr-c2)", desc: "C2 • Thành thạo bản ngữ" };
     }
   };
 
@@ -293,8 +293,8 @@ export default function VocabularyHub() {
               padding: "4px 10px",
               borderRadius: "20px",
               backgroundColor:
-                source === "api" ? "rgba(16, 185, 129, 0.12)" : "rgba(59, 130, 246, 0.12)",
-              color: source === "api" ? "#10b981" : "#3b82f6",
+                source === "api" ? "var(--color-primary-light)" : "var(--color-info-light)",
+              color: source === "api" ? "var(--color-primary)" : "var(--color-info)",
               fontWeight: 600,
             }}
           >
@@ -322,7 +322,7 @@ export default function VocabularyHub() {
                 fontSize: "0.85rem",
                 fontWeight: isActive ? 700 : 500,
                 backgroundColor: isActive ? "var(--color-primary)" : "var(--color-bg-card)",
-                color: isActive ? "#ffffff" : "var(--color-text-secondary)",
+                color: isActive ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
                 border: "1px solid var(--color-border)",
                 cursor: "pointer",
                 transition: "all 0.15s ease",

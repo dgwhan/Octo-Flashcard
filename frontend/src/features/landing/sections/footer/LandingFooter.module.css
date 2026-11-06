@@ -1,0 +1,111 @@
+/* ==========================================================================
+   OCTO STUDY - STREAMLINED FOOTER
+   Clean 4-column layout, clear hierarchy, balanced spacing
+   ========================================================================== */
+
+.footer {
+  background: var(--color-bg-card, #ffffff);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  padding: 64px 24px 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+:global([data-theme="dark"]) .footer,
+:global(.dark) .footer {
+  background: var(--color-bg-card, #1e293b);
+  border-top-color: var(--color-border, #334155);
+}
+
+.footerContainer {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.footerTop {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr 1.2fr 1.4fr;
+  gap: 40px;
+}
+
+.footerBrandCol {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.footerColTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+
+.footerLinkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footerLink {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  text-decoration: none;
+  line-height: 1.5;
+  transition: color 0.15s ease;
+}
+
+a.footerLink:hover {
+  color: var(--color-primary);
+}
+
+.footerBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 1024px) {
+  .footerTop {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 48px 16px 28px;
+  }
+  .footerTop {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .footerBottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

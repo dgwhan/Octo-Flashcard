@@ -1,0 +1,208 @@
+/* ==========================================================================
+   OCTO FLASHCARD - BADGE COMPONENT (SOFT FILL STYLE)
+   Design Philosophy: Soft Fill — pure background fill & text.
+   No border, no outline, no shadow.
+   Rounded pill (border-radius: 999px), compact padding, font 12–13px, weight 500–600.
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-full, 999px);
+  border: none;
+  outline: none;
+  box-shadow: none;
+  white-space: nowrap;
+  line-height: 1.25;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast, 0.15s ease),
+    color var(--transition-fast, 0.15s ease),
+    opacity var(--transition-fast, 0.15s ease);
+}
+
+/* ================= SIZES ================= */
+.sm {
+  padding: 2px 8px;
+  font-size: 12px;
+  letter-spacing: -0.01em;
+}
+
+.md {
+  padding: 4px 10px;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+/* ================= SOFT FILL VARIANTS ================= */
+
+/* Neutral / Subtle */
+.neutral,
+.outline {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  border: none;
+  box-shadow: none;
+}
+
+/* Primary (Emerald) */
+.primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-hover);
+  border: none;
+  box-shadow: none;
+}
+
+:global([data-theme="dark"]) .primary,
+:global(.dark) .primary {
+  color: var(--color-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .primary {
+    color: var(--color-primary);
+  }
+}
+
+/* Success */
+.success {
+  background-color: var(--color-success-light);
+  color: var(--color-success-hover);
+  border: none;
+  box-shadow: none;
+}
+
+:global([data-theme="dark"]) .success,
+:global(.dark) .success {
+  color: var(--color-success);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .success {
+    color: var(--color-success);
+  }
+}
+
+/* Warning (Amber) */
+.warning {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-hover);
+  border: none;
+  box-shadow: none;
+}
+
+:global([data-theme="dark"]) .warning,
+:global(.dark) .warning {
+  color: var(--color-warning);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .warning {
+    color: var(--color-warning);
+  }
+}
+
+/* Danger (Ruby Red) */
+.danger {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-hover);
+  border: none;
+  box-shadow: none;
+}
+
+:global([data-theme="dark"]) .danger,
+:global(.dark) .danger {
+  color: var(--color-danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .danger {
+    color: var(--color-danger);
+  }
+}
+
+/* Info (Blue) */
+.info {
+  background-color: var(--color-info-light);
+  color: var(--color-info-hover);
+  border: none;
+  box-shadow: none;
+}
+
+:global([data-theme="dark"]) .info,
+:global(.dark) .info {
+  color: var(--color-info);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .info {
+    color: var(--color-info);
+  }
+}
+
+/* ================= CEFR EDUCATIONAL LEVELS ================= */
+.a1 {
+  background-color: var(--color-cefr-a1-bg);
+  color: var(--color-cefr-a1);
+  border: none;
+  box-shadow: none;
+}
+
+.a2 {
+  background-color: var(--color-cefr-a2-bg);
+  color: var(--color-cefr-a2);
+  border: none;
+  box-shadow: none;
+}
+
+.b1 {
+  background-color: var(--color-cefr-b1-bg);
+  color: var(--color-cefr-b1);
+  border: none;
+  box-shadow: none;
+}
+
+.b2 {
+  background-color: var(--color-cefr-b2-bg);
+  color: var(--color-cefr-b2);
+  border: none;
+  box-shadow: none;
+}
+
+.c1 {
+  background-color: var(--color-cefr-c1-bg);
+  color: var(--color-cefr-c1);
+  border: none;
+  box-shadow: none;
+}
+
+.c2 {
+  background-color: var(--color-cefr-c2-bg);
+  color: var(--color-cefr-c2);
+  border: none;
+  box-shadow: none;
+}
+
+/* ================= INTERACTION ================= */
+.interactive {
+  cursor: pointer;
+  user-select: none;
+}
+
+.interactive:hover {
+  opacity: 0.85;
+}
+
+.interactive:active {
+  opacity: 0.95;
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}

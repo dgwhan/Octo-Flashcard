@@ -1,0 +1,400 @@
+/* ==========================================================================
+   OCTO FLASHCARD - STICKY NOTES ZIGZAG WORKSPACE
+   Authentic study-note aesthetics, eye-pleasing pastels, subtle zigzag rotation.
+   No tape strips, borderless clean cards, Soft Fill badges.
+   ========================================================================== */
+
+.section {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  scroll-margin-top: 96px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* ================= SECTION HEADER ================= */
+.sectionHeader {
+  text-align: center;
+  max-width: 1040px;
+  margin: 0 auto 48px;
+}
+
+.sectionTag {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0 0 16px;
+  color: var(--color-text-primary);
+  line-height: 1.25;
+}
+
+@media (min-width: 769px) {
+  .sectionTitle {
+    white-space: nowrap;
+  }
+}
+
+.sectionSubtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ================= ZIGZAG GRID ================= */
+.zigzagGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 36px;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* ================= STICKY NOTE CARD ================= */
+.stickyNote {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 26px 26px 22px;
+  border-radius: var(--radius-md, 14px);
+  border: none;
+  outline: none;
+  background-color: var(--note-bg, var(--color-bg-card));
+  color: var(--color-text-primary);
+  box-shadow:
+    0 4px 18px -2px rgba(0, 0, 0, 0.06),
+    0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  transition:
+    transform 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 185px;
+}
+
+:global([data-theme="dark"]) .stickyNote,
+:global(.dark) .stickyNote {
+  box-shadow:
+    0 8px 24px -2px rgba(0, 0, 0, 0.45),
+    0 2px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .stickyNote {
+    box-shadow:
+      0 8px 24px -2px rgba(0, 0, 0, 0.45),
+      0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Hover & Focus Interactions */
+.stickyNote:hover {
+  transform: translateY(-4px) rotate(0deg) !important;
+  box-shadow:
+    0 14px 30px -4px rgba(0, 0, 0, 0.1),
+    0 4px 12px -2px rgba(0, 0, 0, 0.05);
+}
+
+.stickyNote:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  transform: translateY(-4px) rotate(0deg) !important;
+}
+
+/* ================= SUBTLE ZIGZAG ROTATIONS & OFFSETS (DESKTOP) ================= */
+.note1 {
+  transform: rotate(-1.2deg);
+  margin-top: 0;
+}
+
+.note2 {
+  transform: rotate(1.4deg);
+  margin-top: 20px;
+}
+
+.note3 {
+  transform: rotate(1.1deg);
+  margin-top: -10px;
+}
+
+.note4 {
+  transform: rotate(-1deg);
+  margin-top: 10px;
+}
+
+.note5 {
+  transform: rotate(-1.4deg);
+  margin-top: -8px;
+}
+
+.note6 {
+  transform: rotate(1.2deg);
+  margin-top: 12px;
+}
+
+/* ================= NOTE HEADER ================= */
+.noteHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.noteIndex {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.55;
+}
+
+.noteIconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* Soft Fill Study Annotation Badge */
+.annotationTag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background-color: var(--note-tag-bg, var(--color-bg-subtle));
+  color: var(--note-tag-text, var(--color-text-secondary));
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* ================= NOTE BODY ================= */
+.noteBody {
+  text-align: left;
+  flex: 1;
+}
+
+.noteTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 8px;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.noteSummary {
+  font-size: 0.885rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+
+/* ================= NOTE FOOTER & CTA ================= */
+.noteFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: auto;
+}
+
+.noteLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.noteLinkIcon {
+  transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stickyNote:hover .noteLinkIcon {
+  transform: translateX(4px);
+}
+
+.noteLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   PASTEL NOTE COLOR PALETTES (LIGHT MODE)
+   Gentle study-card colors: mint, sky, warm amber, lavender, rose, ice
+   ========================================================================== */
+.themeEmerald {
+  --note-bg: #f3faf6;
+  --note-tag-bg: #dcfce7;
+  --note-tag-text: #047857;
+}
+
+.themeBlue {
+  --note-bg: #f1f7fe;
+  --note-tag-bg: #dbeafe;
+  --note-tag-text: #1d4ed8;
+}
+
+.themeAmber {
+  --note-bg: #fefcf2;
+  --note-tag-bg: #fef3c7;
+  --note-tag-text: #b45309;
+}
+
+.themePurple {
+  --note-bg: #f7f3fe;
+  --note-tag-bg: #ede9fe;
+  --note-tag-text: #6d28d9;
+}
+
+.themeRose {
+  --note-bg: #fdf2f7;
+  --note-tag-bg: #fce7f3;
+  --note-tag-text: #be185d;
+}
+
+.themeSky {
+  --note-bg: #f0f8fe;
+  --note-tag-bg: #e0f2fe;
+  --note-tag-text: #0369a1;
+}
+
+/* ==========================================================================
+   MIDNIGHT NAVY COLOR PALETTES (DARK MODE)
+   Clean midnight sapphire, zero murky green-black #0e1511/#101c16
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme="light"])) .themeEmerald {
+    --note-bg: #0c1a1f;
+    --note-tag-bg: rgba(16, 185, 129, 0.2);
+    --note-tag-text: #34d399;
+  }
+
+  :global(:root:not([data-theme="light"])) .themeBlue {
+    --note-bg: #0f1c30;
+    --note-tag-bg: rgba(59, 130, 246, 0.2);
+    --note-tag-text: #60a5fa;
+  }
+
+  :global(:root:not([data-theme="light"])) .themeAmber {
+    --note-bg: #1c180e;
+    --note-tag-bg: rgba(245, 158, 11, 0.2);
+    --note-tag-text: #fbbf24;
+  }
+
+  :global(:root:not([data-theme="light"])) .themePurple {
+    --note-bg: #181328;
+    --note-tag-bg: rgba(139, 92, 246, 0.2);
+    --note-tag-text: #a78bfa;
+  }
+
+  :global(:root:not([data-theme="light"])) .themeRose {
+    --note-bg: #1e111b;
+    --note-tag-bg: rgba(236, 72, 153, 0.2);
+    --note-tag-text: #f472b6;
+  }
+
+  :global(:root:not([data-theme="light"])) .themeSky {
+    --note-bg: #0c1c2a;
+    --note-tag-bg: rgba(14, 165, 233, 0.2);
+    --note-tag-text: #38bdf8;
+  }
+}
+
+:global([data-theme="dark"]) .themeEmerald,
+:global(.dark) .themeEmerald {
+  --note-bg: #0c1a1f;
+  --note-tag-bg: rgba(16, 185, 129, 0.2);
+  --note-tag-text: #34d399;
+}
+
+:global([data-theme="dark"]) .themeBlue,
+:global(.dark) .themeBlue {
+  --note-bg: #0f1c30;
+  --note-tag-bg: rgba(59, 130, 246, 0.2);
+  --note-tag-text: #60a5fa;
+}
+
+:global([data-theme="dark"]) .themeAmber,
+:global(.dark) .themeAmber {
+  --note-bg: #1c180e;
+  --note-tag-bg: rgba(245, 158, 11, 0.2);
+  --note-tag-text: #fbbf24;
+}
+
+:global([data-theme="dark"]) .themePurple,
+:global(.dark) .themePurple {
+  --note-bg: #181328;
+  --note-tag-bg: rgba(139, 92, 246, 0.2);
+  --note-tag-text: #a78bfa;
+}
+
+:global([data-theme="dark"]) .themeRose,
+:global(.dark) .themeRose {
+  --note-bg: #1e111b;
+  --note-tag-bg: rgba(236, 72, 153, 0.2);
+  --note-tag-text: #f472b6;
+}
+
+:global([data-theme="dark"]) .themeSky,
+:global(.dark) .themeSky {
+  --note-bg: #0c1c2a;
+  --note-tag-bg: rgba(14, 165, 233, 0.2);
+  --note-tag-text: #38bdf8;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .zigzagGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .note1,
+  .note2,
+  .note3,
+  .note4,
+  .note5,
+  .note6 {
+    transform: none !important;
+    margin: 0 !important;
+  }
+
+  .stickyNote {
+    padding: 22px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 48px 16px;
+  }
+}

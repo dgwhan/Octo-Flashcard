@@ -1,31 +1,28 @@
 "use client";
 
-import React from "react";
-import LandingHeader from "./LandingHeader";
-import LandingHero from "./LandingHero";
-import LandingFeatures from "./LandingFeatures";
-import LandingSources from "./LandingSources";
-import LandingMethodology from "./LandingMethodology";
-import LandingCTA from "./LandingCTA";
-import LandingFooter from "./LandingFooter";
+import {
+  LandingHeader,
+  LandingHero,
+  LandingFeatures,
+  LandingMethodology,
+  LandingCTA,
+  LandingFooter,
+} from "./sections";
 import styles from "./landing.module.css";
 
 export default function LandingPage() {
   return (
     <div className={styles.landingWrapper}>
-      {/* Dedicated Standalone Header */}
+      {/* Dedicated Standalone Floating Header */}
       <LandingHeader />
 
       {/* Main Content Body */}
       <main>
-        {/* Hero Section */}
+        {/* Hero Section & 2-Row Big Numbers Metrics */}
         <LandingHero />
 
-        {/* 6 Core Pillars Features */}
+        {/* 6 Core Pillars Features (Sticky Notes Zigzag) */}
         <LandingFeatures />
-
-        {/* Public Domain & 3rd Party Open Sources Attribution Showcase */}
-        <LandingSources />
 
         {/* Cognitive & Pedagogical Methodology */}
         <LandingMethodology />

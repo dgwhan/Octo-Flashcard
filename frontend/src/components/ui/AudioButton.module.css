@@ -1,0 +1,112 @@
+.audioBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full, 9999px);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast, 0.15s ease);
+  user-select: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Sizes */
+.sm {
+  width: 28px;
+  height: 28px;
+}
+
+.md {
+  width: 36px;
+  height: 36px;
+}
+
+.lg {
+  width: 44px;
+  height: 44px;
+}
+
+/* Variants */
+.primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary-ring);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse, #ffffff);
+  transform: scale(1.06);
+}
+
+.subtle {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.subtle:hover:not(:disabled) {
+  background-color: var(--color-bg-card);
+  color: var(--color-primary);
+  border-color: var(--color-border-hover);
+  transform: scale(1.06);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-primary);
+}
+
+/* Playing State */
+.playing {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-inverse, #ffffff) !important;
+  border-color: var(--color-primary) !important;
+  animation: audioPulse 1.2s infinite;
+}
+
+.playingIndicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPulse {
+  animation: pulseScale 0.8s ease-in-out infinite alternate;
+}
+
+.audioBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.audioBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+@keyframes audioPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--color-primary-ring);
+  }
+  50% {
+    box-shadow: 0 0 0 6px var(--color-primary-ring);
+  }
+}
+
+@keyframes pulseScale {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1.15);
+  }
+}

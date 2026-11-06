@@ -687,14 +687,14 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
 
                     if (submittedQuiz) {
                       if (isCorrect) {
-                        bg = "rgba(16, 185, 129, 0.15)";
-                        border = "2px solid #10b981";
+                        bg = "var(--color-success-light)";
+                        border = "2px solid var(--color-success)";
                       } else if (isSelected) {
-                        bg = "rgba(239, 68, 68, 0.15)";
-                        border = "2px solid #ef4444";
+                        bg = "var(--color-danger-light)";
+                        border = "2px solid var(--color-danger)";
                       }
                     } else if (isSelected) {
-                      bg = "rgba(16, 185, 129, 0.1)";
+                      bg = "var(--color-primary-light)";
                       border = "2px solid var(--color-primary)";
                     }
 
@@ -745,7 +745,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "12px" }}>
             {submittedQuiz ? (
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <CheckCircle2 size={24} style={{ color: "#10b981" }} />
+                <CheckCircle2 size={24} style={{ color: "var(--color-success)" }} />
                 <span style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-text-primary)" }}>
                   Kết quả: {calculateScore()} / {lesson.quiz.length} câu đúng!
                 </span>

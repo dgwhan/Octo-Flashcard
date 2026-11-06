@@ -316,7 +316,7 @@
   font-weight: 600;
   display: flex;
   align-items: center;
-  border: 1px solid #a7f3d0;
+  border: 1px solid var(--color-primary-ring);
   animation: fadeIn 0.2s ease-in-out;
 }
 

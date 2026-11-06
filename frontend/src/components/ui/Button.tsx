@@ -2,7 +2,8 @@ import React, { ButtonHTMLAttributes, forwardRef } from "react";
 import styles from "./Button.module.css";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "outline" | "danger";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
   loadingText?: string;
   isLoading?: boolean;
 }
@@ -11,7 +12,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = "primary",
-      loadingText = "Loading...",
+      size = "md",
+      loadingText = "Đang tải...",
       isLoading = false,
       children,
       disabled,
@@ -22,14 +24,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     return (
       <button
-        className={`${styles.button} ${styles[variant]} ${className || ""}`}
+        className={`${styles.button} ${styles[variant]} ${styles[size]} ${
+          className || ""
+        }`}
         ref={ref}
         disabled={disabled || isLoading}
         {...props}
       >
         {isLoading ? (
           <>
-            <span className={styles.spinner} role="status" aria-label="loading" />
+            <span
+              className={styles.spinner}
+              role="status"
+              aria-label="loading"
+            />
             {loadingText}
           </>
         ) : (

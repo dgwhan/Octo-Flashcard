@@ -45,20 +45,20 @@ export default function VoaLessonList() {
       case "beginning":
         return {
           label: `Level ${levelNum}: Sơ cấp (A1-A2)`,
-          color: "#10b981",
-          bg: "rgba(16, 185, 129, 0.12)",
+          color: "var(--color-cefr-a1)",
+          bg: "var(--color-cefr-a1-bg)",
         };
       case "intermediate":
         return {
           label: `Level ${levelNum}: Trung cấp (B1-B2)`,
-          color: "#3b82f6",
-          bg: "rgba(59, 130, 246, 0.12)",
+          color: "var(--color-cefr-a2)",
+          bg: "var(--color-cefr-a2-bg)",
         };
       case "advanced":
         return {
           label: `Level ${levelNum}: Nâng cao (C1)`,
-          color: "#8b5cf6",
-          bg: "rgba(139, 92, 246, 0.12)",
+          color: "var(--color-cefr-c1)",
+          bg: "var(--color-cefr-c1-bg)",
         };
     }
   };
@@ -135,7 +135,7 @@ export default function VoaLessonList() {
                     padding: "2px 8px",
                     borderRadius: "9999px",
                     backgroundColor: isActive ? "var(--color-primary)" : "var(--color-bg-alt)",
-                    color: isActive ? "#ffffff" : "var(--color-text-secondary)",
+                    color: isActive ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
                     fontWeight: 600,
                   }}
                 >

@@ -137,13 +137,13 @@ export default function TatoebaExplorer() {
   const getLevelBadge = (lvl: string) => {
     switch (lvl) {
       case "Beginner":
-        return { color: "#10b981", bg: "rgba(16, 185, 129, 0.12)", label: "Cơ bản" };
+        return { color: "var(--color-cefr-a1)", bg: "var(--color-cefr-a1-bg)", label: "Cơ bản" };
       case "Intermediate":
-        return { color: "#3b82f6", bg: "rgba(59, 130, 246, 0.12)", label: "Trung cấp" };
+        return { color: "var(--color-cefr-a2)", bg: "var(--color-cefr-a2-bg)", label: "Trung cấp" };
       case "Advanced":
-        return { color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.12)", label: "Nâng cao" };
+        return { color: "var(--color-cefr-c1)", bg: "var(--color-cefr-c1-bg)", label: "Nâng cao" };
       default:
-        return { color: "#10b981", bg: "rgba(16, 185, 129, 0.12)", label: lvl };
+        return { color: "var(--color-cefr-a1)", bg: "var(--color-cefr-a1-bg)", label: lvl };
     }
   };
 
@@ -235,8 +235,8 @@ export default function TatoebaExplorer() {
               padding: "4px 10px",
               borderRadius: "20px",
               backgroundColor:
-                apiSource === "api" ? "rgba(16, 185, 129, 0.12)" : "rgba(59, 130, 246, 0.12)",
-              color: apiSource === "api" ? "#10b981" : "#3b82f6",
+                apiSource === "api" ? "var(--color-primary-light)" : "var(--color-info-light)",
+              color: apiSource === "api" ? "var(--color-primary)" : "var(--color-info)",
               fontWeight: 600,
             }}
           >
@@ -264,7 +264,7 @@ export default function TatoebaExplorer() {
                 fontSize: "0.85rem",
                 fontWeight: isActive ? 700 : 500,
                 backgroundColor: isActive ? "var(--color-primary)" : "var(--color-bg-card)",
-                color: isActive ? "#ffffff" : "var(--color-text-secondary)",
+                color: isActive ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
                 border: "1px solid var(--color-border)",
                 cursor: "pointer",
                 transition: "all 0.15s ease",

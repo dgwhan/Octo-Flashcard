@@ -125,8 +125,8 @@ export default function AudiobookList() {
               padding: "4px 10px",
               borderRadius: "20px",
               backgroundColor:
-                source === "api" ? "rgba(16, 185, 129, 0.12)" : "rgba(59, 130, 246, 0.12)",
-              color: source === "api" ? "#10b981" : "#3b82f6",
+                source === "api" ? "var(--color-primary-light)" : "var(--color-info-light)",
+              color: source === "api" ? "var(--color-primary)" : "var(--color-info)",
               fontWeight: 600,
             }}
           >
@@ -152,7 +152,7 @@ export default function AudiobookList() {
               fontSize: "0.8rem",
               fontWeight: 500,
               backgroundColor: searchQuery === kw ? "var(--color-primary)" : "var(--color-bg-card)",
-              color: searchQuery === kw ? "#fff" : "var(--color-text-secondary)",
+              color: searchQuery === kw ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
               border: "1px solid var(--color-border)",
               cursor: "pointer",
             }}

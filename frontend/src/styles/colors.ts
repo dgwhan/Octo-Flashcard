@@ -94,6 +94,28 @@ export const colors = {
   warning: "var(--color-warning)",
   warningHover: "var(--color-warning-hover)",
   warningLight: "var(--color-warning-light)",
+
+  info: "var(--color-info)",
+  infoHover: "var(--color-info-hover)",
+  infoLight: "var(--color-info-light)",
+  infoBorder: "var(--color-info-border)",
+
+  // Overlays
+  overlay: "var(--color-overlay)",
+
+  // CEFR Levels
+  cefrA1: "var(--color-cefr-a1)",
+  cefrA1Bg: "var(--color-cefr-a1-bg)",
+  cefrA2: "var(--color-cefr-a2)",
+  cefrA2Bg: "var(--color-cefr-a2-bg)",
+  cefrB1: "var(--color-cefr-b1)",
+  cefrB1Bg: "var(--color-cefr-b1-bg)",
+  cefrB2: "var(--color-cefr-b2)",
+  cefrB2Bg: "var(--color-cefr-b2-bg)",
+  cefrC1: "var(--color-cefr-c1)",
+  cefrC1Bg: "var(--color-cefr-c1-bg)",
+  cefrC2: "var(--color-cefr-c2)",
+  cefrC2Bg: "var(--color-cefr-c2-bg)",
 } as const;
 
 export default colors;

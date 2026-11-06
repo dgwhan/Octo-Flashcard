@@ -1,0 +1,239 @@
+.heroSection {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+  min-height: calc(100vh - 84px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* ================= TWO-COLUMN SPLIT LAYOUT ================= */
+.splitGrid {
+  display: grid;
+  grid-template-columns: 48% 52%;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+}
+
+/* ================= LEFT COLUMN: CONTENT ================= */
+.contentCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.tagPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full, 9999px);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border: 1px solid var(--color-primary-ring);
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.heroTitle {
+  font-size: clamp(2.2rem, 3.6vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  margin: 0 0 18px 0;
+}
+
+.highlightText {
+  color: var(--color-primary);
+  position: relative;
+  display: inline;
+}
+
+.heroSubtitle {
+  font-size: clamp(0.95rem, 1.2vw, 1.075rem);
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+  margin: 0 0 32px 0;
+  max-width: 520px;
+}
+
+.heroSubtitle strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.ctaGroup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse, #ffffff);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  outline: none;
+  transition:
+    background-color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 120ms ease;
+}
+
+.primaryBtn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.primaryBtn:active {
+  background-color: var(--color-primary-hover);
+  transform: scale(0.99);
+}
+
+.primaryBtn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  outline: none;
+  transition:
+    color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 120ms ease;
+}
+
+.secondaryBtn:hover {
+  background-color: var(--color-bg-muted);
+  color: var(--color-primary);
+}
+
+.secondaryBtn:active {
+  background-color: var(--color-bg-muted);
+  transform: scale(0.99);
+}
+
+.secondaryBtn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryBtn,
+  .secondaryBtn {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+.visualCol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ================= RESPONSIVE BREAKPOINTS ================= */
+@media (max-width: 1024px) {
+  .heroSection {
+    min-height: auto;
+    padding: 36px 20px 48px;
+  }
+
+  .splitGrid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+  }
+
+  /* Flatten contentCol so children can be ordered with visualCol */
+  .contentCol {
+    display: contents;
+  }
+
+  .heroTitle {
+    order: 1;
+    text-align: center;
+    margin: 0 0 16px 0;
+    max-width: 720px;
+  }
+
+  .heroSubtitle {
+    order: 2;
+    text-align: center;
+    max-width: 620px;
+    margin: 0 0 28px 0;
+  }
+
+  /* Flashcard card stack placed in the middle */
+  .visualCol {
+    order: 3;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 4px 0 28px 0;
+  }
+
+  /* CTA Buttons placed below the flashcard */
+  .ctaGroup {
+    order: 4;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroSection {
+    padding: 28px 16px 40px;
+  }
+
+  .heroTitle {
+    font-size: 1.95rem;
+  }
+
+  .visualCol {
+    margin: 0 0 24px 0;
+  }
+
+  .ctaGroup {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+  }
+}

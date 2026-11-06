@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color-overlay);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
@@ -243,15 +243,15 @@
   align-items: center;
   gap: 6px;
   padding: 10px 22px;
-  border-radius: var(--radius-md, 8px);
+  border-radius: var(--radius-md, 10px);
   background-color: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-inverse, #ffffff);
   border: none;
   font-weight: 700;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px var(--color-primary-ring);
 }
 
 .btnSave:hover:not(:disabled) {

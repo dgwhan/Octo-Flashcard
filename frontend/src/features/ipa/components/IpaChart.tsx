@@ -87,15 +87,15 @@ export default function IpaChart() {
   const getCategoryBadge = (category: PhonemeCategory) => {
     switch (category) {
       case "monophthong_long":
-        return { label: "Nguyên âm dài", color: "#10b981", bg: "rgba(16, 185, 129, 0.12)" };
+        return { label: "Nguyên âm dài", color: "var(--color-primary)", bg: "var(--color-primary-light)" };
       case "monophthong_short":
-        return { label: "Nguyên âm ngắn", color: "#3b82f6", bg: "rgba(59, 130, 246, 0.12)" };
+        return { label: "Nguyên âm ngắn", color: "var(--color-info)", bg: "var(--color-info-light)" };
       case "diphthong":
-        return { label: "Nguyên âm đôi", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.12)" };
+        return { label: "Nguyên âm đôi", color: "var(--color-cefr-c1)", bg: "var(--color-cefr-c1-bg)" };
       case "consonant_unvoiced":
-        return { label: "Vô thanh (bật hơi)", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.12)" };
+        return { label: "Vô thanh (bật hơi)", color: "var(--color-warning-hover)", bg: "var(--color-warning-light)" };
       case "consonant_voiced":
-        return { label: "Hữu thanh (rung giọng)", color: "#ec4899", bg: "rgba(236, 72, 153, 0.12)" };
+        return { label: "Hữu thanh (rung giọng)", color: "var(--color-cefr-c2)", bg: "var(--color-cefr-c2-bg)" };
     }
   };
 
@@ -167,9 +167,9 @@ export default function IpaChart() {
             gap: "8px",
             padding: "8px 18px",
             borderRadius: "10px",
-            border: isQuizMode ? "1px solid #f59e0b" : "1px solid rgba(16, 185, 129, 0.3)",
-            backgroundColor: isQuizMode ? "#f59e0b" : "rgba(16, 185, 129, 0.12)",
-            color: isQuizMode ? "#ffffff" : "var(--color-primary)",
+            border: isQuizMode ? "1px solid var(--color-warning)" : "1px solid var(--color-primary-ring)",
+            backgroundColor: isQuizMode ? "var(--color-warning)" : "var(--color-primary-light)",
+            color: isQuizMode ? "var(--color-text-inverse, #ffffff)" : "var(--color-primary)",
             fontWeight: 700,
             fontSize: "0.875rem",
             cursor: "pointer",
@@ -252,13 +252,13 @@ export default function IpaChart() {
 
               if (quizSelected) {
                 if (isTarget) {
-                  btnBorder = "2px solid #10b981";
-                  btnBg = "rgba(16, 185, 129, 0.15)";
-                  btnColor = "#10b981";
+                  btnBorder = "2px solid var(--color-success)";
+                  btnBg = "var(--color-success-light)";
+                  btnColor = "var(--color-success)";
                 } else if (isPicked) {
-                  btnBorder = "2px solid #ef4444";
-                  btnBg = "rgba(239, 68, 68, 0.15)";
-                  btnColor = "#ef4444";
+                  btnBorder = "2px solid var(--color-danger)";
+                  btnBg = "var(--color-danger-light)";
+                  btnColor = "var(--color-danger)";
                 }
               }
 
@@ -294,7 +294,7 @@ export default function IpaChart() {
                 style={{
                   fontSize: "1rem",
                   fontWeight: 700,
-                  color: quizFeedback === "correct" ? "#10b981" : "#ef4444",
+                  color: quizFeedback === "correct" ? "var(--color-success)" : "var(--color-danger)",
                 }}
               >
                 {quizFeedback === "correct"
