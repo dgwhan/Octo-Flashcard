@@ -32,7 +32,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 
 .menuBtn:hover {
@@ -86,7 +86,7 @@
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   color: var(--color-text-primary);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
   outline: none;
 }
 
@@ -122,7 +122,7 @@
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  transition: background-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
   white-space: nowrap;
 }
 
@@ -154,7 +154,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 
 .avatarBtn:hover {
@@ -231,7 +231,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--dur-fast) var(--ease-out);
   text-align: left;
 }
 
@@ -278,4 +278,56 @@
   padding: 0 1rem;
   border-radius: var(--radius-md);
   white-space: nowrap;
+}
+
+/* Quick dictionary: quiet secondary action (was inline styles) */
+.dictBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.dictBtn:hover {
+  border-color: var(--color-primary);
+}
+
+.centerSection {
+  min-width: 0;
+}
+
+/* Part 2.10: hold together down to 360px */
+@media (max-width: 767px) {
+  .dictLabel {
+    display: none;
+  }
+
+  .dictBtn {
+    width: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .rightSection {
+    gap: 0.5rem;
+  }
+
+  .authButtons .registerBtn {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .centerSection {
+    display: none;
+  }
 }

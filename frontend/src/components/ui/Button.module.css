@@ -124,7 +124,7 @@
 /* ================= DANGER BUTTON ================= */
 .danger {
   background-color: var(--color-danger);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   border: none;
 }
 

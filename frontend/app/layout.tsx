@@ -2,10 +2,28 @@ import type { Metadata, Viewport } from "next";
 import AppLayout from "@/src/components/layout/AppLayout";
 import { I18nProvider } from "@/src/i18n";
 import { siteConfig } from "@/src/config/seo";
+import { Fraunces, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 
+// Display + body; both ship a Vietnamese subset so diacritics stay in one face.
+const fraunces = Fraunces({
+  subsets: ["latin", "vietnamese"],
+  axes: ["opsz"], // SOFT/WONK dropped: they doubled the font payload (~215KB) for a barely visible change
+  style: ["normal", "italic"],
+  variable: "--font-fraunces",
+});
+
+const beVietnam = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-be-vietnam",
+});
+
 export const viewport: Viewport = {
-  themeColor: "#10b981",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f4ef" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b110f" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -14,7 +32,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Octo Flashcard - Nền tảng học từ vựng Flashcard thông minh",
+    default: "Octo Flashcard · Tám cách học tiếng Anh, một chỗ",
     template: "%s | Octo Flashcard",
   },
   description: siteConfig.description,
@@ -27,20 +45,20 @@ export const metadata: Metadata = {
     locale: "vi_VN",
     url: siteConfig.url,
     siteName: siteConfig.name,
-    title: "Octo Flashcard - Nền tảng học từ vựng Flashcard thông minh",
+    title: "Octo Flashcard · Tám cách học tiếng Anh, một chỗ",
     description: siteConfig.description,
     images: [
       {
         url: siteConfig.ogImage,
-        width: 800,
-        height: 800,
-        alt: siteConfig.name,
+        width: 1200,
+        height: 630,
+        alt: "Octo Flashcard: một con bạch tuộc, tám cách học tiếng Anh",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Octo Flashcard - Nền tảng học từ vựng Flashcard thông minh",
+    title: "Octo Flashcard · Tám cách học tiếng Anh, một chỗ",
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
@@ -55,11 +73,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/icon.jpg",
-  },
+  // icons come from app/favicon.ico, app/icon.png and app/apple-icon.png (file conventions)
 };
 
 export default function RootLayout({
@@ -68,19 +82,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className="h-full antialiased" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang="vi"
+      className={`h-full antialiased ${fraunces.variable} ${beVietnam.variable}`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col font-sans">
         <I18nProvider>
           <AppLayout>{children}</AppLayout>

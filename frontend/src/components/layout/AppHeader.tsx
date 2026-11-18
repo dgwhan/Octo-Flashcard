@@ -103,9 +103,10 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
       {/* Center section: Search Bar */}
       <div className={styles.centerSection}>
         <div className={styles.searchContainer}>
-          <Search className={styles.searchIcon} />
+          <Search className={styles.searchIcon} aria-hidden="true" />
           <input
-            type="text"
+            type="search"
+            aria-label={t("header.searchPlaceholder")}
             className={styles.searchInput}
             placeholder={t("header.searchPlaceholder")}
             value={searchQuery}
@@ -120,23 +121,12 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
         <button
           type="button"
           onClick={() => setIsDictModalOpen(true)}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            padding: "8px 12px",
-            borderRadius: "10px",
-            background: "rgba(16, 185, 129, 0.1)",
-            color: "var(--color-primary)",
-            border: "1px solid rgba(16, 185, 129, 0.25)",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
+          className={styles.dictBtn}
           title="Tra từ điển nhanh"
+          aria-label="Tra từ điển nhanh"
         >
-          <BookA size={16} />
-          <span className="hidden sm:inline">Tra từ điển</span>
+          <BookA size={16} aria-hidden="true" />
+          <span className={styles.dictLabel}>Tra từ điển</span>
         </button>
 
         {/* Language Switcher */}

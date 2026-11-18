@@ -9,7 +9,7 @@
   top: 64px;
   left: 0;
   z-index: 40;
-  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
   overflow-x: hidden;
 }
 
@@ -62,7 +62,7 @@
   color: var(--color-text-secondary);
   font-weight: 500;
   font-size: 0.9375rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   text-decoration: none;
   position: relative;
   white-space: nowrap;
@@ -117,7 +117,7 @@
 }
 
 .navLabel {
-  transition: opacity 0.2s ease;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 .sidebarCollapsed .navLabel {

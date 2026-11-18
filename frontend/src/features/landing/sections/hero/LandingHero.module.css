@@ -21,13 +21,13 @@
   font-size: var(--fs-display);
   line-height: var(--lh-tight);
   letter-spacing: var(--tracking-display);
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 1.75rem;
 }
 
 .heroTitle em {
-  font-style: normal;
-  color: var(--color-primary-hover);
+  font-style: italic;
+  color: var(--color-primary);
 }
 
 .heroLine {
@@ -82,13 +82,120 @@
   transform: translate(-15%, 1%) rotate(-8deg) scale(0.95);
 }
 
+/* Stage 4 — the only "effect": the deck fans out like a hand of cards when you reach for it
+   (hover or keyboard focus on Octo's card). Brand-derived: flashcards, nothing else. */
+.stackBack1,
+.stackBack2 {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.heroStack:hover .stackBack2,
+.heroStack:focus-within .stackBack2 {
+  transform: translate(-37%, 6%) rotate(-15deg) scale(0.9);
+}
+
+.heroStack:hover .stackBack1,
+.heroStack:focus-within .stackBack1 {
+  transform: translate(-21%, 3%) rotate(-10deg) scale(0.95);
+}
+
+/* Front card = a button that flips (signature motion, src/lib/motion.ts) */
 .stackFront {
+  position: absolute;
+  inset: 0;
+  --card-tilt-rest: var(--card-tilt); /* flipCard() settles back to this angle */
   transform: rotate(var(--card-tilt));
+  perspective: 1400px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+
+.stackFront:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 6px;
+  border-radius: var(--radius-lg);
+}
+
+.flipInner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.faceFront {
   background: #fff; /* mascot artwork has a white ground */
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
+}
+
+.faceBack {
+  background: var(--color-bg-card);
+  transform: rotateY(180deg);
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 32px;
+}
+
+.flipHint {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: #46514b; /* fixed: always sits on the white mascot ground or the card */
+  padding: 6px 10px;
+  border-radius: var(--radius-full);
+  background: rgb(255 255 255 / 0.85);
+  border: 1px solid #dcddd5;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.stackFront:hover .flipHint {
+  color: #047857;
+  border-color: #047857;
+}
+
+.faceBack .flipHint {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border-color: var(--color-border);
+}
+
+.cardWordLg {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.cardMeaningLg {
+  font-size: 1.125rem;
+  color: var(--color-text-primary);
 }
 
 .mascot {
@@ -97,8 +204,9 @@
 }
 
 .cardWord {
+  font-family: var(--font-display);
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -124,8 +232,9 @@
 }
 
 .factValue {
+  font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1;
 }
@@ -156,4 +265,9 @@
     grid-template-columns: repeat(2, 1fr);
     row-gap: 20px;
   }
+}
+
+.stackFront:hover .faceBack .flipHint {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }

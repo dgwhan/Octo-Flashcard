@@ -16,7 +16,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--dur-fast) var(--ease-out);
   user-select: none;
 }
 
@@ -76,7 +76,7 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition: background 0.15s ease;
+  transition: background var(--dur-fast) var(--ease-out);
 }
 
 .optionItem:hover {

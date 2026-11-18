@@ -43,7 +43,7 @@ export default function HomePageClient() {
               padding: "14px 24px",
               borderRadius: "12px",
               backgroundColor: "var(--color-primary)",
-              color: "#ffffff",
+              color: "var(--color-text-inverse)",
               fontWeight: 600,
               fontSize: "0.95rem",
               textDecoration: "none",

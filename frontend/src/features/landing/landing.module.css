@@ -18,7 +18,7 @@
   font-weight: 600;
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
   margin-bottom: 1rem;
 }
 
@@ -29,9 +29,9 @@
 
 .sectionTitle {
   font-size: var(--fs-h2);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
-  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 600;
 }
 
 .divider {
@@ -66,7 +66,7 @@
 .primaryBtn:hover,
 .primaryBtnLg:hover {
   background: var(--color-primary-hover);
-  color: #fff;
+  color: var(--color-text-inverse);
 }
 
 .ghostBtn {

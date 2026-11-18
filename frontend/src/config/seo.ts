@@ -6,7 +6,7 @@ export const siteConfig = {
   description:
     "Nền tảng học từ vựng và ngoại ngữ thông minh bằng phương pháp lật thẻ Flashcard 2 mặt, phát âm Audio chuẩn và tự đánh giá độ ghi nhớ.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-  ogImage: "/icon.jpg",
+  ogImage: "/og.png",
   keywords: [
     "flashcard",
     "học từ vựng tiếng anh",
@@ -59,8 +59,8 @@ export function constructMetadata({
       images: [
         {
           url: siteConfig.ogImage,
-          width: 800,
-          height: 800,
+          width: 1200,
+          height: 630,
           alt: `${siteConfig.name} - ${title}`,
         },
       ],

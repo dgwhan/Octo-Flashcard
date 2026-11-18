@@ -22,22 +22,23 @@
 }
 
 .stepNum {
+  font-family: var(--font-display);
   font-size: clamp(3.5rem, 8vw, 6rem);
-  font-weight: 800;
+  font-weight: 400;
   line-height: 0.85;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.03em;
   color: var(--color-primary);
 }
 
 .stepTitle {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.015em;
 }
 
 .stepTerm {
   font-size: var(--fs-small);
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
   font-weight: 600;
   margin: 4px 0 10px;
 }

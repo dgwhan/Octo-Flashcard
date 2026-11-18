@@ -3,9 +3,9 @@ import { constructMetadata } from "@/src/config/seo";
 import { LandingPage } from "@/src/features/landing";
 
 export const metadata: Metadata = constructMetadata({
-  title: "Octo Flashcard - Nền tảng học tiếng Anh dựa trên Khoa học Não bộ & Học liệu Mở",
+  title: "Một con bạch tuộc, tám cách học tiếng Anh",
   description:
-    "Chinh phục tiếng Anh toàn diện với Flashcard 3D thông minh (Active Recall & Spaced Repetition), kết hợp học liệu mở chất lượng cao từ VOA Learning English, LibriVox Audiobooks và Tatoeba Project.",
+    "Flashcard tự tạo, truyện VOA đọc chậm, sách nói LibriVox, câu Tatoeba có giọng người thật, bảng 44 âm IPA và 15 chủ đề ngữ pháp từ A1 đến C1. Miễn phí, nguồn học liệu nào cũng ghi rõ.",
   path: "/",
 });
 

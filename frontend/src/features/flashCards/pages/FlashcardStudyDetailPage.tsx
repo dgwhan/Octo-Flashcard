@@ -80,7 +80,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
               padding: "10px 20px",
               borderRadius: "8px",
               backgroundColor: "var(--color-primary)",
-              color: "#ffffff",
+              color: "var(--color-text-inverse)",
               border: "none",
               cursor: "pointer",
               fontWeight: 600,
@@ -118,7 +118,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
               padding: "10px 20px",
               borderRadius: "8px",
               backgroundColor: "var(--color-primary)",
-              color: "#ffffff",
+              color: "var(--color-text-inverse)",
               textDecoration: "none",
               fontWeight: 600,
             }}

@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--color-primary);
+  color: var(--color-primary-bright);
 }
 
 .sucker {
@@ -15,4 +15,27 @@
 
 .filled {
   background: currentColor;
+}
+
+/* Supporting motion: suckers pop in one by one as the row scrolls into view.
+   Pure CSS (scroll-driven); browsers without it simply show the row. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal .sucker {
+      animation: suckerIn linear both;
+      animation-timeline: view();
+      animation-range: entry min(calc(var(--i) * 7%), 60%) entry min(calc(40% + var(--i) * 7%), 100%);
+    }
+  }
+}
+
+@keyframes suckerIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

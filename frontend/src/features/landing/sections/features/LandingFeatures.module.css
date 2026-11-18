@@ -20,16 +20,17 @@
 }
 
 .moduleNumBig {
+  font-family: var(--font-display);
   font-size: clamp(4rem, 9vw, 7rem);
-  font-weight: 800;
+  font-weight: 500;
   line-height: 0.85;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.03em;
   color: var(--color-primary);
 }
 
 .leadTitle {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -61,7 +62,7 @@
 }
 
 .moduleIcon {
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
   margin-top: 2px;
 }
 
@@ -89,7 +90,7 @@
 
 .moduleRow:hover .moduleTitle,
 .moduleRow:hover .moduleArrow {
-  color: var(--color-primary-hover);
+  color: var(--color-primary);
 }
 
 .leadModule:focus-visible,

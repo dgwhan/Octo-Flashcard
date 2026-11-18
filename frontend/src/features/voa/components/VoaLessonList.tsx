@@ -362,7 +362,7 @@ export default function VoaLessonList() {
                         alignItems: "center",
                         gap: "6px",
                         backgroundColor: "var(--color-primary)",
-                        color: "#ffffff",
+                        color: "var(--color-text-inverse)",
                         padding: "8px 14px",
                         borderRadius: "10px",
                         fontWeight: 600,

@@ -1,0 +1,456 @@
+/* Grammar roadmap (module 04). Tokens: src/styles/colors.css */
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter) 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.eyebrow {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: end;
+}
+
+.title {
+  font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.title em {
+  font-style: italic;
+  color: var(--color-primary);
+}
+
+.lead {
+  max-width: 34rem;
+  color: var(--color-text-secondary);
+  line-height: var(--lh-body);
+}
+
+/* "Next card": the card motif, tilted like the one Octo holds */
+.nextCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transform: rotate(var(--card-tilt));
+  transition: transform var(--dur-base) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.nextCard:hover {
+  transform: rotate(0deg) translateY(-4px);
+  border-color: var(--color-primary);
+}
+
+.nextCard:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+.nextLabel {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.nextNum {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--color-primary);
+  margin: 8px 0 4px;
+}
+
+.nextTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.nextEn {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.nextCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ---------- Progress ---------- */
+.progress {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "head suckers"
+    "stats stats";
+  align-items: center;
+  gap: 1.25rem 2rem;
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--color-border);
+}
+
+.progressHead {
+  grid-area: head;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.progressValue {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.progressOf {
+  color: var(--color-text-muted);
+  font-size: 1.5rem;
+}
+
+.progressLabel {
+  font-size: 0.925rem;
+  color: var(--color-text-secondary);
+}
+
+.progressSuckers {
+  grid-area: suckers;
+  justify-self: end;
+  gap: 8px;
+}
+
+.progressStats {
+  grid-area: stats;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+}
+
+.progressStats dt {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+.progressStats dd {
+  font-weight: 600;
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stageTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+.stageTab {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.stageTab:hover {
+  color: var(--color-text-primary);
+}
+
+.stageTab[aria-pressed="true"] {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.stageTabMeta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: min(100%, 260px);
+  padding: 9px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.search:focus-within {
+  border-color: var(--color-primary);
+}
+
+.search input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 0.925rem;
+}
+
+/* ---------- Stage + topic rows ---------- */
+.stage {
+  display: flex;
+  flex-direction: column;
+}
+
+.stageTitle {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 14px;
+  font-size: 1.75rem;
+  font-weight: 600;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-text-primary);
+}
+
+.stageNum {
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.stageLevels {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.topicList {
+  list-style: none;
+}
+
+.topicRow {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: start;
+  padding: 24px 4px;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.topicRow:hover {
+  background: var(--color-bg-card);
+}
+
+.topicRow:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.topicNum {
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  line-height: 0.9;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.topicRow[data-status="InProgress"] .topicNum,
+.topicRow[data-status="Completed"] .topicNum {
+  color: var(--color-primary);
+}
+
+.topicBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.topicMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.topicTime {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+.topicTitle {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.topicEn {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.topicDesc {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  max-width: 40rem;
+}
+
+.topicSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.stepsText {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.topicAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  border-bottom: 1.5px solid var(--color-primary);
+  padding-bottom: 2px;
+}
+
+.topicRow:hover .topicAction {
+  color: var(--color-primary);
+}
+
+/* ---------- Empty state ---------- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 2rem 0;
+}
+
+.emptyTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.textBtn {
+  border: 0;
+  background: none;
+  padding: 0 0 2px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1.5px solid var(--color-primary);
+  cursor: pointer;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  .header {
+    grid-template-columns: 1fr;
+  }
+
+  .nextCard {
+    transform: none;
+  }
+
+  .progress {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "suckers"
+      "stats";
+  }
+
+  .progressSuckers {
+    justify-self: start;
+  }
+
+  .topicRow {
+    grid-template-columns: 3rem minmax(0, 1fr);
+  }
+
+  .topicNum {
+    font-size: 2rem;
+  }
+
+  .topicSide {
+    grid-column: 2;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .steps {
+    flex-direction: row;
+    align-items: center;
+  }
+}

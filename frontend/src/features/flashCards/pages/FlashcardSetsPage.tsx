@@ -118,9 +118,9 @@ export const FlashcardSetsPage: React.FC = () => {
           >
             <Lock size={32} />
           </div>
-          <h2 style={{ fontSize: "1.375rem", fontWeight: 700, margin: 0 }}>
+          <h1 style={{ fontSize: "1.375rem", fontWeight: 700, margin: 0 }}>
             {t("auth.authRequiredTitle")}
-          </h2>
+          </h1>
           <p style={{ color: "var(--color-text-secondary)", maxWidth: "440px", margin: 0 }}>
             {t("auth.authRequiredDesc")}
           </p>
@@ -135,7 +135,7 @@ export const FlashcardSetsPage: React.FC = () => {
                 padding: "12px 24px",
                 borderRadius: "10px",
                 backgroundColor: "var(--color-primary)",
-                color: "#ffffff",
+                color: "var(--color-text-inverse)",
                 fontWeight: 600,
                 border: "none",
                 cursor: "pointer",

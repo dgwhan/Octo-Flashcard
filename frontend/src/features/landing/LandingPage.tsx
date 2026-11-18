@@ -13,7 +13,7 @@ import styles from "./landing.module.css";
 function Divider() {
   return (
     <div className={styles.divider}>
-      <SuckerRow />
+      <SuckerRow reveal />
     </div>
   );
 }

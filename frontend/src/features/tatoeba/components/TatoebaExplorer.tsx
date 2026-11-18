@@ -188,7 +188,7 @@ export default function TatoebaExplorer() {
               padding: "6px 14px",
               borderRadius: "8px",
               backgroundColor: "var(--color-primary)",
-              color: "#fff",
+              color: "var(--color-text-inverse)",
               border: "none",
               fontWeight: 600,
               cursor: "pointer",

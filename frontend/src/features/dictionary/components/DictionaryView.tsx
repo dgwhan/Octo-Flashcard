@@ -192,7 +192,7 @@ export default function DictionaryView({
             alignItems: "center",
             gap: "6px",
             backgroundColor: "var(--color-primary)",
-            color: "#ffffff",
+            color: "var(--color-text-inverse)",
             border: "none",
             borderRadius: "10px",
             padding: "10px 18px",

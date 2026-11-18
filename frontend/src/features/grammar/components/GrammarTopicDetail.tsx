@@ -1,78 +1,84 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  BookOpen,
-  PenTool,
-  RotateCw,
+  ArrowRight,
   CheckCircle2,
   XCircle,
-  AlertCircle,
-  Sparkles,
-  HelpCircle,
+  Lightbulb,
   Clock,
-  Award,
   ChevronRight,
   ChevronLeft,
   RotateCcw,
+  RotateCw,
   Check,
-  Zap,
-  Compass,
 } from "lucide-react";
 import { GrammarTopic, UserGrammarProgress } from "../grammar.types";
 import { grammarService } from "../grammar.service";
 import { ROUTES } from "@/src/config/routes";
+import { Badge, SuckerRow } from "@/src/components/ui";
+import type { BadgeVariant } from "@/src/components/ui";
+import { flipCard, dealCard } from "@/src/lib/motion";
+import QuestionList from "./QuestionList";
+import styles from "./GrammarTopicDetail.module.css";
 
 interface GrammarTopicDetailProps {
   topic: GrammarTopic;
 }
 
+type Tab = "theory" | "practice" | "review";
+
+// UI-only threshold for the "mastered" message; saving/status rules live in grammar.service.ts
+const MASTERY_PASS = 80;
+
+const FORMULA_SIGN: Record<string, string> = {
+  affirmative: "+",
+  negative: "−",
+  interrogative: "?",
+  special: "*",
+};
+
+const emptyProgress = (topic: GrammarTopic): UserGrammarProgress => ({
+  topicId: topic.id,
+  isTheoryCompleted: false,
+  isPracticeCompleted: false,
+  practiceScore: 0,
+  practiceTotalQuestions: topic.practice.length,
+  practiceCorrectAnswers: 0,
+  isReviewCompleted: false,
+  masteryScore: 0,
+  status: "NotStarted",
+  lastStudiedAt: new Date().toISOString(),
+});
+
 export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
-  const router = useRouter();
-
-  // Active Tab: "theory" | "practice" | "review"
-  const [activeTab, setActiveTab] = useState<"theory" | "practice" | "review">("theory");
-
-  // User Progress State
-  const [progress, setProgress] = useState<UserGrammarProgress>({
-    topicId: topic.id,
-    isTheoryCompleted: false,
-    isPracticeCompleted: false,
-    practiceScore: 0,
-    practiceTotalQuestions: topic.practice.length,
-    practiceCorrectAnswers: 0,
-    isReviewCompleted: false,
-    masteryScore: 0,
-    status: "NotStarted",
-    lastStudiedAt: new Date().toISOString(),
-  });
+  const [activeTab, setActiveTab] = useState<Tab>("theory");
+  const [progress, setProgress] = useState<UserGrammarProgress>(() => emptyProgress(topic));
   const [isSaving, setIsSaving] = useState(false);
   const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
 
-  // Practice State
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  // Practice
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Flashcards Review State
+  // Flashcards (same signature flip as the study viewer)
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const sceneRef = useRef<HTMLButtonElement>(null);
+  const innerRef = useRef<HTMLSpanElement>(null);
 
-  // Mastery Quiz State
+  // Mastery quiz
   const [masteryAnswers, setMasteryAnswers] = useState<Record<number, number>>({});
   const [isMasterySubmitted, setIsMasterySubmitted] = useState(false);
+  const [masteryAttempt, setMasteryAttempt] = useState(0); // this attempt's score; progress keeps the best
 
-  // Load progress for this topic
   useEffect(() => {
     async function loadProgress() {
       try {
         const data = await grammarService.getRoadmapProgress();
-        if (data.progressMap[topic.id]) {
-          setProgress(data.progressMap[topic.id]);
-        }
+        if (data.progressMap[topic.id]) setProgress(data.progressMap[topic.id]);
       } catch (err) {
         console.error("[GrammarTopicDetail] Error loading progress:", err);
       }
@@ -80,22 +86,18 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
     loadProgress();
   }, [topic.id]);
 
-  // Thông báo tạm thời
   const showToast = (msg: string) => {
     setNotificationMsg(msg);
     setTimeout(() => setNotificationMsg(null), 3500);
   };
 
-  // 1. Hoàn thành Lý thuyết
+  // 1. Theory done
   const handleCompleteTheory = async () => {
     setIsSaving(true);
     try {
-      const updated = await grammarService.saveTopicProgress({
-        topicId: topic.id,
-        isTheoryCompleted: true,
-      });
+      const updated = await grammarService.saveTopicProgress({ topicId: topic.id, isTheoryCompleted: true });
       setProgress(updated);
-      showToast("🎉 Đã lưu hoàn thành Lý thuyết! Chuyển sang phần Thực hành.");
+      showToast("Đã lưu: hoàn thành lý thuyết. Tiếp theo là bài thực hành.");
       setActiveTab("practice");
     } catch (err) {
       console.error("[GrammarTopicDetail] Save theory error:", err);
@@ -104,25 +106,13 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
     }
   };
 
-  // 2. Nộp bài Thực hành
-  const handleSelectPracticeOption = (questionIdx: number, optionIdx: number) => {
-    if (isSubmitted) return;
-    setSelectedAnswers((prev) => ({ ...prev, [questionIdx]: optionIdx }));
-  };
-
+  // 2. Practice
   const handleSubmitPractice = async () => {
     const questions = topic.practice;
-    let correctCount = 0;
-    questions.forEach((q, idx) => {
-      if (selectedAnswers[idx] === q.correctIndex) {
-        correctCount++;
-      }
-    });
-
+    const correctCount = questions.filter((q, idx) => selectedAnswers[idx] === q.correctIndex).length;
     const score = Math.round((correctCount / questions.length) * 100);
     setIsSubmitted(true);
     setIsSaving(true);
-
     try {
       const updated = await grammarService.saveTopicProgress({
         topicId: topic.id,
@@ -132,7 +122,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
         practiceCorrectAnswers: correctCount,
       });
       setProgress(updated);
-      showToast(`🎯 Bài thực hành: Đạt ${correctCount}/${questions.length} câu đúng (${score}%).`);
+      showToast(`Thực hành: đúng ${correctCount}/${questions.length} câu (${score}%).`);
     } catch (err) {
       console.error("[GrammarTopicDetail] Save practice error:", err);
     } finally {
@@ -143,23 +133,16 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
   const handleResetPractice = () => {
     setSelectedAnswers({});
     setIsSubmitted(false);
-    setCurrentQuestionIndex(0);
   };
 
-  // 3. Nộp bài Mastery Quiz trong phần Ôn tập
+  // 3. Mastery quiz
   const handleSubmitMasteryQuiz = async () => {
-    const quizQuestions = topic.review.masteryQuiz;
-    let correct = 0;
-    quizQuestions.forEach((q, idx) => {
-      if (masteryAnswers[idx] === q.correctIndex) {
-        correct++;
-      }
-    });
-
-    const score = Math.round((correct / quizQuestions.length) * 100);
+    const quiz = topic.review.masteryQuiz;
+    const correct = quiz.filter((q, idx) => masteryAnswers[idx] === q.correctIndex).length;
+    const score = Math.round((correct / quiz.length) * 100);
+    setMasteryAttempt(score);
     setIsMasterySubmitted(true);
     setIsSaving(true);
-
     try {
       const updated = await grammarService.saveTopicProgress({
         topicId: topic.id,
@@ -167,7 +150,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
         masteryScore: score,
       });
       setProgress(updated);
-      showToast(`🏆 Độ thuần thục đạt: ${score}%. Đã lưu vào cơ sở dữ liệu!`);
+      showToast(`Độ thuần thục: ${score}%. Đã lưu tiến độ.`);
     } catch (err) {
       console.error("[GrammarTopicDetail] Save review error:", err);
     } finally {
@@ -175,30 +158,16 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
     }
   };
 
-  // Đặt lại toàn bộ tiến độ của chủ điểm này
   const handleResetEntireTopic = async () => {
-    if (!window.confirm("Bạn có chắc chắn muốn đặt lại toàn bộ tiến độ học của chủ điểm này không?")) {
-      return;
-    }
+    if (!window.confirm("Đặt lại toàn bộ tiến độ của chủ điểm này? Điểm thực hành và ôn tập sẽ bị xoá.")) return;
     setIsSaving(true);
     try {
       await grammarService.resetTopicProgress(topic.id);
-      setProgress({
-        topicId: topic.id,
-        isTheoryCompleted: false,
-        isPracticeCompleted: false,
-        practiceScore: 0,
-        practiceTotalQuestions: topic.practice.length,
-        practiceCorrectAnswers: 0,
-        isReviewCompleted: false,
-        masteryScore: 0,
-        status: "NotStarted",
-        lastStudiedAt: new Date().toISOString(),
-      });
+      setProgress(emptyProgress(topic));
       handleResetPractice();
       setMasteryAnswers({});
       setIsMasterySubmitted(false);
-      showToast("Đã đặt lại tiến độ chủ điểm thành công.");
+      showToast("Đã đặt lại tiến độ chủ điểm.");
     } catch (err) {
       console.error("[GrammarTopicDetail] Reset topic error:", err);
     } finally {
@@ -206,834 +175,275 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
     }
   };
 
+  // Flashcards
+  const cards = topic.review.flashcards;
+  const card = cards[currentCardIndex];
+  const flip = () => {
+    flipCard(innerRef.current, sceneRef.current, !isFlipped);
+    setIsFlipped(!isFlipped);
+  };
+  const goCard = (dir: 1 | -1) => {
+    setIsFlipped(false); // snap to front: never show the next card's back mid-turn
+    setCurrentCardIndex((i) => (i + dir + cards.length) % cards.length);
+    dealCard(sceneRef.current, dir);
+  };
+
+  // Tabs (WAI-ARIA tabs: arrow keys move between tabs)
+  const tabs: { id: Tab; label: string; done: boolean }[] = [
+    { id: "theory", label: "Lý thuyết", done: progress.isTheoryCompleted },
+    { id: "practice", label: "Thực hành", done: progress.isPracticeCompleted },
+    { id: "review", label: "Ôn tập", done: progress.isReviewCompleted },
+  ];
+  const onTabKey = (e: React.KeyboardEvent) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const i = tabs.findIndex((t) => t.id === activeTab);
+    const next = tabs[(i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length];
+    setActiveTab(next.id);
+    document.getElementById(`tab-${next.id}`)?.focus();
+  };
+
+  const doneSteps = tabs.filter((t) => t.done).length;
+  const hasProgress = doneSteps > 0;
+  const answeredPractice = Object.keys(selectedAnswers).length;
+  const answeredMastery = Object.keys(masteryAnswers).length;
+
   return (
-    <div
-      style={{
-        maxWidth: "1100px",
-        margin: "0 auto",
-        padding: "20px 16px 80px 16px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-      }}
-    >
-      {/* Toast Notification */}
-      {notificationMsg && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "24px",
-            right: "24px",
-            backgroundColor: "var(--color-text-primary)",
-            color: "var(--color-text-inverse)",
-            padding: "12px 20px",
-            borderRadius: "12px",
-            fontSize: "0.9rem",
-            fontWeight: 600,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
-          <Sparkles size={18} style={{ color: "#34d399" }} />
-          <span>{notificationMsg}</span>
-        </div>
-      )}
-
-      {/* TOP NAVIGATION BREADCRUMB */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "12px",
-        }}
-      >
-        <Link
-          href={ROUTES.GRAMMAR}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            color: "var(--color-text-secondary)",
-            fontSize: "0.9rem",
-            fontWeight: 600,
-            textDecoration: "none",
-          }}
-        >
-          <ArrowLeft size={16} />
-          <span>Quay lại Lộ trình ngữ pháp</span>
-        </Link>
-
-        {/* Reset button */}
-        {(progress.isTheoryCompleted || progress.isPracticeCompleted || progress.isReviewCompleted) && (
-          <button
-            type="button"
-            onClick={handleResetEntireTopic}
-            disabled={isSaving}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 12px",
-              borderRadius: "8px",
-              backgroundColor: "transparent",
-              color: "var(--color-danger, #ef4444)",
-              border: "1px solid var(--color-border)",
-              fontSize: "0.8rem",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            <RotateCcw size={14} />
-            <span>Đặt lại bài học</span>
-          </button>
+    <div className={styles.page}>
+      <div className={styles.toast} role="status" aria-live="polite">
+        {notificationMsg && (
+          <span className={styles.toastInner}>
+            <CheckCircle2 size={16} />
+            {notificationMsg}
+          </span>
         )}
       </div>
 
-      {/* TOPIC HEADER BANNER */}
-      <div
-        style={{
-          backgroundColor: "var(--color-bg-card)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "20px",
-          padding: "24px 28px",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "20px",
-        }}
-      >
+      <nav className={styles.topBar}>
+        <Link href={ROUTES.GRAMMAR} className={styles.backLink}>
+          <ArrowLeft size={16} />
+          Lộ trình ngữ pháp
+        </Link>
+        {hasProgress && (
+          <button type="button" className={styles.resetBtn} onClick={handleResetEntireTopic} disabled={isSaving}>
+            <RotateCcw size={14} />
+            Đặt lại bài học
+          </button>
+        )}
+      </nav>
+
+      {/* ---------- Header ---------- */}
+      <header className={styles.header}>
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-            <span
-              style={{
-                padding: "3px 10px",
-                borderRadius: "6px",
-                backgroundColor: "var(--color-bg-subtle)",
-                color: topic.badgeColor,
-                fontSize: "0.8rem",
-                fontWeight: 800,
-                border: `1px solid ${topic.badgeColor}40`,
-              }}
-            >
+          <p className={styles.meta}>
+            <Badge variant={topic.level.toLowerCase() as BadgeVariant} size="sm">
               {topic.level}
+            </Badge>
+            <span>
+              Chặng {topic.stage} · Bài {String(topic.order).padStart(2, "0")}
             </span>
-            <span style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", fontWeight: 600 }}>
-              {topic.stageName} • Bài {topic.order}
+            <span className={styles.metaTime}>
+              <Clock size={13} aria-hidden="true" /> {topic.estimatedMinutes} phút
             </span>
-            <span style={{ fontSize: "0.8rem", color: "var(--color-text-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
-              <Clock size={13} /> {topic.estimatedMinutes} phút
-            </span>
-          </div>
-
-          <h1
-            style={{
-              fontSize: "1.85rem",
-              fontWeight: 800,
-              color: "var(--color-text-primary)",
-              margin: "0 0 6px 0",
-            }}
-          >
-            {topic.title}
-          </h1>
-          <div style={{ fontSize: "1.05rem", color: "var(--color-primary)", fontWeight: 700 }}>
-            {topic.vietnameseTitle}
-          </div>
-          <p
-            style={{
-              fontSize: "0.95rem",
-              color: "var(--color-text-secondary)",
-              margin: "8px 0 0 0",
-              maxWidth: "700px",
-            }}
-          >
-            {topic.description}
           </p>
+          <h1 className={styles.title}>{topic.title}</h1>
+          <p className={styles.viTitle}>{topic.vietnameseTitle}</p>
+          <p className={styles.description}>{topic.description}</p>
         </div>
 
-        {/* Progress summary capsule */}
-        <div
-          style={{
-            backgroundColor: "var(--color-bg-subtle)",
-            border: "1px solid var(--color-border)",
-            borderRadius: "14px",
-            padding: "14px 20px",
-            display: "flex",
-            alignItems: "center",
-            gap: "18px",
-          }}
-        >
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: 600 }}>
-              LÝ THUYẾT
+        <div className={styles.headerProgress} aria-label={`Đã xong ${doneSteps}/3 bước`}>
+          <SuckerRow count={3} filled={doneSteps} className={styles.headerSuckers} />
+          <dl className={styles.stepList}>
+            <div>
+              <dt>Lý thuyết</dt>
+              <dd>{progress.isTheoryCompleted ? "Đã học" : "–"}</dd>
             </div>
-            <div
-              style={{
-                fontSize: "0.95rem",
-                fontWeight: 800,
-                color: progress.isTheoryCompleted ? "var(--color-primary)" : "var(--color-text-secondary)",
-                marginTop: "2px",
-              }}
-            >
-              {progress.isTheoryCompleted ? "Đã học" : "Chưa"}
+            <div>
+              <dt>Thực hành</dt>
+              <dd>{progress.isPracticeCompleted ? `${progress.practiceScore}%` : "–"}</dd>
             </div>
-          </div>
-          <div style={{ width: "1px", height: "28px", backgroundColor: "var(--color-border)" }} />
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: 600 }}>
-              THỰC HÀNH
+            <div>
+              <dt>Ôn tập</dt>
+              <dd>{progress.isReviewCompleted ? `${progress.masteryScore}%` : "–"}</dd>
             </div>
-            <div
-              style={{
-                fontSize: "0.95rem",
-                fontWeight: 800,
-                color: progress.isPracticeCompleted ? "#3b82f6" : "var(--color-text-secondary)",
-                marginTop: "2px",
-              }}
-            >
-              {progress.isPracticeCompleted ? `${progress.practiceScore}%` : "Chưa"}
-            </div>
-          </div>
-          <div style={{ width: "1px", height: "28px", backgroundColor: "var(--color-border)" }} />
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", fontWeight: 600 }}>
-              ÔN TẬP
-            </div>
-            <div
-              style={{
-                fontSize: "0.95rem",
-                fontWeight: 800,
-                color: progress.isReviewCompleted ? "#8b5cf6" : "var(--color-text-secondary)",
-                marginTop: "2px",
-              }}
-            >
-              {progress.isReviewCompleted ? `${progress.masteryScore}%` : "Chưa"}
-            </div>
-          </div>
+          </dl>
         </div>
+      </header>
+
+      {/* ---------- Tabs ---------- */}
+      <div className={styles.tabs} role="tablist" aria-label="Các bước học" onKeyDown={onTabKey}>
+        {tabs.map((t, i) => (
+          <button
+            key={t.id}
+            id={`tab-${t.id}`}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === t.id}
+            aria-controls={`panel-${t.id}`}
+            tabIndex={activeTab === t.id ? 0 : -1}
+            className={styles.tab}
+            onClick={() => setActiveTab(t.id)}
+          >
+            <span className={styles.tabNum}>{String(i + 1).padStart(2, "0")}</span>
+            {t.label}
+            {t.done && <Check size={15} className={styles.tabDone} aria-label="đã xong" />}
+          </button>
+        ))}
       </div>
 
-      {/* NAVIGATION TABS: LÝ THUYẾT - BÀI TẬP - ÔN TẬP */}
-      <div
-        style={{
-          display: "flex",
-          borderBottom: "2px solid var(--color-border)",
-          gap: "8px",
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveTab("theory")}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 24px",
-            border: "none",
-            borderBottom: activeTab === "theory" ? "3px solid var(--color-primary)" : "3px solid transparent",
-            backgroundColor: "transparent",
-            color: activeTab === "theory" ? "var(--color-primary)" : "var(--color-text-secondary)",
-            fontWeight: activeTab === "theory" ? 800 : 600,
-            fontSize: "0.95rem",
-            cursor: "pointer",
-            marginBottom: "-2px",
-            transition: "all 0.15s ease",
-          }}
-        >
-          <BookOpen size={18} />
-          <span>1. Lý thuyết hướng dẫn</span>
-          {progress.isTheoryCompleted && <CheckCircle2 size={16} style={{ color: "var(--color-primary)" }} />}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("practice")}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 24px",
-            border: "none",
-            borderBottom: activeTab === "practice" ? "3px solid #3b82f6" : "3px solid transparent",
-            backgroundColor: "transparent",
-            color: activeTab === "practice" ? "#3b82f6" : "var(--color-text-secondary)",
-            fontWeight: activeTab === "practice" ? 800 : 600,
-            fontSize: "0.95rem",
-            cursor: "pointer",
-            marginBottom: "-2px",
-            transition: "all 0.15s ease",
-          }}
-        >
-          <PenTool size={18} />
-          <span>2. Bài tập thực hành</span>
-          {progress.isPracticeCompleted && <CheckCircle2 size={16} style={{ color: "#3b82f6" }} />}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("review")}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 24px",
-            border: "none",
-            borderBottom: activeTab === "review" ? "3px solid #8b5cf6" : "3px solid transparent",
-            backgroundColor: "transparent",
-            color: activeTab === "review" ? "#8b5cf6" : "var(--color-text-secondary)",
-            fontWeight: activeTab === "review" ? 800 : 600,
-            fontSize: "0.95rem",
-            cursor: "pointer",
-            marginBottom: "-2px",
-            transition: "all 0.15s ease",
-          }}
-        >
-          <RotateCw size={18} />
-          <span>3. Ôn tập & Flashcard</span>
-          {progress.isReviewCompleted && <CheckCircle2 size={16} style={{ color: "#8b5cf6" }} />}
-        </button>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* TAB 1: LÝ THUYẾT HƯỚNG DẪN */}
-      {/* ========================================================================= */}
+      {/* ---------- 01 Theory ---------- */}
       {activeTab === "theory" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          {/* Summary Box */}
-          <div
-            style={{
-              backgroundColor: "var(--color-primary-light)",
-              border: "1px solid rgba(16, 185, 129, 0.25)",
-              borderRadius: "16px",
-              padding: "20px 24px",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                color: "var(--color-primary)",
-                marginBottom: "6px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <Sparkles size={16} />
-              TỔNG QUAN CỐT LÕI
-            </div>
-            <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--color-text-primary)", lineHeight: 1.6 }}>
-              {topic.theory.summary}
-            </p>
-          </div>
+        <div id="panel-theory" role="tabpanel" aria-labelledby="tab-theory" className={styles.panel}>
+          <p className={styles.summary}>{topic.theory.summary}</p>
 
-          {/* Formulas Section */}
-          <div>
-            <h2
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 800,
-                color: "var(--color-text-primary)",
-                marginBottom: "14px",
-              }}
-            >
-              Cấu trúc công thức chuẩn
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "16px" }}>
-              {topic.theory.formulas.map((form, fIdx) => (
-                <div
-                  key={fIdx}
-                  style={{
-                    backgroundColor: "var(--color-bg-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "14px",
-                    padding: "18px 20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "0.85rem",
-                      fontWeight: 700,
-                      color: "var(--color-primary)",
-                      backgroundColor: "rgba(16, 185, 129, 0.1)",
-                      padding: "4px 10px",
-                      borderRadius: "6px",
-                      width: "fit-content",
-                    }}
-                  >
-                    {form.label}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "0.95rem",
-                      fontWeight: 700,
-                      color: "var(--color-text-primary)",
-                      backgroundColor: "var(--color-bg-subtle)",
-                      padding: "10px 14px",
-                      borderRadius: "8px",
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {form.structure}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: "0.9rem", fontWeight: 600, color: "var(--color-text-primary)" }}>
-                      Ví dụ: {form.exampleEn}
-                    </div>
-                    <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                      ➜ {form.exampleVi}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Usages Section */}
-          <div>
-            <h2
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 800,
-                color: "var(--color-text-primary)",
-                marginBottom: "14px",
-              }}
-            >
-              Các trường hợp sử dụng & Ví dụ thực tế
-            </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              {topic.theory.usages.map((usage, uIdx) => (
-                <div
-                  key={usage.id || uIdx}
-                  style={{
-                    backgroundColor: "var(--color-bg-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "14px",
-                    padding: "18px 22px",
-                  }}
-                >
-                  <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "var(--color-text-primary)" }}>
-                    {uIdx + 1}. {usage.title}
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "0.9rem",
-                      color: "var(--color-text-secondary)",
-                      margin: "6px 0 12px 0",
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {usage.explanation}
+          <section className={styles.block}>
+            <h2 className={styles.blockTitle}>Công thức</h2>
+            <div className={styles.formulas}>
+              {topic.theory.formulas.map((f, i) => (
+                <article key={i} className={styles.formula}>
+                  <p className={styles.formulaLabel}>
+                    <span className={styles.formulaSign} aria-hidden="true">
+                      {FORMULA_SIGN[f.type] ?? "*"}
+                    </span>
+                    {f.label}
                   </p>
-                  <div
-                    style={{
-                      backgroundColor: "var(--color-bg-subtle)",
-                      borderRadius: "10px",
-                      padding: "10px 16px",
-                      borderLeft: "4px solid var(--color-primary)",
-                    }}
-                  >
-                    <div style={{ fontSize: "0.92rem", fontWeight: 600, color: "var(--color-text-primary)" }}>
-                      {usage.exampleEn}
-                    </div>
-                    <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                      ➜ {usage.exampleVi}
-                    </div>
-                  </div>
-                </div>
+                  <p className={styles.formulaStructure}>{f.structure}</p>
+                  <p className={styles.exampleEn} lang="en">
+                    {f.exampleEn}
+                  </p>
+                  <p className={styles.exampleVi}>{f.exampleVi}</p>
+                </article>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Signals Section */}
-          <div>
-            <h2
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 800,
-                color: "var(--color-text-primary)",
-                marginBottom: "14px",
-              }}
-            >
-              Dấu hiệu nhận biết & Từ khóa quan trọng
-            </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {topic.theory.signals.map((sig, sIdx) => (
-                <div
-                  key={sIdx}
-                  style={{
-                    backgroundColor: "var(--color-bg-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "14px",
-                    padding: "16px 20px",
-                  }}
-                >
-                  <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--color-text-primary)" }}>
-                    {sig.category}
+          <section className={styles.block}>
+            <h2 className={styles.blockTitle}>Khi nào dùng</h2>
+            <ol className={styles.usages}>
+              {topic.theory.usages.map((u, i) => (
+                <li key={u.id || i} className={styles.usage}>
+                  <span className={styles.usageNum}>{String(i + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3 className={styles.usageTitle}>{u.title}</h3>
+                    <p className={styles.usageText}>{u.explanation}</p>
+                    <blockquote className={styles.example}>
+                      <p className={styles.exampleEn} lang="en">
+                        {u.exampleEn}
+                      </p>
+                      <p className={styles.exampleVi}>{u.exampleVi}</p>
+                    </blockquote>
                   </div>
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", margin: "8px 0" }}>
-                    {sig.words.map((w, wIdx) => (
-                      <span
-                        key={wIdx}
-                        style={{
-                          backgroundColor: "rgba(59, 130, 246, 0.1)",
-                          color: "#3b82f6",
-                          padding: "4px 10px",
-                          borderRadius: "6px",
-                          fontWeight: 700,
-                          fontSize: "0.85rem",
-                        }}
-                      >
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          <section className={styles.block}>
+            <h2 className={styles.blockTitle}>Dấu hiệu nhận biết</h2>
+            <div className={styles.signals}>
+              {topic.theory.signals.map((s, i) => (
+                <div key={i} className={styles.signal}>
+                  <h3 className={styles.signalTitle}>{s.category}</h3>
+                  <ul className={styles.chips}>
+                    {s.words.map((w) => (
+                      <li key={w} className={styles.chip} lang="en">
                         {w}
-                      </span>
+                      </li>
                     ))}
-                  </div>
-                  <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
-                    {sig.explanation}
-                  </div>
+                  </ul>
+                  <p className={styles.signalText}>{s.explanation}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Common Mistakes */}
-          <div>
-            <h2
-              style={{
-                fontSize: "1.25rem",
-                fontWeight: 800,
-                color: "var(--color-text-primary)",
-                marginBottom: "14px",
-              }}
-            >
-              Những lỗi sai kinh điển cần tránh
-            </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {topic.theory.commonMistakes.map((mis, mIdx) => (
-                <div
-                  key={mIdx}
-                  style={{
-                    backgroundColor: "var(--color-bg-card)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: "14px",
-                    padding: "16px 20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--color-danger, #ef4444)", fontWeight: 600, fontSize: "0.9rem" }}>
-                    <XCircle size={16} />
-                    <span>Sai: {mis.incorrect}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--color-primary)", fontWeight: 700, fontSize: "0.9rem" }}>
-                    <CheckCircle2 size={16} />
-                    <span>Đúng: {mis.correct}</span>
-                  </div>
-                  <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", marginTop: "2px" }}>
-                    💡 <em>Giải thích:</em> {mis.explanation}
-                  </div>
-                </div>
+          <section className={styles.block}>
+            <h2 className={styles.blockTitle}>Lỗi hay gặp</h2>
+            <ul className={styles.mistakes}>
+              {topic.theory.commonMistakes.map((m, i) => (
+                <li key={i} className={styles.mistake}>
+                  <p className={styles.wrong}>
+                    <XCircle size={16} aria-label="Sai" />
+                    <s lang="en">{m.incorrect}</s>
+                  </p>
+                  <p className={styles.right}>
+                    <CheckCircle2 size={16} aria-label="Đúng" />
+                    <span lang="en">{m.correct}</span>
+                  </p>
+                  <p className={styles.mistakeText}>{m.explanation}</p>
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
 
-          {/* Complete Theory Action Button */}
-          <div
-            style={{
-              backgroundColor: "var(--color-bg-card)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "18px",
-              padding: "24px",
-              textAlign: "center",
-              marginTop: "12px",
-            }}
-          >
-            <h3 style={{ margin: "0 0 8px 0", fontSize: "1.15rem", fontWeight: 800, color: "var(--color-text-primary)" }}>
-              Bạn đã hiểu rõ lý thuyết của chủ điểm này?
-            </h3>
-            <p style={{ margin: "0 0 18px 0", fontSize: "0.9rem", color: "var(--color-text-secondary)" }}>
-              Hãy đánh dấu hoàn thành để lưu tiến độ vào hệ thống và bắt đầu bài tập thực hành phản xạ ngay!
-            </p>
-            <button
-              type="button"
-              onClick={handleCompleteTheory}
-              disabled={isSaving}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "12px 28px",
-                borderRadius: "12px",
-                backgroundColor: "var(--color-primary)",
-                color: "#ffffff",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                border: "none",
-                cursor: "pointer",
-                boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
-              }}
-            >
-              <Check size={18} />
-              <span>Đã hiểu lý thuyết ➔ Chuyển sang Thực hành</span>
+          {topic.theory.proTips.length > 0 && (
+            <section className={styles.block}>
+              <h2 className={styles.blockTitle}>Mẹo nhớ</h2>
+              <ul className={styles.tips}>
+                {topic.theory.proTips.map((tip, i) => (
+                  <li key={i}>
+                    <Lightbulb size={16} aria-hidden="true" />
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <div className={styles.nextStep}>
+            <p className={styles.nextStepText}>Đọc xong phần lý thuyết? Đánh dấu để lưu tiến độ và chuyển sang bài tập.</p>
+            <button type="button" className={styles.primaryBtn} onClick={handleCompleteTheory} disabled={isSaving}>
+              {progress.isTheoryCompleted ? "Sang bài thực hành" : "Đã hiểu, sang thực hành"}
+              <ArrowRight size={18} />
             </button>
           </div>
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* TAB 2: BÀI TẬP THỰC HÀNH */}
-      {/* ========================================================================= */}
+      {/* ---------- 02 Practice ---------- */}
       {activeTab === "practice" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Practice Header Bar */}
-          <div
-            style={{
-              backgroundColor: "var(--color-bg-card)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "16px",
-              padding: "16px 20px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: "12px",
-            }}
-          >
-            <div>
-              <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--color-text-primary)" }}>
-                Bài tập thực hành phản xạ ({topic.practice.length} câu)
-              </div>
-              <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
-                Chọn đáp án đúng nhất. Giải thích ngữ pháp chi tiết sẽ hiển thị ngay khi nộp bài.
-              </div>
-            </div>
-
+        <div id="panel-practice" role="tabpanel" aria-labelledby="tab-practice" className={styles.panel}>
+          <div className={styles.panelHead}>
+            <p>
+              {topic.practice.length} câu. Chọn đáp án đúng nhất; giải thích hiện sau khi nộp bài.
+            </p>
             {isSubmitted && (
-              <button
-                type="button"
-                onClick={handleResetPractice}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "8px 14px",
-                  borderRadius: "10px",
-                  backgroundColor: "var(--color-bg-subtle)",
-                  color: "var(--color-text-primary)",
-                  border: "1px solid var(--color-border)",
-                  fontSize: "0.85rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
+              <button type="button" className={styles.ghostBtn} onClick={handleResetPractice}>
                 <RotateCcw size={14} />
-                <span>Làm lại bài tập</span>
+                Làm lại
               </button>
             )}
           </div>
 
-          {/* List of Questions */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-            {topic.practice.map((q, qIdx) => {
-              const selectedOpt = selectedAnswers[qIdx];
-              const isAnswered = selectedOpt !== undefined;
-              const isCorrect = isAnswered && selectedOpt === q.correctIndex;
+          <QuestionList
+            idPrefix="practice"
+            questions={topic.practice}
+            answers={selectedAnswers}
+            submitted={isSubmitted}
+            onSelect={(q, o) => !isSubmitted && setSelectedAnswers((prev) => ({ ...prev, [q]: o }))}
+          />
 
-              return (
-                <div
-                  key={q.id || qIdx}
-                  style={{
-                    backgroundColor: "var(--color-bg-card)",
-                    border: isSubmitted
-                      ? isCorrect
-                        ? "2px solid rgba(16, 185, 129, 0.45)"
-                        : "2px solid rgba(239, 68, 68, 0.45)"
-                      : "1px solid var(--color-border)",
-                    borderRadius: "16px",
-                    padding: "20px 24px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "14px",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
-                    <span
-                      style={{
-                        width: "28px",
-                        height: "28px",
-                        borderRadius: "8px",
-                        backgroundColor: "var(--color-bg-subtle)",
-                        color: "var(--color-text-primary)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 800,
-                        fontSize: "0.85rem",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {qIdx + 1}
-                    </span>
-                    <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--color-text-primary)", lineHeight: 1.5 }}>
-                      {q.question}
-                    </div>
-                  </div>
-
-                  {/* Options */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "10px" }}>
-                    {q.options.map((opt, optIdx) => {
-                      const isOptionSelected = selectedOpt === optIdx;
-                      let optBg = "var(--color-bg-subtle)";
-                      let optBorder = "1px solid var(--color-border)";
-                      let optColor = "var(--color-text-primary)";
-
-                      if (isSubmitted) {
-                        if (optIdx === q.correctIndex) {
-                          optBg = "rgba(16, 185, 129, 0.15)";
-                          optBorder = "2px solid var(--color-primary)";
-                          optColor = "var(--color-primary)";
-                        } else if (isOptionSelected && optIdx !== q.correctIndex) {
-                          optBg = "rgba(239, 68, 68, 0.15)";
-                          optBorder = "2px solid var(--color-danger, #ef4444)";
-                          optColor = "var(--color-danger, #ef4444)";
-                        }
-                      } else if (isOptionSelected) {
-                        optBg = "rgba(59, 130, 246, 0.12)";
-                        optBorder = "2px solid #3b82f6";
-                        optColor = "#3b82f6";
-                      }
-
-                      return (
-                        <button
-                          key={optIdx}
-                          type="button"
-                          onClick={() => handleSelectPracticeOption(qIdx, optIdx)}
-                          disabled={isSubmitted}
-                          style={{
-                            padding: "12px 16px",
-                            borderRadius: "10px",
-                            backgroundColor: optBg,
-                            border: optBorder,
-                            color: optColor,
-                            fontWeight: isOptionSelected ? 700 : 500,
-                            fontSize: "0.9rem",
-                            textAlign: "left",
-                            cursor: isSubmitted ? "default" : "pointer",
-                            transition: "all 0.15s ease",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}
-                        >
-                          <span style={{ fontWeight: 800, opacity: 0.7 }}>
-                            {String.fromCharCode(65 + optIdx)}.
-                          </span>
-                          <span>{opt}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Explanation after submission */}
-                  {isSubmitted && (
-                    <div
-                      style={{
-                        backgroundColor: isCorrect ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                        borderRadius: "10px",
-                        padding: "12px 16px",
-                        borderLeft: isCorrect ? "4px solid var(--color-primary)" : "4px solid var(--color-danger, #ef4444)",
-                        fontSize: "0.88rem",
-                        color: "var(--color-text-primary)",
-                        lineHeight: 1.5,
-                      }}
-                    >
-                      <div style={{ fontWeight: 700, marginBottom: "4px", color: isCorrect ? "var(--color-primary)" : "var(--color-danger, #ef4444)" }}>
-                        {isCorrect ? "✓ Chính xác!" : "✗ Chưa chính xác!"} Đáp án đúng: {String.fromCharCode(65 + q.correctIndex)}. {q.options[q.correctIndex]}
-                      </div>
-                      <div>💡 <em>Giải thích:</em> {q.explanation}</div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Submit Practice Button */}
-          {!isSubmitted && (
-            <div style={{ textAlign: "center", marginTop: "12px" }}>
+          {!isSubmitted ? (
+            <div className={styles.submitRow}>
+              <span className={styles.answered}>
+                Đã trả lời {answeredPractice}/{topic.practice.length}
+              </span>
               <button
                 type="button"
+                className={styles.primaryBtn}
                 onClick={handleSubmitPractice}
-                disabled={isSaving || Object.keys(selectedAnswers).length === 0}
-                style={{
-                  padding: "14px 36px",
-                  borderRadius: "14px",
-                  backgroundColor: "#3b82f6",
-                  color: "#ffffff",
-                  fontWeight: 700,
-                  fontSize: "1rem",
-                  border: "none",
-                  cursor: Object.keys(selectedAnswers).length === 0 ? "not-allowed" : "pointer",
-                  opacity: Object.keys(selectedAnswers).length === 0 ? 0.6 : 1,
-                  boxShadow: "0 4px 14px rgba(59, 130, 246, 0.35)",
-                }}
+                disabled={isSaving || answeredPractice === 0}
               >
-                {isSaving ? "Đang lưu..." : `Nộp bài thực hành (${Object.keys(selectedAnswers).length}/${topic.practice.length})`}
+                {isSaving ? "Đang lưu…" : "Nộp bài"}
               </button>
             </div>
-          )}
-
-          {/* After submit: Next tab button */}
-          {isSubmitted && (
-            <div
-              style={{
-                backgroundColor: "var(--color-bg-card)",
-                border: "1px solid var(--color-border)",
-                borderRadius: "16px",
-                padding: "20px 24px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "16px",
-              }}
-            >
-              <div>
-                <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--color-text-primary)" }}>
-                  Điểm thực hành của bạn: {progress.practiceScore}%
-                </div>
-                <div style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)" }}>
-                  Đã lưu kết quả bài tập vào DB. Chuyển sang phần Ôn tập & Flashcard để củng cố trí nhớ!
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveTab("review")}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 24px",
-                  borderRadius: "12px",
-                  backgroundColor: "#8b5cf6",
-                  color: "#ffffff",
-                  fontWeight: 700,
-                  fontSize: "0.95rem",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <span>Chuyển sang Ôn tập & Flashcard</span>
+          ) : (
+            <div className={styles.result}>
+              <span className={styles.resultScore}>{progress.practiceScore}%</span>
+              <p className={styles.resultText}>
+                Đúng {progress.practiceCorrectAnswers}/{progress.practiceTotalQuestions} câu. Kết quả đã được lưu.
+              </p>
+              <button type="button" className={styles.primaryBtn} onClick={() => setActiveTab("review")}>
+                Sang phần ôn tập
                 <ChevronRight size={18} />
               </button>
             </div>
@@ -1041,339 +451,117 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* TAB 3: ÔN TẬP & FLASHCARD */}
-      {/* ========================================================================= */}
+      {/* ---------- 03 Review ---------- */}
       {activeTab === "review" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-          {/* Section 1: Flashcards Flip Deck */}
-          <div>
-            <div style={{ marginBottom: "12px" }}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--color-text-primary)", margin: 0 }}>
-                Thẻ ghi nhớ công thức (Flashcards)
-              </h2>
-              <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", margin: "4px 0 0 0" }}>
-                Nhấp vào thẻ để lật mặt sau xem đáp án hoặc quy tắc.
-              </p>
-            </div>
-
-            {topic.review.flashcards.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-                {/* 3D Flip Card Container */}
-                <div
-                  onClick={() => setIsFlipped(!isFlipped)}
-                  style={{
-                    width: "100%",
-                    maxWidth: "560px",
-                    minHeight: "220px",
-                    backgroundColor: isFlipped ? "var(--color-primary-light)" : "var(--color-bg-card)",
-                    border: isFlipped ? "2px solid var(--color-primary)" : "2px solid var(--color-border)",
-                    borderRadius: "20px",
-                    padding: "32px 28px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                    transition: "all 0.25s ease",
-                    position: "relative",
-                  }}
+        <div id="panel-review" role="tabpanel" aria-labelledby="tab-review" className={styles.panel}>
+          {card && (
+            <section className={styles.block}>
+              <h2 className={styles.blockTitle}>Thẻ ghi nhớ</h2>
+              <div className={styles.deck}>
+                <button
+                  ref={sceneRef}
+                  type="button"
+                  className={styles.flipScene}
+                  onClick={flip}
+                  aria-label={isFlipped ? "Lật về mặt câu hỏi" : "Lật thẻ để xem đáp án"}
+                  aria-pressed={isFlipped}
                 >
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "14px",
-                      left: "18px",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      color: "var(--color-text-secondary)",
-                    }}
-                  >
-                    Thẻ {currentCardIndex + 1} / {topic.review.flashcards.length}
+                  <span ref={innerRef} className={`${styles.flipInner} ${isFlipped ? styles.flipped : ""}`}>
+                    <span className={`${styles.face} ${styles.faceFront}`}>
+                      <span className={styles.faceTop}>
+                        Thẻ {currentCardIndex + 1}/{cards.length}
+                        <span className={styles.faceHint}>
+                          <RotateCw size={13} /> Lật thẻ
+                        </span>
+                      </span>
+                      <span className={styles.faceText}>{card.front}</span>
+                      {card.hint && <span className={styles.faceSub}>Gợi ý: {card.hint}</span>}
+                    </span>
+                    <span className={`${styles.face} ${styles.faceBack}`}>
+                      <span className={styles.faceTop}>
+                        Đáp án
+                        <span className={styles.faceHint}>
+                          <RotateCw size={13} /> Lật lại
+                        </span>
+                      </span>
+                      <span className={styles.faceText}>{card.back}</span>
+                    </span>
                   </span>
-
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "14px",
-                      right: "18px",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      color: isFlipped ? "var(--color-primary)" : "var(--color-text-secondary)",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                    }}
-                  >
-                    <RotateCw size={12} /> {isFlipped ? "Mặt sau (Giải thích)" : "Mặt trước (Câu hỏi)"}
-                  </span>
-
-                  <div
-                    style={{
-                      fontSize: "1.15rem",
-                      fontWeight: 700,
-                      color: isFlipped ? "var(--color-primary-dark, #065f46)" : "var(--color-text-primary)",
-                      whiteSpace: "pre-line",
-                      lineHeight: 1.6,
-                    }}
-                  >
-                    {isFlipped
-                      ? topic.review.flashcards[currentCardIndex].back
-                      : topic.review.flashcards[currentCardIndex].front}
-                  </div>
-
-                  {!isFlipped && topic.review.flashcards[currentCardIndex].hint && (
-                    <div
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "var(--color-text-secondary)",
-                        marginTop: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      <HelpCircle size={14} /> Gợi ý: {topic.review.flashcards[currentCardIndex].hint}
-                    </div>
-                  )}
-
-                  <div
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "var(--color-text-secondary)",
-                      marginTop: "16px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    (Nhấp chuột để lật thẻ)
-                  </div>
-                </div>
-
-                {/* Card Controls */}
-                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsFlipped(false);
-                      setCurrentCardIndex((prev) => (prev > 0 ? prev - 1 : topic.review.flashcards.length - 1));
-                    }}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "8px 16px",
-                      borderRadius: "10px",
-                      backgroundColor: "var(--color-bg-card)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-text-primary)",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
-                    <ChevronLeft size={16} />
-                    <span>Thẻ trước</span>
+                </button>
+                <div className={styles.deckNav}>
+                  <button type="button" className={styles.ghostBtn} onClick={() => goCard(-1)}>
+                    <ChevronLeft size={16} /> Thẻ trước
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsFlipped(false);
-                      setCurrentCardIndex((prev) => (prev < topic.review.flashcards.length - 1 ? prev + 1 : 0));
-                    }}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      padding: "8px 16px",
-                      borderRadius: "10px",
-                      backgroundColor: "var(--color-bg-card)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-text-primary)",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
-                    <span>Thẻ tiếp theo</span>
-                    <ChevronRight size={16} />
+                  <SuckerRow count={cards.length} filled={currentCardIndex + 1} />
+                  <button type="button" className={styles.ghostBtn} onClick={() => goCard(1)}>
+                    Thẻ sau <ChevronRight size={16} />
                   </button>
                 </div>
               </div>
-            )}
-          </div>
+            </section>
+          )}
 
-          {/* Section 2: Mastery Quiz */}
-          <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: "24px" }}>
-            <div style={{ marginBottom: "14px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Zap size={20} style={{ color: "#8b5cf6" }} />
-                <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--color-text-primary)", margin: 0 }}>
-                  Thử thách độ thuần thục (Mastery Quiz)
-                </h2>
-              </div>
-              <p style={{ fontSize: "0.85rem", color: "var(--color-text-secondary)", margin: "4px 0 0 0" }}>
-                Bộ câu hỏi kiểm tra nhanh để đạt chứng nhận thành thạo 100% chủ điểm này.
-              </p>
-            </div>
+          <section className={styles.block}>
+            <h2 className={styles.blockTitle}>Kiểm tra thuần thục</h2>
+            <p className={styles.blockLead}>
+              {topic.review.masteryQuiz.length} câu ngắn. Làm xong là hoàn thành chủ điểm này.
+            </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {topic.review.masteryQuiz.map((mq, mIdx) => {
-                const selectedOpt = masteryAnswers[mIdx];
-                const isAnswered = selectedOpt !== undefined;
-                const isCorrect = isAnswered && selectedOpt === mq.correctIndex;
+            <QuestionList
+              idPrefix="mastery"
+              questions={topic.review.masteryQuiz}
+              answers={masteryAnswers}
+              submitted={isMasterySubmitted}
+              onSelect={(q, o) => !isMasterySubmitted && setMasteryAnswers((prev) => ({ ...prev, [q]: o }))}
+            />
 
-                return (
-                  <div
-                    key={mq.id || mIdx}
-                    style={{
-                      backgroundColor: "var(--color-bg-card)",
-                      border: isMasterySubmitted
-                        ? isCorrect
-                          ? "2px solid rgba(16, 185, 129, 0.45)"
-                          : "2px solid rgba(239, 68, 68, 0.45)"
-                        : "1px solid var(--color-border)",
-                      borderRadius: "14px",
-                      padding: "18px 20px",
-                    }}
-                  >
-                    <div style={{ fontSize: "0.98rem", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: "12px" }}>
-                      Câu {mIdx + 1}: {mq.question}
-                    </div>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "8px" }}>
-                      {mq.options.map((opt, optIdx) => {
-                        const isOptionSelected = selectedOpt === optIdx;
-                        let optBg = "var(--color-bg-subtle)";
-                        let optBorder = "1px solid var(--color-border)";
-                        let optColor = "var(--color-text-primary)";
-
-                        if (isMasterySubmitted) {
-                          if (optIdx === mq.correctIndex) {
-                            optBg = "rgba(16, 185, 129, 0.15)";
-                            optBorder = "2px solid var(--color-primary)";
-                            optColor = "var(--color-primary)";
-                          } else if (isOptionSelected && optIdx !== mq.correctIndex) {
-                            optBg = "rgba(239, 68, 68, 0.15)";
-                            optBorder = "2px solid var(--color-danger, #ef4444)";
-                            optColor = "var(--color-danger, #ef4444)";
-                          }
-                        } else if (isOptionSelected) {
-                          optBg = "rgba(139, 92, 246, 0.12)";
-                          optBorder = "2px solid #8b5cf6";
-                          optColor = "#8b5cf6";
-                        }
-
-                        return (
-                          <button
-                            key={optIdx}
-                            type="button"
-                            onClick={() => {
-                              if (!isMasterySubmitted) {
-                                setMasteryAnswers((prev) => ({ ...prev, [mIdx]: optIdx }));
-                              }
-                            }}
-                            disabled={isMasterySubmitted}
-                            style={{
-                              padding: "10px 14px",
-                              borderRadius: "8px",
-                              backgroundColor: optBg,
-                              border: optBorder,
-                              color: optColor,
-                              fontWeight: isOptionSelected ? 700 : 500,
-                              fontSize: "0.85rem",
-                              textAlign: "left",
-                              cursor: isMasterySubmitted ? "default" : "pointer",
-                            }}
-                          >
-                            <span style={{ fontWeight: 800, marginRight: "6px" }}>
-                              {String.fromCharCode(65 + optIdx)}.
-                            </span>
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {isMasterySubmitted && (
-                      <div
-                        style={{
-                          marginTop: "12px",
-                          fontSize: "0.85rem",
-                          color: "var(--color-text-secondary)",
-                        }}
-                      >
-                        💡 <em>Giải thích:</em> {mq.explanation}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Submit Mastery Quiz */}
-            {!isMasterySubmitted && (
-              <div style={{ textAlign: "center", marginTop: "16px" }}>
+            {!isMasterySubmitted ? (
+              <div className={styles.submitRow}>
+                <span className={styles.answered}>
+                  Đã trả lời {answeredMastery}/{topic.review.masteryQuiz.length}
+                </span>
                 <button
                   type="button"
+                  className={styles.primaryBtn}
                   onClick={handleSubmitMasteryQuiz}
-                  disabled={isSaving || Object.keys(masteryAnswers).length === 0}
-                  style={{
-                    padding: "12px 32px",
-                    borderRadius: "12px",
-                    backgroundColor: "#8b5cf6",
-                    color: "#ffffff",
-                    fontWeight: 700,
-                    fontSize: "0.95rem",
-                    border: "none",
-                    cursor: Object.keys(masteryAnswers).length === 0 ? "not-allowed" : "pointer",
-                    opacity: Object.keys(masteryAnswers).length === 0 ? 0.6 : 1,
-                    boxShadow: "0 4px 14px rgba(139, 92, 246, 0.35)",
+                  disabled={isSaving || answeredMastery === 0}
+                >
+                  {isSaving ? "Đang lưu…" : "Nộp bài kiểm tra"}
+                </button>
+              </div>
+            ) : masteryAttempt >= MASTERY_PASS ? (
+              /* the gold moment: a topic mastered — only when it actually is */
+              <div className={`${styles.result} ${styles.resultMastered}`}>
+                <SuckerRow count={3} filled={3} className={styles.goldSuckers} />
+                <span className={styles.resultScore}>{masteryAttempt}%</span>
+                <p className={styles.resultText}>
+                  Bạn đã nắm vững “{topic.vietnameseTitle}”. Tiến độ đã được lưu.
+                </p>
+                <Link href={ROUTES.GRAMMAR} className={styles.primaryBtn}>
+                  Về lộ trình
+                  <ArrowRight size={18} />
+                </Link>
+              </div>
+            ) : (
+              <div className={styles.result}>
+                <span className={styles.resultScore}>{masteryAttempt}%</span>
+                <p className={styles.resultText}>
+                  Chưa tới {MASTERY_PASS}%. Lật lại các thẻ ghi nhớ ở trên rồi làm lại bài kiểm tra.
+                </p>
+                <button
+                  type="button"
+                  className={styles.primaryBtn}
+                  onClick={() => {
+                    setMasteryAnswers({});
+                    setIsMasterySubmitted(false);
                   }}
                 >
-                  {isSaving ? "Đang lưu..." : `Nộp bài Mastery Quiz (${Object.keys(masteryAnswers).length}/${topic.review.masteryQuiz.length})`}
+                  <RotateCcw size={16} />
+                  Làm lại
                 </button>
               </div>
             )}
-
-            {isMasterySubmitted && (
-              <div
-                style={{
-                  backgroundColor: "rgba(16, 185, 129, 0.12)",
-                  border: "1px solid rgba(16, 185, 129, 0.3)",
-                  borderRadius: "16px",
-                  padding: "20px 24px",
-                  textAlign: "center",
-                  marginTop: "20px",
-                }}
-              >
-                <div style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--color-primary)" }}>
-                  🎉 CHÚC MỪNG! BẠN ĐÃ HOÀN THÀNH CHỦ ĐIỂM NGỮ PHÁP NÀY!
-                </div>
-                <p style={{ margin: "6px 0 16px 0", fontSize: "0.9rem", color: "var(--color-text-secondary)" }}>
-                  Tiến độ đã được ghi nhận vào tài khoản của bạn. Hãy tiếp tục thử thách các chủ điểm tiếp theo trong Roadmap!
-                </p>
-                <Link
-                  href={ROUTES.GRAMMAR}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "12px 28px",
-                    borderRadius: "12px",
-                    backgroundColor: "var(--color-primary)",
-                    color: "#ffffff",
-                    fontWeight: 700,
-                    fontSize: "0.95rem",
-                    textDecoration: "none",
-                  }}
-                >
-                  <Compass size={18} />
-                  <span>Quay lại Lộ trình (Roadmap)</span>
-                </Link>
-              </div>
-            )}
-          </div>
+          </section>
         </div>
       )}
     </div>

@@ -321,7 +321,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                   height: "50px",
                   borderRadius: "50%",
                   backgroundColor: "var(--color-primary)",
-                  color: "#ffffff",
+                  color: "var(--color-text-inverse)",
                   border: "none",
                   display: "flex",
                   alignItems: "center",
@@ -768,7 +768,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
               }}
               style={{
                 backgroundColor: "var(--color-primary)",
-                color: "#ffffff",
+                color: "var(--color-text-inverse)",
                 border: "none",
                 borderRadius: "10px",
                 padding: "10px 22px",

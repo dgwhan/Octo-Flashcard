@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
+import HeroCard from "./HeroCard";
 import shared from "../../landing.module.css";
 import styles from "./LandingHero.module.css";
 
@@ -42,20 +42,18 @@ export default function LandingHero() {
       </div>
 
       {/* Card stack: Octo is the front of the top card; the cards behind show real entries from vocabulary.data */}
-      <div className={styles.heroStack} aria-hidden="true">
-        <div className={`${styles.stackCard} ${styles.stackBack2}`}>
+      <div className={styles.heroStack}>
+        <div className={`${styles.stackCard} ${styles.stackBack2}`} aria-hidden="true">
           <span className={styles.cardWord}>community</span>
           <span className={styles.cardIpa}>/kəˈmjuːnəti/</span>
           <span className={styles.cardMeaning}>Cộng đồng dân cư</span>
         </div>
-        <div className={`${styles.stackCard} ${styles.stackBack1}`}>
+        <div className={`${styles.stackCard} ${styles.stackBack1}`} aria-hidden="true">
           <span className={styles.cardWord}>available</span>
           <span className={styles.cardIpa}>/əˈveɪləbl/</span>
           <span className={styles.cardMeaning}>Có sẵn, rảnh rỗi để sử dụng</span>
         </div>
-        <div className={`${styles.stackCard} ${styles.stackFront}`}>
-          <Image src="/octo-mascot.jpg" alt="" width={420} height={420} priority className={styles.mascot} />
-        </div>
+        <HeroCard />
       </div>
 
       <dl className={styles.facts}>

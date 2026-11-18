@@ -50,7 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) var(--ease-out);
 }
 
 .closeBtn:hover {
@@ -86,7 +86,7 @@
   color: var(--color-text-primary);
   font-size: 0.9375rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color var(--dur-fast) var(--ease-out);
 }
 
 .fieldInput:focus {
@@ -166,7 +166,7 @@
   font-weight: 600;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) var(--ease-out);
 }
 
 .btnAddItem:hover {
@@ -250,7 +250,7 @@
   font-weight: 700;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--dur-fast) var(--ease-out);
   box-shadow: 0 4px 12px var(--color-primary-ring);
 }
 

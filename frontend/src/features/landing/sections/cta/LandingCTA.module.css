@@ -1,6 +1,6 @@
 /* CTA: dark full-bleed band, left-aligned */
 .cta {
-  background: #0b1512;
+  background: var(--color-bg-inverse);
   color: #f3f4f6;
 }
 
@@ -16,14 +16,20 @@
 
 .ctaSuckers {
   grid-column: 1 / -1;
-  color: var(--color-primary);
+  color: var(--color-primary-bright);
+}
+
+/* the one gold moment on the page: the first sucker has grabbed a card */
+.ctaSuckers > span:first-child {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
 }
 
 .ctaTitle {
   font-size: var(--fs-h2);
   line-height: 1.05;
-  letter-spacing: -0.03em;
-  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-weight: 600;
 }
 
 .ctaSide {
@@ -36,7 +42,7 @@
 }
 
 .ctaBtn {
-  background: var(--color-primary);
+  background: var(--color-primary-bright);
   color: #04130d;
 }
 

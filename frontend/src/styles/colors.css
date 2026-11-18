@@ -1,110 +1,120 @@
 /* ==========================================================================
-   OCTO FLASHCARD - DESIGN SYSTEM & COLOR TOKENS
-   Theme: Vibrant electric emerald - premium iOS style (AppColors)
+   OCTO FLASHCARD — DESIGN TOKENS (single source, Part 4.5)
+
+   Palette rule (Part 2.3): warm neutral base · ONE dominant colour (emerald)
+   · ONE rare accent (gold, from the card Octo holds up). Danger/warning are
+   functional status colours, not decoration.
+
+   Every colour is written once with light-dark(): light value first, dark
+   second. The OS preference picks the scheme; [data-theme] / .light / .dark
+   can force one.
    ========================================================================== */
 
-/* ==========================================================================
-   1. DEFAULT THEME: LIGHT MODE
-   ========================================================================== */
-:root,
+:root {
+  color-scheme: light dark;
+}
+
 [data-theme="light"],
 .light {
-  /* Brand / Accent (Vibrant electric emerald - premium iOS style) */
-  --color-accent: #10b981;
-  --color-accent-light: #34d399;
-  --color-accent-hover: #059669;
+  color-scheme: light;
+}
 
-  /* Primary Palette */
-  --color-primary: #10b981;
-  --color-primary-hover: #059669;
-  --color-primary-light: #ecfdf5;
-  --color-primary-ring: rgba(16, 185, 129, 0.25);
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+}
 
-  /* Secondary / Supporting Palette */
-  --color-secondary: #34d399;
-  --color-secondary-hover: #10b981;
-  --color-secondary-light: #ecfdf5;
+:root {
+  /* ---- Brand: emerald -------------------------------------------------- */
+  /* primary = fills + text links. Deep enough for white text at AA (5.5:1). */
+  --color-primary: light-dark(#047857, #34d399);
+  --color-primary-hover: light-dark(#065f46, #6ee7b7);
+  --color-primary-light: light-dark(#e3f3eb, rgb(52 211 153 / 0.14));
+  --color-primary-ring: light-dark(rgb(4 120 87 / 0.28), rgb(52 211 153 / 0.35));
+  /* bright = the vivid logo emerald; graphics & motif only, never body text */
+  --color-primary-bright: light-dark(#10b981, #34d399);
 
-  /* Neutrals & Backgrounds (Light Theme) */
-  --color-bg-main: #f3f4f6;          /* backgroundLight */
-  --color-bg-card: #ffffff;          /* cardLight */
-  --color-surface: #ffffff;          /* surface */
-  --color-bg-subtle: #f3f4f6;        /* inputFillLight / subtle */
-  --color-bg-muted: #e5e7eb;         /* dividerLight / muted gray */
+  /* ---- Accent: gold (rare — "card mastered" moments only) -------------- */
+  --color-gold: #e4b73a;
 
-  /* Typography (Light Theme) */
-  --color-text-primary: #111827;     /* textLight */
-  --color-text-secondary: #6b7280;   /* subtextLight */
-  --color-text-muted: #6b7280;       /* subtextLight */
-  --color-text-inverse: #ffffff;
+  /* ---- Neutrals (warm paper / green-black ink) -------------------------- */
+  --color-bg-main: light-dark(#f4f4ef, #0b110f);
+  --color-bg-card: light-dark(#ffffff, #111916);
+  --color-surface: light-dark(#ffffff, #17211d);
+  --color-bg-subtle: light-dark(#ecece6, #17211d);
+  --color-bg-muted: light-dark(#e1e2da, #222d28);
+  --color-bg-inverse: light-dark(#0b1512, #0e2219); /* dark bands (CTA) */
 
-  /* Buttons & Inputs (Light Theme) */
-  --color-btn: #10b981;              /* btnLight */
-  --color-btn-hover: #059669;
-  --color-input-fill: #f3f4f6;        /* inputFillLight */
+  --color-text-primary: light-dark(#111a16, #edf2ee);
+  --color-text-secondary: light-dark(#46514b, #a8b3ad);
+  --color-text-muted: light-dark(#5f6963, #84908a);
+  --color-text-inverse: light-dark(#ffffff, #06140f); /* text on --color-primary */
 
-  /* Borders & Dividers (Light Theme) */
-  --color-border: #e5e7eb;           /* dividerLight */
-  --color-border-hover: #d1d5db;
-  --color-border-focus: #10b981;
-  --color-divider: #e5e7eb;          /* dividerLight */
+  --color-border: light-dark(#dcddd5, #222d28);
+  --color-border-hover: light-dark(#c5c7be, #34413b);
+  --color-border-focus: var(--color-primary);
+  --color-divider: var(--color-border);
+  --color-icon: light-dark(#46514b, #c3ccc7);
 
-  /* Icons (Light Theme) */
-  --color-icon: #4b5563;             /* iconLight */
+  --color-overlay: light-dark(rgb(11 17 15 / 0.5), rgb(0 0 0 / 0.7));
 
-  /* Status Colors */
-  --color-danger: #ef4444;
-  --color-danger-hover: #dc2626;
-  --color-danger-light: #fef2f2;
-  --color-danger-border: #fca5a5;
+  /* ---- Functional status ---------------------------------------------- */
+  --color-success: var(--color-primary);
+  --color-success-hover: var(--color-primary-hover);
+  --color-success-light: var(--color-primary-light);
 
-  --color-success: #10b981;
-  --color-success-hover: #059669;
-  --color-success-light: #ecfdf5;
+  --color-danger: light-dark(#c62828, #f87171);
+  --color-danger-hover: light-dark(#a51d1d, #ef4444);
+  --color-danger-light: light-dark(#fef2f2, rgb(239 68 68 / 0.16));
+  --color-danger-border: light-dark(#fca5a5, rgb(239 68 68 / 0.35));
 
-  --color-warning: #f59e0b;
-  --color-warning-hover: #d97706;
-  --color-warning-light: #fffbeb;
+  --color-warning: light-dark(#b45309, #fbbf24);
+  --color-warning-hover: light-dark(#92400e, #f59e0b);
+  --color-warning-light: light-dark(#fffbeb, rgb(245 158 11 / 0.16));
 
-  --color-info: #3b82f6;
-  --color-info-hover: #2563eb;
-  --color-info-light: #eff6ff;
-  --color-info-border: #bfdbfe;
+  /* info is neutral ink, not a second brand hue */
+  --color-info: var(--color-text-secondary);
+  --color-info-hover: var(--color-text-primary);
+  --color-info-light: var(--color-bg-subtle);
+  --color-info-border: var(--color-border);
 
-  /* Overlays & Backdrops */
-  --color-overlay: rgba(0, 0, 0, 0.5);
+  /* ---- CEFR levels: one emerald ramp, A1 lightest → C2 deepest ---------- */
+  --color-cefr-a1: light-dark(#047857, #6ee7b7);
+  --color-cefr-a1-bg: light-dark(rgb(16 185 129 / 0.1), rgb(52 211 153 / 0.1));
+  --color-cefr-a2: light-dark(#065f46, #6ee7b7);
+  --color-cefr-a2-bg: light-dark(rgb(16 185 129 / 0.18), rgb(52 211 153 / 0.18));
+  --color-cefr-b1: light-dark(#065f46, #a7f3d0);
+  --color-cefr-b1-bg: light-dark(rgb(16 185 129 / 0.26), rgb(52 211 153 / 0.24));
+  --color-cefr-b2: light-dark(#064e3b, #d1fae5);
+  --color-cefr-b2-bg: light-dark(rgb(16 185 129 / 0.36), rgb(52 211 153 / 0.32));
+  --color-cefr-c1: light-dark(#f0fdf6, #06140f);
+  --color-cefr-c1-bg: light-dark(#047857, #34d399);
+  --color-cefr-c2: light-dark(#f0fdf6, #06140f);
+  --color-cefr-c2-bg: light-dark(#064e3b, #a7f3d0);
 
-  /* Educational / CEFR Level Tokens */
-  --color-cefr-a1: #10b981;
-  --color-cefr-a1-bg: rgba(16, 185, 129, 0.12);
-  --color-cefr-a2: #3b82f6;
-  --color-cefr-a2-bg: rgba(59, 130, 246, 0.12);
-  --color-cefr-b1: #f59e0b;
-  --color-cefr-b1-bg: rgba(245, 158, 11, 0.12);
-  --color-cefr-b2: #f97316;
-  --color-cefr-b2-bg: rgba(249, 115, 22, 0.12);
-  --color-cefr-c1: #8b5cf6;
-  --color-cefr-c1-bg: rgba(139, 92, 246, 0.12);
-  --color-cefr-c2: #ec4899;
-  --color-cefr-c2-bg: rgba(236, 72, 153, 0.12);
-
-  /* Fallback & Compatibility Aliases */
+  /* ---- Compatibility aliases (names still used across the app) --------- */
+  --color-accent: var(--color-primary);
+  --color-accent-light: var(--color-primary-bright);
+  --color-accent-hover: var(--color-primary-hover);
+  --color-secondary: var(--color-primary-bright);
+  --color-secondary-hover: var(--color-primary);
+  --color-secondary-light: var(--color-primary-light);
+  --color-primary-dark: var(--color-primary-hover);
+  --color-btn: var(--color-primary);
+  --color-btn-hover: var(--color-primary-hover);
+  --color-input-fill: var(--color-bg-subtle);
   --color-bg-primary: var(--color-bg-main);
-  --color-bg-primary-rgb: 243, 244, 246;
+  --color-bg-alt: var(--color-bg-subtle);
+  --color-bg-hover: var(--color-bg-muted);
 
-  /* Elevation & Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md:
-    0 4px 6px -1px rgb(0 0 0 / 0.08),
-    0 2px 4px -2px rgb(0 0 0 / 0.08);
-  --shadow-lg:
-    0 10px 15px -3px rgb(0 0 0 / 0.08),
-    0 4px 6px -4px rgb(0 0 0 / 0.08);
-  --shadow-xl:
-    0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* ---- Elevation --------------------------------------------------------- */
+  --shadow-color: light-dark(rgb(17 26 22 / 0.08), rgb(0 0 0 / 0.5));
+  --shadow-sm: 0 1px 2px 0 var(--shadow-color);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
+  --shadow-xl: 0 20px 25px -5px var(--shadow-color), 0 8px 10px -6px var(--shadow-color);
 
-  /* Border Radii */
+  /* ---- Radii ------------------------------------------------------------- */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -112,225 +122,36 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
+  /* ---- Typography (families come from next/font in app/layout.tsx) ------ */
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-be-vietnam), "Segoe UI", system-ui, sans-serif;
 
-/* ==========================================================================
-   2. DARK THEME
-   Triggered via [data-theme="dark"], class="dark", or prefers-color-scheme
-   ========================================================================== */
-[data-theme="dark"],
-.dark {
-  /* Brand / Accent */
-  --color-accent: #10b981;
-  --color-accent-light: #34d399;
-  --color-accent-hover: #059669;
-
-  /* Primary Palette */
-  --color-primary: #10b981;          /* primaryDark */
-  --color-primary-hover: #059669;
-  --color-primary-light: rgba(16, 185, 129, 0.16);
-  --color-primary-ring: rgba(16, 185, 129, 0.35);
-
-  /* Secondary / Supporting Palette */
-  --color-secondary: #34d399;
-  --color-secondary-hover: #10b981;
-  --color-secondary-light: rgba(52, 211, 153, 0.16);
-
-  /* Neutrals & Backgrounds (Dark Theme: Midnight Navy) */
-  --color-bg-main: #070b14;          /* Midnight Navy background */
-  --color-bg-card: #0f172a;          /* Clean slate navy card */
-  --color-surface: #1e293b;          /* Elevated navy surface */
-  --color-bg-subtle: #1e293b;        /* Subtle navy fill */
-  --color-bg-muted: #334155;         /* Muted slate divider */
-
-  /* Typography (Dark Theme) */
-  --color-text-primary: #f8fafc;     /* Crisp high-legibility text */
-  --color-text-secondary: #94a3b8;   /* Soft moonlight slate */
-  --color-text-muted: #64748b;
-  --color-text-inverse: #0f172a;
-
-  /* Buttons & Inputs (Dark Theme) */
-  --color-btn: #10b981;              /* primary */
-  --color-btn-hover: #059669;
-  --color-input-fill: #1e293b;
-
-  /* Borders & Dividers (Dark Theme) */
-  --color-border: #1e293b;
-  --color-border-hover: #334155;
-  --color-border-focus: #10b981;
-  --color-divider: #1e293b;
-
-  /* Icons (Dark Theme) */
-  --color-icon: #cbd5e1;
-
-  /* Status Colors (Optimized contrast for Dark Mode) */
-  --color-danger: #f87171;
-  --color-danger-hover: #ef4444;
-  --color-danger-light: rgba(239, 68, 68, 0.18);
-  --color-danger-border: rgba(239, 68, 68, 0.35);
-
-  --color-success: #10b981;
-  --color-success-hover: #059669;
-  --color-success-light: rgba(16, 185, 129, 0.18);
-
-  --color-warning: #fbbf24;
-  --color-warning-hover: #f59e0b;
-  --color-warning-light: rgba(245, 158, 11, 0.18);
-
-  --color-info: #60a5fa;
-  --color-info-hover: #3b82f6;
-  --color-info-light: rgba(59, 130, 246, 0.18);
-  --color-info-border: rgba(59, 130, 246, 0.35);
-
-  /* Overlays & Backdrops */
-  --color-overlay: rgba(0, 0, 0, 0.7);
-
-  /* Educational / CEFR Level Tokens (Dark Mode) */
-  --color-cefr-a1: #34d399;
-  --color-cefr-a1-bg: rgba(16, 185, 129, 0.2);
-  --color-cefr-a2: #60a5fa;
-  --color-cefr-a2-bg: rgba(59, 130, 246, 0.2);
-  --color-cefr-b1: #fbbf24;
-  --color-cefr-b1-bg: rgba(245, 158, 11, 0.2);
-  --color-cefr-b2: #fb923c;
-  --color-cefr-b2-bg: rgba(249, 115, 22, 0.2);
-  --color-cefr-c1: #a78bfa;
-  --color-cefr-c1-bg: rgba(139, 92, 246, 0.2);
-  --color-cefr-c2: #f472b6;
-  --color-cefr-c2-bg: rgba(236, 72, 153, 0.2);
-
-  /* Fallback & Compatibility Aliases */
-  --color-bg-primary: var(--color-bg-main);
-  --color-bg-primary-rgb: 9, 13, 16;
-
-  /* Elevation & Shadows (Dark Mode) */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-  --shadow-md:
-    0 4px 6px -1px rgb(0 0 0 / 0.4),
-    0 2px 4px -2px rgb(0 0 0 / 0.4);
-  --shadow-lg:
-    0 10px 15px -3px rgb(0 0 0 / 0.5),
-    0 4px 6px -4px rgb(0 0 0 / 0.5);
-  --shadow-xl:
-    0 20px 25px -5px rgb(0 0 0 / 0.6),
-    0 8px 10px -6px rgb(0 0 0 / 0.6);
-}
-
-/* ==========================================================================
-   3. AUTOMATIC OS DARK MODE PREFERENCE
-   Applies if not explicitly overridden by data-theme="light" or .light
-   ========================================================================== */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not(.light) {
-    --color-accent: #10b981;
-    --color-accent-light: #34d399;
-    --color-accent-hover: #059669;
-
-    --color-primary: #10b981;
-    --color-primary-hover: #059669;
-    --color-primary-light: rgba(16, 185, 129, 0.16);
-    --color-primary-ring: rgba(16, 185, 129, 0.35);
-
-    --color-secondary: #34d399;
-    --color-secondary-hover: #10b981;
-    --color-secondary-light: rgba(52, 211, 153, 0.16);
-
-    --color-bg-main: #090d10;
-    --color-bg-card: #151d24;
-    --color-surface: #1f2937;
-    --color-bg-subtle: #1f2937;
-    --color-bg-muted: #1f2937;
-
-    --color-text-primary: #f3f4f6;
-    --color-text-secondary: #d0d2d5;
-    --color-text-muted: #9ca3af;
-    --color-text-inverse: #111827;
-
-    --color-btn: #10b981;
-    --color-btn-hover: #059669;
-    --color-input-fill: #1f2937;
-
-    --color-border: #374151;
-    --color-border-hover: #4b5563;
-    --color-border-focus: #10b981;
-    --color-divider: #374151;
-
-    --color-icon: #d1d5db;
-
-    --color-danger: #f87171;
-    --color-danger-hover: #ef4444;
-    --color-danger-light: rgba(239, 68, 68, 0.18);
-    --color-danger-border: rgba(239, 68, 68, 0.35);
-
-    --color-success: #10b981;
-    --color-success-hover: #059669;
-    --color-success-light: rgba(16, 185, 129, 0.18);
-
-    --color-warning: #fbbf24;
-    --color-warning-hover: #f59e0b;
-    --color-warning-light: rgba(245, 158, 11, 0.18);
-
-    --color-info: #60a5fa;
-    --color-info-hover: #3b82f6;
-    --color-info-light: rgba(59, 130, 246, 0.18);
-    --color-info-border: rgba(59, 130, 246, 0.35);
-
-    --color-overlay: rgba(0, 0, 0, 0.7);
-
-    --color-cefr-a1: #34d399;
-    --color-cefr-a1-bg: rgba(16, 185, 129, 0.2);
-    --color-cefr-a2: #60a5fa;
-    --color-cefr-a2-bg: rgba(59, 130, 246, 0.2);
-    --color-cefr-b1: #fbbf24;
-    --color-cefr-b1-bg: rgba(245, 158, 11, 0.2);
-    --color-cefr-b2: #fb923c;
-    --color-cefr-b2-bg: rgba(249, 115, 22, 0.2);
-    --color-cefr-c1: #a78bfa;
-    --color-cefr-c1-bg: rgba(139, 92, 246, 0.2);
-    --color-cefr-c2: #f472b6;
-    --color-cefr-c2-bg: rgba(236, 72, 153, 0.2);
-
-    --color-bg-primary: var(--color-bg-main);
-    --color-bg-primary-rgb: 9, 13, 16;
-
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-    --shadow-md:
-      0 4px 6px -1px rgb(0 0 0 / 0.4),
-      0 2px 4px -2px rgb(0 0 0 / 0.4);
-    --shadow-lg:
-      0 10px 15px -3px rgb(0 0 0 / 0.5),
-      0 4px 6px -4px rgb(0 0 0 / 0.5);
-    --shadow-xl:
-      0 20px 25px -5px rgb(0 0 0 / 0.6),
-      0 8px 10px -6px rgb(0 0 0 / 0.6);
-  }
-}
-
-/* ==========================================================================
-   4. NON-COLOR TOKENS (type scale, spacing, easing) — single source (Part 4.5)
-   ========================================================================== */
-:root {
-  --fs-display: clamp(2.5rem, 5.8vw, 5.75rem);
-  --fs-h2: clamp(2rem, 4.2vw, 3.5rem);
+  --fs-display: clamp(2.75rem, 6.4vw, 6.25rem);
+  --fs-h2: clamp(2.125rem, 4.4vw, 3.75rem);
   --fs-h3: 1.25rem;
   --fs-body: 1rem;
   --fs-small: 0.8125rem;
-  --lh-tight: 1.02;
-  --lh-body: 1.6;
-  --tracking-display: -0.035em;
+  --lh-tight: 1;
+  --lh-body: 1.65;
+  --tracking-display: -0.02em;
   --tracking-label: 0.12em;
 
+  /* ---- Space ------------------------------------------------------------- */
   --space-section: clamp(4.5rem, 10vw, 8rem);
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --container: 1200px;
 
+  /* ---- Motion ------------------------------------------------------------ */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 160ms;
   --dur-base: 320ms;
+  --transition-fast: var(--dur-fast) var(--ease-out);
+  --transition-normal: 220ms var(--ease-out);
+  --transition-slow: var(--dur-base) var(--ease-out);
+
+  --ease-flip: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-flip: 620ms;
 
   --card-tilt: -4deg; /* angle of the card Octo holds up */
+  --card-tilt-rest: -1deg; /* same gesture, gentler, for cards you read */
 }

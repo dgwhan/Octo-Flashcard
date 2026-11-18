@@ -256,7 +256,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                   height: "48px",
                   borderRadius: "50%",
                   backgroundColor: "var(--color-primary)",
-                  color: "#ffffff",
+                  color: "var(--color-text-inverse)",
                   border: "none",
                   display: "flex",
                   alignItems: "center",

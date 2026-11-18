@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Volume2,
@@ -23,6 +23,7 @@ import {
 import { FlashCardResponse } from "@/src/types/flashCard";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { useTranslation } from "@/src/i18n";
+import { flipCard, dealCard, goldTick } from "@/src/lib/motion";
 import styles from "./FlashCardViewer.module.css";
 
 export interface FlashCardViewerProps {
@@ -166,10 +167,31 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
     [currentCard, isFlipped, isReversed]
   );
 
-  // Flip card
+  // Flip card — only a user's flip animates; card changes reset to the front instantly
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const masteredPillRef = useRef<HTMLSpanElement>(null);
+
   const handleFlip = useCallback(() => {
-    setIsFlipped((prev) => !prev);
-  }, []);
+    flipCard(innerRef.current, sceneRef.current, !isFlipped);
+    setIsFlipped(!isFlipped);
+  }, [isFlipped]);
+
+  // Deal the next/previous card in from the direction of travel
+  const prevIndexRef = useRef(currentIndex);
+  useEffect(() => {
+    if (prevIndexRef.current !== currentIndex) {
+      dealCard(sceneRef.current, currentIndex > prevIndexRef.current ? 1 : -1);
+      prevIndexRef.current = currentIndex;
+    }
+  }, [currentIndex]);
+
+  // Gold ring on the "mastered" counter when it goes up (never on first load)
+  const prevMasteredRef = useRef(masteredIds.size);
+  useEffect(() => {
+    if (masteredIds.size > prevMasteredRef.current) goldTick(masteredPillRef.current);
+    prevMasteredRef.current = masteredIds.size;
+  }, [masteredIds.size]);
 
   // Next card
   const handleNext = useCallback(() => {
@@ -502,7 +524,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
       <div className={styles.progressSection}>
         <div className={styles.statsBar}>
           <div className={styles.statPills}>
-            <span className={styles.pillMastered} title="Số thẻ đã thuộc">
+            <span ref={masteredPillRef} className={styles.pillMastered} title="Số thẻ đã thuộc">
               <CheckCircle2 size={13} />
               <span>{masteredIds.size} Đã nhớ</span>
             </span>
@@ -526,6 +548,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
 
       {/* 3D Flippable Flashcard */}
       <div
+        ref={sceneRef}
         className={styles.cardScene}
         onClick={handleFlip}
         role="button"
@@ -535,7 +558,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
           if (e.key === "Enter") handleFlip();
         }}
       >
-        <div className={`${styles.cardInner} ${isFlipped ? styles.flipped : ""}`}>
+        <div ref={innerRef} className={`${styles.cardInner} ${isFlipped ? styles.flipped : ""}`}>
           {/* MẶT TRƯỚC (Front Face) */}
           <div className={`${styles.cardFace} ${styles.cardFront}`}>
             <div className={styles.faceHeader}>

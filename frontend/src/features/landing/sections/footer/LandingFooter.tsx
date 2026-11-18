@@ -22,7 +22,7 @@ export default function LandingFooter() {
         </div>
 
         <nav aria-label="Module">
-          <h4 className={styles.footerColTitle}>Module</h4>
+          <h2 className={styles.footerColTitle}>Module</h2>
           <ul className={styles.footerList}>
             {MODULES.map((m) => (
               <li key={m.num}>
@@ -35,7 +35,7 @@ export default function LandingFooter() {
         </nav>
 
         <nav aria-label="Nguồn học liệu">
-          <h4 className={styles.footerColTitle}>Nguồn</h4>
+          <h2 className={styles.footerColTitle}>Nguồn</h2>
           <ul className={styles.footerList}>
             {SOURCE_LINKS.map((s) => (
               <li key={s.href}>

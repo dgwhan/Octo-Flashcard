@@ -34,7 +34,7 @@
   box-shadow:
     0 20px 45px -12px var(--color-primary-ring),
     0 10px 20px -6px rgb(0 0 0 / 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .auth-form-card-wide {
@@ -126,7 +126,7 @@
   font-weight: 500;
   color: var(--color-text-primary);
   outline: none;
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .form-input::placeholder {
@@ -186,7 +186,7 @@
   justify-content: center;
   padding: 6px;
   border-radius: 8px;
-  transition: color 0.2s ease;
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
 .password-toggle-btn:hover {
@@ -213,7 +213,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all var(--dur-fast) var(--ease-out);
   background: var(--color-bg-subtle);
   flex-shrink: 0;
 }
@@ -246,7 +246,7 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 8px 20px -4px var(--color-primary-ring);
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -283,7 +283,7 @@
   font-weight: 700;
   text-decoration: none;
   margin-left: 4px;
-  transition: color 0.15s ease;
+  transition: color var(--dur-fast) var(--ease-out);
 }
 
 .auth-link:hover {
