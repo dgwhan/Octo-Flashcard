@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
+import { GRAMMAR_ROADMAP_TOPICS } from "@/src/features/grammar/grammar.data"; // server component: data stays on the server
 import HeroCard from "./HeroCard";
 import shared from "../../landing.module.css";
 import styles from "./LandingHero.module.css";
@@ -9,7 +10,7 @@ import styles from "./LandingHero.module.css";
 const FACTS = [
   { value: "8", label: "module học trong một chỗ" },
   { value: "44", label: "âm IPA có audio" },
-  { value: "15", label: "chủ đề ngữ pháp A1–C1" },
+  { value: String(GRAMMAR_ROADMAP_TOPICS.length), label: "chủ điểm ngữ pháp A1–C1" },
   { value: "7", label: "truyện VOA đọc chậm" },
 ];
 

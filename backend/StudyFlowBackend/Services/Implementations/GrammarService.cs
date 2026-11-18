@@ -13,29 +13,54 @@ namespace StudyFlowBackend.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        // Danh sách topic IDs chuẩn theo lộ trình 3 cấp độ
+        // Topic IDs in curriculum order: one stage per CEFR level.
+        // Must match CURRICULUM in frontend/src/features/grammar/grammar.data.ts
         private static readonly string[] OrderedTopicIds = new[]
         {
-            // Stage 1: Foundation (A1 - A2)
+            // A1
             "present-simple",
+            "articles",
+            "pronouns-possessives",
+            "there-is-are",
             "present-continuous",
+            "prepositions-time-place",
+
+            // A2
             "past-simple",
+            "past-continuous",
             "future-simple",
             "countable-uncountable",
+            "question-forms",
+            "used-to",
 
-            // Stage 2: Intermediate (B1)
+            // B1
             "present-perfect",
+            "present-perfect-continuous",
+            "past-perfect",
             "comparatives-superlatives",
             "modal-verbs",
+            "gerund-infinitive",
             "passive-voice",
             "conditionals-0-1",
+            "too-enough-so-such",
+            "question-tags",
 
-            // Stage 3: Advanced (B2 - C1)
+            // B2
+            "future-continuous-perfect",
             "conditionals-2-3",
             "relative-clauses",
             "reported-speech",
+            "modal-perfect",
+            "causative",
+            "indirect-questions",
+            "linking-words",
+
+            // C1
             "inversion",
-            "subjunctive-wish"
+            "subjunctive-wish",
+            "participle-clauses",
+            "cleft-sentences",
+            "impersonal-passive"
         };
 
         public GrammarService(IUnitOfWork unitOfWork)

@@ -22,6 +22,7 @@ import { Badge, SuckerRow } from "@/src/components/ui";
 import type { BadgeVariant } from "@/src/components/ui";
 import { flipCard, dealCard } from "@/src/lib/motion";
 import QuestionList from "./QuestionList";
+import { GrammarAnswer, scoreAnswers } from "../grammar.grading";
 import styles from "./GrammarTopicDetail.module.css";
 
 interface GrammarTopicDetailProps {
@@ -59,9 +60,14 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
 
-  // Practice
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  // Practice: core set (saved to progress) + advanced set (scored, not saved)
+  const [practiceSet, setPracticeSet] = useState<"basic" | "advanced">("basic");
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, GrammarAnswer>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [practiceAttempt, setPracticeAttempt] = useState({ correct: 0, total: 0, percent: 0 });
+  const [advancedAnswers, setAdvancedAnswers] = useState<Record<number, GrammarAnswer>>({});
+  const [isAdvancedSubmitted, setIsAdvancedSubmitted] = useState(false);
+  const [advancedAttempt, setAdvancedAttempt] = useState({ correct: 0, total: 0, percent: 0 });
 
   // Flashcards (same signature flip as the study viewer)
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -70,7 +76,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
   const innerRef = useRef<HTMLSpanElement>(null);
 
   // Mastery quiz
-  const [masteryAnswers, setMasteryAnswers] = useState<Record<number, number>>({});
+  const [masteryAnswers, setMasteryAnswers] = useState<Record<number, GrammarAnswer>>({});
   const [isMasterySubmitted, setIsMasterySubmitted] = useState(false);
   const [masteryAttempt, setMasteryAttempt] = useState(0); // this attempt's score; progress keeps the best
 
@@ -109,8 +115,9 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
   // 2. Practice
   const handleSubmitPractice = async () => {
     const questions = topic.practice;
-    const correctCount = questions.filter((q, idx) => selectedAnswers[idx] === q.correctIndex).length;
-    const score = Math.round((correctCount / questions.length) * 100);
+    const attempt = scoreAnswers(questions, selectedAnswers);
+    const { correct: correctCount, percent: score } = attempt;
+    setPracticeAttempt(attempt);
     setIsSubmitted(true);
     setIsSaving(true);
     try {
@@ -135,11 +142,22 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
     setIsSubmitted(false);
   };
 
+  // 2b. Advanced set: scored on the spot; progress keeps recording the core set only
+  const handleSubmitAdvanced = () => {
+    const attempt = scoreAnswers(topic.advanced, advancedAnswers);
+    setAdvancedAttempt(attempt);
+    setIsAdvancedSubmitted(true);
+    showToast(`Nâng cao: đúng ${attempt.correct}/${attempt.total} câu (${attempt.percent}%).`);
+  };
+
+  const handleResetAdvanced = () => {
+    setAdvancedAnswers({});
+    setIsAdvancedSubmitted(false);
+  };
+
   // 3. Mastery quiz
   const handleSubmitMasteryQuiz = async () => {
-    const quiz = topic.review.masteryQuiz;
-    const correct = quiz.filter((q, idx) => masteryAnswers[idx] === q.correctIndex).length;
-    const score = Math.round((correct / quiz.length) * 100);
+    const score = scoreAnswers(topic.review.masteryQuiz, masteryAnswers).percent;
     setMasteryAttempt(score);
     setIsMasterySubmitted(true);
     setIsSaving(true);
@@ -165,6 +183,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
       await grammarService.resetTopicProgress(topic.id);
       setProgress(emptyProgress(topic));
       handleResetPractice();
+      handleResetAdvanced();
       setMasteryAnswers({});
       setIsMasterySubmitted(false);
       showToast("Đã đặt lại tiến độ chủ điểm.");
@@ -204,8 +223,11 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
 
   const doneSteps = tabs.filter((t) => t.done).length;
   const hasProgress = doneSteps > 0;
-  const answeredPractice = Object.keys(selectedAnswers).length;
-  const answeredMastery = Object.keys(masteryAnswers).length;
+  const answered = (a: Record<number, GrammarAnswer>) =>
+    Object.values(a).filter((v) => typeof v === "number" || v.trim() !== "").length;
+  const answeredPractice = answered(selectedAnswers);
+  const answeredAdvanced = answered(advancedAnswers);
+  const answeredMastery = answered(masteryAnswers);
 
   return (
     <div className={styles.page}>
@@ -403,50 +425,116 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
       {activeTab === "practice" && (
         <div id="panel-practice" role="tabpanel" aria-labelledby="tab-practice" className={styles.panel}>
           <div className={styles.panelHead}>
-            <p>
-              {topic.practice.length} câu. Chọn đáp án đúng nhất; giải thích hiện sau khi nộp bài.
-            </p>
-            {isSubmitted && (
-              <button type="button" className={styles.ghostBtn} onClick={handleResetPractice}>
+            <div className={styles.setSwitch} role="group" aria-label="Bộ bài tập">
+              <button
+                type="button"
+                aria-pressed={practiceSet === "basic"}
+                className={styles.setBtn}
+                onClick={() => setPracticeSet("basic")}
+              >
+                Cơ bản <span className={styles.setCount}>{topic.practice.length}</span>
+              </button>
+              <button
+                type="button"
+                aria-pressed={practiceSet === "advanced"}
+                className={styles.setBtn}
+                onClick={() => setPracticeSet("advanced")}
+              >
+                Nâng cao <span className={styles.setCount}>{topic.advanced.length}</span>
+              </button>
+            </div>
+            {(practiceSet === "basic" ? isSubmitted : isAdvancedSubmitted) && (
+              <button
+                type="button"
+                className={styles.ghostBtn}
+                onClick={practiceSet === "basic" ? handleResetPractice : handleResetAdvanced}
+              >
                 <RotateCcw size={14} />
                 Làm lại
               </button>
             )}
           </div>
+          <p className={styles.blockLead}>
+            {practiceSet === "basic"
+              ? "Trắc nghiệm và điền từ. Điểm bộ này được lưu vào tiến độ."
+              : "Câu khó hơn: bẫy thường gặp và viết lại câu. Dùng để tự kiểm tra, không tính vào tiến độ."}
+          </p>
 
-          <QuestionList
-            idPrefix="practice"
-            questions={topic.practice}
-            answers={selectedAnswers}
-            submitted={isSubmitted}
-            onSelect={(q, o) => !isSubmitted && setSelectedAnswers((prev) => ({ ...prev, [q]: o }))}
-          />
+          {practiceSet === "basic" ? (
+            <>
+              <QuestionList
+                idPrefix="practice"
+                questions={topic.practice}
+                answers={selectedAnswers}
+                submitted={isSubmitted}
+                onAnswer={(q, a) => !isSubmitted && setSelectedAnswers((prev) => ({ ...prev, [q]: a }))}
+              />
 
-          {!isSubmitted ? (
-            <div className={styles.submitRow}>
-              <span className={styles.answered}>
-                Đã trả lời {answeredPractice}/{topic.practice.length}
-              </span>
-              <button
-                type="button"
-                className={styles.primaryBtn}
-                onClick={handleSubmitPractice}
-                disabled={isSaving || answeredPractice === 0}
-              >
-                {isSaving ? "Đang lưu…" : "Nộp bài"}
-              </button>
-            </div>
+              {!isSubmitted ? (
+                <div className={styles.submitRow}>
+                  <span className={styles.answered}>
+                    Đã trả lời {answeredPractice}/{topic.practice.length}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.primaryBtn}
+                    onClick={handleSubmitPractice}
+                    disabled={isSaving || answeredPractice === 0}
+                  >
+                    {isSaving ? "Đang lưu…" : "Nộp bài"}
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.result}>
+                  <span className={styles.resultScore}>{practiceAttempt.percent}%</span>
+                  <p className={styles.resultText}>
+                    Đúng {practiceAttempt.correct}/{practiceAttempt.total} câu. Kết quả đã được lưu. Thử sức tiếp với bộ
+                    nâng cao?
+                  </p>
+                  <button type="button" className={styles.primaryBtn} onClick={() => setPracticeSet("advanced")}>
+                    Làm bộ nâng cao
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
-            <div className={styles.result}>
-              <span className={styles.resultScore}>{progress.practiceScore}%</span>
-              <p className={styles.resultText}>
-                Đúng {progress.practiceCorrectAnswers}/{progress.practiceTotalQuestions} câu. Kết quả đã được lưu.
-              </p>
-              <button type="button" className={styles.primaryBtn} onClick={() => setActiveTab("review")}>
-                Sang phần ôn tập
-                <ChevronRight size={18} />
-              </button>
-            </div>
+            <>
+              <QuestionList
+                idPrefix="advanced"
+                questions={topic.advanced}
+                answers={advancedAnswers}
+                submitted={isAdvancedSubmitted}
+                onAnswer={(q, a) => !isAdvancedSubmitted && setAdvancedAnswers((prev) => ({ ...prev, [q]: a }))}
+              />
+
+              {!isAdvancedSubmitted ? (
+                <div className={styles.submitRow}>
+                  <span className={styles.answered}>
+                    Đã trả lời {answeredAdvanced}/{topic.advanced.length}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.primaryBtn}
+                    onClick={handleSubmitAdvanced}
+                    disabled={answeredAdvanced === 0}
+                  >
+                    Chấm điểm
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.result}>
+                  <span className={styles.resultScore}>{advancedAttempt.percent}%</span>
+                  <p className={styles.resultText}>
+                    Đúng {advancedAttempt.correct}/{advancedAttempt.total} câu nâng cao.
+                  </p>
+                  <button type="button" className={styles.primaryBtn} onClick={() => setActiveTab("review")}>
+                    Sang phần ôn tập
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -512,7 +600,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
               questions={topic.review.masteryQuiz}
               answers={masteryAnswers}
               submitted={isMasterySubmitted}
-              onSelect={(q, o) => !isMasterySubmitted && setMasteryAnswers((prev) => ({ ...prev, [q]: o }))}
+              onAnswer={(q, a) => !isMasterySubmitted && setMasteryAnswers((prev) => ({ ...prev, [q]: a }))}
             />
 
             {!isMasterySubmitted ? (

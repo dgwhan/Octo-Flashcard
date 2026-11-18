@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
-import { GrammarRoadmapHub } from "@/src/features/grammar";
+import { GrammarRoadmapHub, GRAMMAR_TOPIC_SUMMARIES } from "@/src/features/grammar";
 
 export const metadata: Metadata = constructMetadata({
-  title: "Lộ Trình Học Ngữ Pháp Tiếng Anh Chuẩn Theo Cấp Độ (A1 - C1)",
+  title: `Lộ trình ngữ pháp tiếng Anh: ${GRAMMAR_TOPIC_SUMMARIES.length} chủ điểm từ A1 đến C1`,
   description:
-    "Chinh phục ngữ pháp tiếng Anh từ cơ bản đến nâng cao theo Roadmap: có lý thuyết hướng dẫn, bài tập thực hành tương tác và flashcards ôn tập củng cố, lưu tiến độ học tập.",
+    "Học ngữ pháp tiếng Anh theo lộ trình năm cấp A1–C1: lý thuyết, bài thực hành có đáp án tự gõ, bộ bài nâng cao, flashcard và bài kiểm tra, tự lưu tiến độ.",
   path: "/grammar",
 });
 
 export default function GrammarPage() {
-  return <GrammarRoadmapHub />;
+  return <GrammarRoadmapHub topics={GRAMMAR_TOPIC_SUMMARIES} />;
 }

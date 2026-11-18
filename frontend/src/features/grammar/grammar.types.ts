@@ -28,14 +28,27 @@ export interface GrammarMistake {
   explanation: string;
 }
 
-export interface GrammarQuestion {
+interface GrammarQuestionBase {
   id: string;
   question: string;
-  options: string[];
-  correctIndex: number;
   explanation: string;
   hint?: string;
 }
+
+/** Multiple choice (default when `type` is omitted). */
+export interface GrammarChoiceQuestion extends GrammarQuestionBase {
+  type?: "choice";
+  options: string[];
+  correctIndex: number;
+}
+
+/** Typed answer: the question contains a "___" blank; any of `answers` is accepted (case/space-insensitive). */
+export interface GrammarInputQuestion extends GrammarQuestionBase {
+  type: "input";
+  answers: string[];
+}
+
+export type GrammarQuestion = GrammarChoiceQuestion | GrammarInputQuestion;
 
 export interface GrammarFlashcard {
   id: string;
@@ -45,17 +58,14 @@ export interface GrammarFlashcard {
   category?: string;
 }
 
-export interface GrammarTopic {
+/** What a topic file authors. Stage and order are derived from the curriculum in grammar.data.ts. */
+export interface GrammarTopicInput {
   id: string;
-  stage: 1 | 2 | 3;
-  stageName: string;
   level: GrammarCEFR;
-  order: number;
   title: string;
   vietnameseTitle: string;
   description: string;
   estimatedMinutes: number;
-  badgeColor: string;
   theory: {
     summary: string;
     formulas: GrammarFormula[];
@@ -64,12 +74,26 @@ export interface GrammarTopic {
     commonMistakes: GrammarMistake[];
     proTips: string[];
   };
+  /** Core practice (mixed choice + typed). Its score is what progress records. */
   practice: GrammarQuestion[];
+  /** Harder set: tricky contrasts, typed transformations. */
+  advanced: GrammarQuestion[];
   review: {
     flashcards: GrammarFlashcard[];
     masteryQuiz: GrammarQuestion[];
   };
 }
+
+export interface GrammarTopic extends GrammarTopicInput {
+  stage: 1 | 2 | 3 | 4 | 5; // one stage per CEFR level
+  order: number; // 1-based position in the whole curriculum
+}
+
+/** Light shape for lists (keeps theory/exercises out of client bundles). */
+export type GrammarTopicSummary = Pick<
+  GrammarTopic,
+  "id" | "level" | "stage" | "order" | "title" | "vietnameseTitle" | "description" | "estimatedMinutes"
+>;
 
 export interface UserGrammarProgress {
   topicId: string;

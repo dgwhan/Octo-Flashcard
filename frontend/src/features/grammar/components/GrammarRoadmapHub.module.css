@@ -106,11 +106,9 @@
 
 /* ---------- Progress ---------- */
 .progress {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "head suckers"
-    "stats stats";
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
   gap: 1.25rem 2rem;
   padding-block: 1.5rem;
@@ -118,7 +116,6 @@
 }
 
 .progressHead {
-  grid-area: head;
   display: flex;
   align-items: baseline;
   gap: 12px;
@@ -140,14 +137,7 @@
   color: var(--color-text-secondary);
 }
 
-.progressSuckers {
-  grid-area: suckers;
-  justify-self: end;
-  gap: 8px;
-}
-
 .progressStats {
-  grid-area: stats;
   display: flex;
   flex-wrap: wrap;
   gap: 2.5rem;
@@ -253,8 +243,6 @@
   gap: 0 14px;
   font-size: 1.75rem;
   font-weight: 600;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--color-text-primary);
 }
 
 .stageNum {
@@ -422,18 +410,6 @@
     transform: none;
   }
 
-  .progress {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "head"
-      "suckers"
-      "stats";
-  }
-
-  .progressSuckers {
-    justify-self: start;
-  }
-
   .topicRow {
     grid-template-columns: 3rem minmax(0, 1fr);
   }
@@ -453,4 +429,24 @@
     flex-direction: row;
     align-items: center;
   }
+}
+
+/* Stage heading row: title left, the stage's own tentacle of progress right */
+.stageHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-text-primary);
+}
+
+.stageProgress {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
 }

@@ -891,3 +891,77 @@
     justify-content: center;
   }
 }
+
+/* ---------- Practice set switch (Cơ bản / Nâng cao) ---------- */
+.setSwitch {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+.setBtn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.setBtn[aria-pressed="true"] {
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.setCount {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Typed answer ---------- */
+.typed {
+  padding-left: 44px;
+}
+
+.typedInput {
+  width: min(100%, 360px);
+  padding: 11px 14px;
+  border: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.typedInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.typedInput[data-state="correct"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.typedInput[data-state="wrong"] {
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+
+@media (max-width: 760px) {
+  .typed {
+    padding-left: 0;
+  }
+}

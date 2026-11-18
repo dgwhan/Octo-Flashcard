@@ -2,71 +2,96 @@
 
 import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
 import { GrammarQuestion } from "../grammar.types";
+import { GrammarAnswer, isAnswerCorrect, correctAnswerText } from "../grammar.grading";
 import styles from "./GrammarTopicDetail.module.css";
 
 interface QuestionListProps {
   idPrefix: string;
   questions: GrammarQuestion[];
-  answers: Record<number, number>;
+  answers: Record<number, GrammarAnswer>;
   submitted: boolean;
-  onSelect: (questionIdx: number, optionIdx: number) => void;
+  onAnswer: (questionIdx: number, answer: GrammarAnswer) => void;
 }
 
 const letter = (i: number) => String.fromCharCode(65 + i);
 
-/** Practice and mastery quiz share this: real radio groups, verdict + explanation after submit. */
-export default function QuestionList({ idPrefix, questions, answers, submitted, onSelect }: QuestionListProps) {
+/** Practice, advanced and mastery sets share this: radio groups or a typed blank, verdict + explanation after submit. */
+export default function QuestionList({ idPrefix, questions, answers, submitted, onAnswer }: QuestionListProps) {
   return (
     <ol className={styles.questions}>
       {questions.map((q, qIdx) => {
-        const chosen = answers[qIdx];
-        const verdict = !submitted ? undefined : chosen === q.correctIndex ? "correct" : "wrong";
+        const given = answers[qIdx];
+        const correct = isAnswerCorrect(q, given);
+        const verdict = !submitted ? undefined : correct ? "correct" : "wrong";
         const name = `${idPrefix}-${q.id || qIdx}`;
+        const empty = given === undefined || (typeof given === "string" && !given.trim());
 
         return (
           <li key={name} className={styles.question} data-verdict={verdict}>
-            <fieldset className={styles.fieldset} disabled={submitted}>
-              <legend className={styles.questionText}>
-                <span className={styles.questionNum}>{String(qIdx + 1).padStart(2, "0")}</span>
-                {q.question}
-              </legend>
-
-              <div className={styles.options}>
-                {q.options.map((opt, optIdx) => {
-                  const state = submitted
-                    ? optIdx === q.correctIndex
-                      ? "correct"
-                      : chosen === optIdx
-                        ? "wrong"
-                        : undefined
-                    : chosen === optIdx
-                      ? "chosen"
-                      : undefined;
-                  return (
-                    <label key={optIdx} className={styles.option} data-state={state}>
-                      <input
-                        type="radio"
-                        name={name}
-                        checked={chosen === optIdx}
-                        onChange={() => onSelect(qIdx, optIdx)}
-                        className={styles.optionInput}
-                      />
-                      <span className={styles.optionLetter}>{letter(optIdx)}</span>
-                      <span>{opt}</span>
-                    </label>
-                  );
-                })}
+            {q.type === "input" ? (
+              <div className={styles.fieldset}>
+                <label htmlFor={name} className={styles.questionText}>
+                  <span className={styles.questionNum}>{String(qIdx + 1).padStart(2, "0")}</span>
+                  {q.question}
+                </label>
+                <div className={styles.typed}>
+                  <input
+                    id={name}
+                    type="text"
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    lang="en"
+                    className={styles.typedInput}
+                    data-state={verdict}
+                    value={typeof given === "string" ? given : ""}
+                    onChange={(e) => onAnswer(qIdx, e.target.value)}
+                    readOnly={submitted}
+                    placeholder="Gõ đáp án…"
+                  />
+                </div>
               </div>
-            </fieldset>
+            ) : (
+              <fieldset className={styles.fieldset} disabled={submitted}>
+                <legend className={styles.questionText}>
+                  <span className={styles.questionNum}>{String(qIdx + 1).padStart(2, "0")}</span>
+                  {q.question}
+                </legend>
+                <div className={styles.options}>
+                  {q.options.map((opt, optIdx) => {
+                    const state = submitted
+                      ? optIdx === q.correctIndex
+                        ? "correct"
+                        : given === optIdx
+                          ? "wrong"
+                          : undefined
+                      : given === optIdx
+                        ? "chosen"
+                        : undefined;
+                    return (
+                      <label key={optIdx} className={styles.option} data-state={state}>
+                        <input
+                          type="radio"
+                          name={name}
+                          checked={given === optIdx}
+                          onChange={() => onAnswer(qIdx, optIdx)}
+                          className={styles.optionInput}
+                        />
+                        <span className={styles.optionLetter}>{letter(optIdx)}</span>
+                        <span>{opt}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            )}
 
             {submitted && (
               <div className={styles.explain}>
                 <p className={styles.verdict}>
-                  {verdict === "correct" ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                  {verdict === "correct" ? "Chính xác." : chosen === undefined ? "Chưa trả lời." : "Chưa đúng."}{" "}
-                  <span className={styles.verdictAnswer}>
-                    Đáp án: {letter(q.correctIndex)}. {q.options[q.correctIndex]}
-                  </span>
+                  {correct ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+                  {correct ? "Chính xác." : empty ? "Chưa trả lời." : "Chưa đúng."}{" "}
+                  <span className={styles.verdictAnswer}>Đáp án: {correctAnswerText(q)}</span>
                 </p>
                 <p className={styles.explainText}>
                   <Lightbulb size={14} aria-hidden="true" />

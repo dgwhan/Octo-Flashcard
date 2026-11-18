@@ -1,6 +1,5 @@
 import { axiosInstance, getAuthToken } from "@/src/lib/api";
 import { UserGrammarProgress, GrammarRoadmapStats } from "./grammar.types";
-import { GRAMMAR_ROADMAP_TOPICS } from "./grammar.data";
 
 const LOCAL_STORAGE_KEY = "octo_grammar_progress_v1";
 
@@ -58,8 +57,12 @@ export function saveLocalGrammarProgress(progressMap: Record<string, UserGrammar
 }
 
 // Tính toán thống kê Roadmap từ map tiến độ
-export function calculateLocalStats(progressMap: Record<string, UserGrammarProgress>): GrammarRoadmapStats {
-  const totalTopics = GRAMMAR_ROADMAP_TOPICS.length;
+// orderedTopicIds comes from the caller (server-provided curriculum) so the full lesson data never ships to the client.
+export function calculateLocalStats(
+  progressMap: Record<string, UserGrammarProgress>,
+  orderedTopicIds: string[] = []
+): GrammarRoadmapStats {
+  const totalTopics = orderedTopicIds.length;
   const progressList = Object.values(progressMap);
 
   const completedList = progressList.filter((p) => p.status === "Completed");
@@ -82,9 +85,7 @@ export function calculateLocalStats(progressMap: Record<string, UserGrammarProgr
       ? Math.round(scoredMastery.reduce((sum, p) => sum + p.masteryScore, 0) / scoredMastery.length)
       : 0;
 
-  const nextTopic = GRAMMAR_ROADMAP_TOPICS.find(
-    (t) => !progressMap[t.id] || progressMap[t.id].status !== "Completed"
-  );
+  const nextTopicId = orderedTopicIds.find((id) => !progressMap[id] || progressMap[id].status !== "Completed");
 
   return {
     totalTopicsCount: totalTopics,
@@ -93,7 +94,7 @@ export function calculateLocalStats(progressMap: Record<string, UserGrammarProgr
     completionPercentage: percentage,
     averagePracticeScore: avgPractice,
     averageMasteryScore: avgMastery,
-    nextRecommendedTopicId: nextTopic ? nextTopic.id : GRAMMAR_ROADMAP_TOPICS[0].id,
+    nextRecommendedTopicId: nextTopicId ?? orderedTopicIds[0] ?? null,
   };
 }
 
@@ -101,7 +102,7 @@ export const grammarService = {
   /**
    * Lấy toàn bộ tiến độ Roadmap của user (từ DB nếu đã login, hoặc fallback sang LocalStorage)
    */
-  async getRoadmapProgress(): Promise<{
+  async getRoadmapProgress(orderedTopicIds: string[] = []): Promise<{
     progressMap: Record<string, UserGrammarProgress>;
     stats: GrammarRoadmapStats;
   }> {
@@ -154,7 +155,7 @@ export const grammarService = {
 
     // Guest mode hoặc Offline: Đọc từ LocalStorage
     const localMap = getLocalGrammarProgress();
-    const stats = calculateLocalStats(localMap);
+    const stats = calculateLocalStats(localMap, orderedTopicIds);
     return { progressMap: localMap, stats };
   },
 

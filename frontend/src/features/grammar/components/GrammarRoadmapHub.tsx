@@ -3,40 +3,48 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight, Search, Clock, RotateCcw, Check } from "lucide-react";
-import { GRAMMAR_ROADMAP_TOPICS } from "../grammar.data";
-import { GrammarTopic, UserGrammarProgress, GrammarRoadmapStats } from "../grammar.types";
+import type { GrammarTopicSummary, UserGrammarProgress, GrammarRoadmapStats, GrammarCEFR } from "../grammar.types";
 import { grammarService } from "../grammar.service";
 import { Badge, SuckerRow } from "@/src/components/ui";
 import type { BadgeVariant } from "@/src/components/ui";
 import styles from "./GrammarRoadmapHub.module.css";
 
-const STAGES = [
-  { id: 1 as const, name: "Nền tảng", levels: "A1 – A2" },
-  { id: 2 as const, name: "Trung cấp", levels: "B1" },
-  { id: 3 as const, name: "Nâng cao", levels: "B2 – C1" },
+// One stage per CEFR level; each stage is one of Octo's tentacles.
+const STAGES: { id: 1 | 2 | 3 | 4 | 5; level: GrammarCEFR; name: string }[] = [
+  { id: 1, level: "A1", name: "Khởi đầu" },
+  { id: 2, level: "A2", name: "Sơ cấp" },
+  { id: 3, level: "B1", name: "Trung cấp" },
+  { id: 4, level: "B2", name: "Trung cao" },
+  { id: 5, level: "C1", name: "Nâng cao" },
 ];
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-export default function GrammarRoadmapHub() {
-  const [selectedStage, setSelectedStage] = useState<1 | 2 | 3 | "all">("all");
+interface GrammarRoadmapHubProps {
+  /** Light list from the server page: keeps theory/exercises out of the client bundle. */
+  topics: GrammarTopicSummary[];
+}
+
+export default function GrammarRoadmapHub({ topics }: GrammarRoadmapHubProps) {
+  const orderedIds = useMemo(() => topics.map((t) => t.id), [topics]);
+  const [selectedStage, setSelectedStage] = useState<number | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [progressMap, setProgressMap] = useState<Record<string, UserGrammarProgress>>({});
   const [stats, setStats] = useState<GrammarRoadmapStats>({
-    totalTopicsCount: GRAMMAR_ROADMAP_TOPICS.length,
+    totalTopicsCount: topics.length,
     completedTopicsCount: 0,
     inProgressTopicsCount: 0,
     completionPercentage: 0,
     averagePracticeScore: 0,
     averageMasteryScore: 0,
-    nextRecommendedTopicId: GRAMMAR_ROADMAP_TOPICS[0].id,
+    nextRecommendedTopicId: topics[0]?.id ?? null,
   });
 
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
       try {
-        const data = await grammarService.getRoadmapProgress();
+        const data = await grammarService.getRoadmapProgress(orderedIds);
         if (isMounted) {
           setProgressMap(data.progressMap);
           setStats(data.stats);
@@ -49,11 +57,11 @@ export default function GrammarRoadmapHub() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [orderedIds]);
 
   const filteredTopics = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return GRAMMAR_ROADMAP_TOPICS.filter((topic) => {
+    return topics.filter((topic) => {
       if (selectedStage !== "all" && topic.stage !== selectedStage) return false;
       if (!q) return true;
       return (
@@ -62,14 +70,11 @@ export default function GrammarRoadmapHub() {
         topic.description.toLowerCase().includes(q)
       );
     });
-  }, [selectedStage, searchQuery]);
+  }, [topics, selectedStage, searchQuery]);
 
-  const nextTopic = useMemo(
-    () =>
-      GRAMMAR_ROADMAP_TOPICS.find((t) => t.id === stats.nextRecommendedTopicId) ?? GRAMMAR_ROADMAP_TOPICS[0],
-    [stats.nextRecommendedTopicId]
-  );
+  const nextTopic = topics.find((t) => t.id === stats.nextRecommendedTopicId) ?? topics[0];
   const nextStarted = progressMap[nextTopic.id]?.status === "InProgress";
+  const completedCount = topics.filter((t) => progressMap[t.id]?.status === "Completed").length;
 
   return (
     <div className={styles.page}>
@@ -78,13 +83,13 @@ export default function GrammarRoadmapHub() {
         <div className={styles.headText}>
           <p className={styles.eyebrow}>04 · Ngữ pháp</p>
           <h1 className={styles.title}>
-            Mười lăm chủ điểm,
+            {topics.length} chủ điểm,
             <br />
-            <em>ba</em> chặng.
+            <em>năm</em> chặng.
           </h1>
           <p className={styles.lead}>
-            Đi từ thì hiện tại đơn tới câu đảo ngữ. Mỗi chủ điểm có ba bước: đọc lý thuyết, làm bài thực hành, rồi ôn
-            bằng flashcard và một bài kiểm tra ngắn.
+            Từ mạo từ a/an/the đến câu chẻ và bị động khách quan, xếp theo năm cấp A1–C1. Mỗi chủ điểm có lý thuyết,
+            bài thực hành, bộ bài nâng cao, flashcard và một bài kiểm tra ngắn.
           </p>
         </div>
 
@@ -100,20 +105,15 @@ export default function GrammarRoadmapHub() {
         </Link>
       </header>
 
-      {/* ---------- Progress: one sucker per topic ---------- */}
+      {/* ---------- Progress ---------- */}
       <section className={styles.progress} aria-label="Tiến độ lộ trình">
         <div className={styles.progressHead}>
           <span className={styles.progressValue}>
-            {stats.completedTopicsCount}
-            <span className={styles.progressOf}>/{stats.totalTopicsCount}</span>
+            {completedCount}
+            <span className={styles.progressOf}>/{topics.length}</span>
           </span>
           <span className={styles.progressLabel}>chủ điểm đã hoàn thành</span>
         </div>
-        <SuckerRow
-          count={stats.totalTopicsCount}
-          filled={stats.completedTopicsCount}
-          className={styles.progressSuckers}
-        />
         <dl className={styles.progressStats}>
           <div>
             <dt>Đang học</dt>
@@ -132,8 +132,17 @@ export default function GrammarRoadmapHub() {
 
       {/* ---------- Toolbar ---------- */}
       <div className={styles.toolbar}>
-        <div className={styles.stageTabs} role="group" aria-label="Lọc theo chặng">
-          {[{ id: "all" as const, name: "Tất cả", levels: "15" }, ...STAGES].map((st) => (
+        <div className={styles.stageTabs} role="group" aria-label="Lọc theo cấp độ">
+          <button
+            type="button"
+            aria-pressed={selectedStage === "all"}
+            className={styles.stageTab}
+            onClick={() => setSelectedStage("all")}
+          >
+            Tất cả
+            <span className={styles.stageTabMeta}>{topics.length}</span>
+          </button>
+          {STAGES.map((st) => (
             <button
               key={st.id}
               type="button"
@@ -141,8 +150,8 @@ export default function GrammarRoadmapHub() {
               className={styles.stageTab}
               onClick={() => setSelectedStage(st.id)}
             >
-              {st.name}
-              <span className={styles.stageTabMeta}>{st.levels}</span>
+              {st.level}
+              <span className={styles.stageTabMeta}>{topics.filter((t) => t.stage === st.id).length}</span>
             </button>
           ))}
         </div>
@@ -158,19 +167,29 @@ export default function GrammarRoadmapHub() {
         </label>
       </div>
 
-      {/* ---------- Roadmap: grouped by stage ---------- */}
+      {/* ---------- Roadmap: one section per stage, each with its own tentacle of progress ---------- */}
       {STAGES.map((stage) => {
-        const topics = filteredTopics.filter((t) => t.stage === stage.id);
-        if (topics.length === 0) return null;
+        const stageTopics = topics.filter((t) => t.stage === stage.id);
+        const shown = filteredTopics.filter((t) => t.stage === stage.id);
+        if (shown.length === 0) return null;
+        const done = stageTopics.filter((t) => progressMap[t.id]?.status === "Completed").length;
         return (
           <section key={stage.id} className={styles.stage} aria-labelledby={`stage-${stage.id}`}>
-            <h2 id={`stage-${stage.id}`} className={styles.stageTitle}>
-              <span className={styles.stageNum}>Chặng {stage.id}</span>
-              {stage.name}
-              <span className={styles.stageLevels}>{stage.levels}</span>
-            </h2>
+            <div className={styles.stageHead}>
+              <h2 id={`stage-${stage.id}`} className={styles.stageTitle}>
+                <span className={styles.stageNum}>Chặng {stage.id}</span>
+                {stage.name}
+                <span className={styles.stageLevels}>{stage.level}</span>
+              </h2>
+              <span className={styles.stageProgress} aria-label={`Đã hoàn thành ${done}/${stageTopics.length} chủ điểm`}>
+                <SuckerRow count={stageTopics.length} filled={done} />
+                <span>
+                  {done}/{stageTopics.length}
+                </span>
+              </span>
+            </div>
             <ol className={styles.topicList}>
-              {topics.map((topic) => (
+              {shown.map((topic) => (
                 <TopicRow key={topic.id} topic={topic} progress={progressMap[topic.id]} />
               ))}
             </ol>
@@ -198,7 +217,7 @@ export default function GrammarRoadmapHub() {
   );
 }
 
-function TopicRow({ topic, progress }: { topic: GrammarTopic; progress?: UserGrammarProgress }) {
+function TopicRow({ topic, progress }: { topic: GrammarTopicSummary; progress?: UserGrammarProgress }) {
   const status = progress?.status ?? "NotStarted";
   const steps = [
     { label: "Lý thuyết", done: !!progress?.isTheoryCompleted },
