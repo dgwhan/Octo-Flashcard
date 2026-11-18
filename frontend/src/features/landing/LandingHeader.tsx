@@ -2,22 +2,19 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-  Sparkles,
-  Layers,
-  Menu,
-  X,
-  ExternalLink,
-  ChevronRight,
-  BookOpen,
-  User,
-  ArrowRight,
-} from "lucide-react";
+import Image from "next/image";
+import { Menu, X, User, ArrowRight } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { AuthModal } from "@/src/features/auth";
 import LanguageSwitcher from "@/src/components/layout/LanguageSwitcher";
 import styles from "./landing.module.css";
+
+const NAV = [
+  { href: "#modules", label: "8 module" },
+  { href: "#sources", label: "Học liệu" },
+  { href: "#method", label: "Phương pháp" },
+];
 
 export default function LandingHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,154 +30,63 @@ export default function LandingHeader() {
   return (
     <>
       <header className={styles.header}>
-        <div className={styles.headerContainer}>
-          {/* Brand Logo */}
+        <div className={styles.headerInner}>
           <Link href={ROUTES.HOME} className={styles.brand}>
-            <div className={styles.brandBadge}>
-              <Layers size={20} />
-            </div>
+            <Image src="/octo-mascot.jpg" alt="" width={36} height={36} className={styles.brandMark} />
             <span>Octo Flashcard</span>
           </Link>
 
-          {/* Desktop Navigation Anchors */}
-          <nav className={styles.navLinks}>
-            <a href="#features" className={styles.navLink}>
-              Tính năng
-            </a>
-            <a href="#sources" className={styles.navLink}>
-              Học liệu mở
-            </a>
-            <a href="#methodology" className={styles.navLink}>
-              Phương pháp
-            </a>
-            <Link href={ROUTES.VOCABULARY} className={styles.navLink}>
-              Từ vựng CEFR
-            </Link>
-            <Link href={ROUTES.VOA} className={styles.navLink}>
-              VOA English
-            </Link>
+          <nav className={styles.navLinks} aria-label="Điều hướng trang">
+            {NAV.map((n) => (
+              <a key={n.href} href={n.href} className={styles.navLink}>
+                {n.label}
+              </a>
+            ))}
           </nav>
 
-          {/* Action Buttons */}
           <div className={styles.headerActions}>
             <LanguageSwitcher />
-
             {storedUser ? (
-              <span
-                style={{
-                  fontSize: "0.875rem",
-                  fontWeight: 600,
-                  color: "var(--color-primary)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
+              <span className={styles.userName}>
                 <User size={15} />
                 {storedUser.username}
               </span>
             ) : (
-              <button
-                type="button"
-                onClick={openLogin}
-                style={{
-                  background: "transparent",
-                  border: "1px solid var(--color-border)",
-                  color: "var(--color-text-primary)",
-                  padding: "8px 16px",
-                  borderRadius: "10px",
-                  fontSize: "0.875rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
+              <button type="button" onClick={openLogin} className={styles.ghostBtn}>
                 Đăng nhập
               </button>
             )}
-
-            {/* Prominent Console Redirection */}
-            <Link href={ROUTES.FLASHCARDS} className={styles.consoleBtn} title="Truy cập khu vực học tập Console">
-              <span>Vào Console</span>
+            <Link href={ROUTES.FLASHCARDS} className={styles.primaryBtn}>
+              <span>Vào học</span>
               <ArrowRight size={16} />
             </Link>
-
-            {/* Mobile Hamburger Toggle */}
             <button
               type="button"
               className={styles.mobileMenuBtn}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle Navigation Menu"
+              aria-label={isMobileMenuOpen ? "Đóng menu" : "Mở menu"}
+              aria-expanded={isMobileMenuOpen}
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Slide-down Drawer */}
         {isMobileMenuOpen && (
           <div className={styles.mobileDrawer}>
-            <a
-              href="#features"
-              className={styles.navLink}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Tính năng nổi bật
-            </a>
-            <a
-              href="#sources"
-              className={styles.navLink}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Nguồn học liệu mở minh bạch
-            </a>
-            <a
-              href="#methodology"
-              className={styles.navLink}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Phương pháp khoa học não bộ
-            </a>
-            <Link
-              href={ROUTES.VOCABULARY}
-              className={styles.navLink}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Từ vựng chuẩn CEFR (A1-C2)
-            </Link>
-            <Link
-              href={ROUTES.VOA}
-              className={styles.navLink}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              VOA Learning English
-            </Link>
-
-            <div style={{ display: "flex", gap: "10px", marginTop: "10px", paddingTop: "12px", borderTop: "1px solid var(--color-border)" }}>
+            {NAV.map((n) => (
+              <a key={n.href} href={n.href} className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+                {n.label}
+              </a>
+            ))}
+            <div className={styles.mobileDrawerActions}>
               {!storedUser && (
-                <button
-                  type="button"
-                  onClick={openLogin}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "8px",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-bg-alt)",
-                    color: "var(--color-text-primary)",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
+                <button type="button" onClick={openLogin} className={styles.ghostBtn}>
                   Đăng nhập
                 </button>
               )}
-              <Link
-                href={ROUTES.FLASHCARDS}
-                className={styles.consoleBtn}
-                style={{ flex: 1, justifyContent: "center" }}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span>Vào Console</span>
+              <Link href={ROUTES.FLASHCARDS} className={styles.primaryBtn} onClick={() => setIsMobileMenuOpen(false)}>
+                <span>Vào học</span>
                 <ArrowRight size={16} />
               </Link>
             </div>
@@ -188,12 +94,7 @@ export default function LandingHeader() {
         )}
       </header>
 
-      {/* Authentication Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        redirectUrl={ROUTES.FLASHCARDS}
-      />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} redirectUrl={ROUTES.FLASHCARDS} />
     </>
   );
 }

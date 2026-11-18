@@ -5,6 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, BookOpen, MessageSquare, Compass } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
+import { MODULES } from "@/src/config/modules";
+
+const NUM_BY_HREF: Record<string, string> = Object.fromEntries(MODULES.map((m) => [m.href, m.num]));
 import { useTranslation } from "@/src/i18n";
 import styles from "./AppSidebar.module.css";
 
@@ -149,6 +152,7 @@ export default function AppSidebar({
                 <Icon className={styles.navIcon} />
               </div>
               <span className={styles.navLabel}>{item.label}</span>
+              {NUM_BY_HREF[item.href] && <span className={styles.navNum}>{NUM_BY_HREF[item.href]}</span>}
             </Link>
           );
         })}

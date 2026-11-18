@@ -1,76 +1,70 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import {
-  Sparkles,
-  Layers,
-  ArrowRight,
-  BookOpen,
-  Volume2,
-  Headphones,
-  CheckCircle2,
-  Play,
-  RotateCw,
-} from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ArrowDown } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import styles from "./landing.module.css";
 
+// Real counts taken from the app's own data files (ipa.data, grammar.data, voa.data).
+const FACTS = [
+  { value: "8", label: "module học trong một chỗ" },
+  { value: "44", label: "âm IPA có audio" },
+  { value: "15", label: "chủ đề ngữ pháp A1–C1" },
+  { value: "7", label: "truyện VOA đọc chậm" },
+];
+
 export default function LandingHero() {
   return (
-    <section className={styles.heroSection}>
-      {/* Top Tag */}
-      <div className={styles.tagPill}>
-        <Sparkles size={16} />
-        <span>Active Recall & Spaced Repetition • Public Domain Learning Ecosystem</span>
-      </div>
-
-      {/* Main Title */}
-      <h1 className={styles.heroTitle}>
-        Chinh Phục Tiếng Anh Toàn Diện Với{" "}
-        <span className={styles.heroGradient}>Học Liệu Mở</span> & Flashcard 3D
-      </h1>
-
-      {/* Subtitle */}
-      <p className={styles.heroSubtitle}>
-        Kết hợp phương pháp khoa học não bộ cùng hàng chục nghìn bài học đọc - nghe chính thức từ{" "}
-        <b>VOA Learning English, Tatoeba Project, LibriVox & Project Gutenberg</b>. 
-        Hoàn toàn minh bạch, phát âm tự nhiên người thật.
-      </p>
-
-      {/* Action Buttons */}
-      <div className={styles.heroCtaGroup}>
-        <Link href={ROUTES.FLASHCARDS} className={styles.primaryHeroBtn}>
-          <Layers size={20} />
-          <span>Vào Console Học Tập Ngay</span>
-          <ArrowRight size={18} />
-        </Link>
-
-        <a href="#sources" className={styles.secondaryHeroBtn}>
-          <BookOpen size={18} />
-          <span>Khám Phá Học Liệu Mở</span>
-        </a>
-      </div>
-
-      {/* Interactive 4-Col Stats Bar */}
-      <div className={styles.statsGrid}>
-        <div className={styles.statItem}>
-          <div className={styles.statNumber}>44</div>
-          <div className={styles.statLabel}>Âm IPA chuẩn quốc tế kèm khẩu hình & âm thanh</div>
-        </div>
-        <div className={styles.statItem}>
-          <div className={styles.statNumber}>10.000+</div>
-          <div className={styles.statLabel}>Sách nói kinh điển LibriVox & Project Gutenberg</div>
-        </div>
-        <div className={styles.statItem}>
-          <div className={styles.statNumber}>50.000+</div>
-          <div className={styles.statLabel}>Câu song ngữ Tatoeba phát âm người thật bản xứ</div>
-        </div>
-        <div className={styles.statItem}>
-          <div className={styles.statNumber}>A1 – C2</div>
-          <div className={styles.statLabel}>Khung chuẩn hóa CEFR, NGSL & Academic Word List</div>
+    <section className={styles.hero}>
+      <div className={styles.heroText}>
+        <p className={styles.eyebrow}>Học tiếng Anh cho người Việt · Học liệu mở</p>
+        <h1 className={styles.heroTitle}>
+          <span className={styles.heroLine}>Một con bạch tuộc,</span>
+          <span className={styles.heroLine}>
+            <em>tám</em> cách học
+          </span>
+          <span className={styles.heroLine}>tiếng Anh.</span>
+        </h1>
+        <p className={styles.heroLead}>
+          Flashcard tự tạo, truyện VOA đọc chậm, sách nói LibriVox, câu Tatoeba có giọng người thật và bảng 44 âm IPA. Mọi
+          thứ gom về một chỗ, nguồn nào cũng ghi rõ.
+        </p>
+        <div className={styles.heroActions}>
+          <Link href={ROUTES.FLASHCARDS} className={styles.primaryBtnLg}>
+            <span>Bắt đầu với Flashcard</span>
+            <ArrowRight size={18} />
+          </Link>
+          <a href="#modules" className={styles.textLink}>
+            <span>Xem cả 8 module</span>
+            <ArrowDown size={16} />
+          </a>
         </div>
       </div>
+
+      {/* Card stack: Octo is the front of the top card; the cards behind show real entries from vocabulary.data */}
+      <div className={styles.heroStack} aria-hidden="true">
+        <div className={`${styles.stackCard} ${styles.stackBack2}`}>
+          <span className={styles.cardWord}>community</span>
+          <span className={styles.cardIpa}>/kəˈmjuːnəti/</span>
+          <span className={styles.cardMeaning}>Cộng đồng dân cư</span>
+        </div>
+        <div className={`${styles.stackCard} ${styles.stackBack1}`}>
+          <span className={styles.cardWord}>available</span>
+          <span className={styles.cardIpa}>/əˈveɪləbl/</span>
+          <span className={styles.cardMeaning}>Có sẵn, rảnh rỗi để sử dụng</span>
+        </div>
+        <div className={`${styles.stackCard} ${styles.stackFront}`}>
+          <Image src="/octo-mascot.jpg" alt="" width={420} height={420} priority className={styles.mascot} />
+        </div>
+      </div>
+
+      <dl className={styles.facts}>
+        {FACTS.map((f) => (
+          <div key={f.label} className={styles.fact}>
+            <dt className={styles.factValue}>{f.value}</dt>
+            <dd className={styles.factLabel}>{f.label}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }

@@ -1,0 +1,44 @@
+.wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--gutter);
+  background: var(--color-bg-main);
+}
+
+.code {
+  font-size: clamp(6rem, 22vw, 14rem);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: var(--fs-h2);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+}
+
+.lead {
+  color: var(--color-text-secondary);
+  max-width: 32rem;
+}
+
+.link {
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--color-primary);
+  padding-bottom: 2px;
+  margin-top: 0.5rem;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}

@@ -1,4 +1,5 @@
 export { default as ErrorMessage } from "./ErrorMessage";
+export { default as SuckerRow } from "./SuckerRow";
 export { default as TopProgressBar } from "./TopProgressBar";
 export { default as Button } from "./Button";
 export * from "./ErrorMessage";
