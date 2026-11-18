@@ -1,37 +1,35 @@
-"use client";
-
 import {
   LandingHeader,
   LandingHero,
   LandingFeatures,
+  LandingSources,
   LandingMethodology,
   LandingCTA,
   LandingFooter,
 } from "./sections";
+import { SuckerRow } from "@/src/components/ui";
 import styles from "./landing.module.css";
+
+function Divider() {
+  return (
+    <div className={styles.divider}>
+      <SuckerRow />
+    </div>
+  );
+}
 
 export default function LandingPage() {
   return (
     <div className={styles.landingWrapper}>
-      {/* Dedicated Standalone Floating Header */}
       <LandingHeader />
-
-      {/* Main Content Body */}
       <main>
-        {/* Hero Section & 2-Row Big Numbers Metrics */}
         <LandingHero />
-
-        {/* 6 Core Pillars Features (Sticky Notes Zigzag) */}
+        <Divider />
         <LandingFeatures />
-
-        {/* Cognitive & Pedagogical Methodology */}
+        <LandingSources />
         <LandingMethodology />
-
-        {/* Call to Action Banner to Console */}
         <LandingCTA />
       </main>
-
-      {/* Comprehensive Landing Footer */}
       <LandingFooter />
     </div>
   );

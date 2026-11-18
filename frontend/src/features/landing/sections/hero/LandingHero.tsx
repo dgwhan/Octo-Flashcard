@@ -1,48 +1,71 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, ArrowDown } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import LandingHeroCard from "./components/LandingHeroCard";
-import LandingHeroMetrics from "./components/LandingHeroMetrics";
+import shared from "../../landing.module.css";
 import styles from "./LandingHero.module.css";
+
+// Real counts taken from the app's own data files (ipa.data, grammar.data, voa.data).
+const FACTS = [
+  { value: "8", label: "module học trong một chỗ" },
+  { value: "44", label: "âm IPA có audio" },
+  { value: "15", label: "chủ đề ngữ pháp A1–C1" },
+  { value: "7", label: "truyện VOA đọc chậm" },
+];
 
 export default function LandingHero() {
   return (
-    <section className={styles.heroSection}>
-      {/* Main Two-Column Split Grid */}
-      <div className={styles.splitGrid}>
-        {/* Left Column: Product Introduction, CTA & Compact Metrics */}
-        <div className={styles.contentCol}>
-          <h1 className={styles.heroTitle}>
-            Chinh Phục Tiếng Anh Toàn Diện Với{" "}
-            <span className={styles.highlightText}>Học Liệu Mở & Flashcard 3D</span>
-          </h1>
-
-          <p className={styles.heroSubtitle}>
-            Kết hợp phương pháp khoa học não bộ cùng hàng chục nghìn bài học đọc - nghe chính thức từ{" "}
-            <strong>VOA Learning English, Tatoeba Project, LibriVox & Project Gutenberg</strong>. Hoàn
-            toàn minh bạch, phát âm tự nhiên người thật.
-          </p>
-
-          <div className={styles.ctaGroup}>
-            <Link href={ROUTES.FLASHCARDS} className={styles.primaryBtn}>
-              <span>Học Thử Miễn Phí</span>
-            </Link>
-            <a href="#features" className={styles.secondaryBtn}>
-              <span>Khám Phá Tính Năng</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Right Column: Floating 3D Vocabulary Card Stack */}
-        <div className={styles.visualCol}>
-          <LandingHeroCard />
+    <section className={styles.hero}>
+      <div className={styles.heroText}>
+        <p className={shared.eyebrow}>Học tiếng Anh cho người Việt · Học liệu mở</p>
+        <h1 className={styles.heroTitle}>
+          <span className={styles.heroLine}>Một con bạch tuộc,</span>
+          <span className={styles.heroLine}>
+            <em>tám</em> cách học
+          </span>
+          <span className={styles.heroLine}>tiếng Anh.</span>
+        </h1>
+        <p className={styles.heroLead}>
+          Flashcard tự tạo, truyện VOA đọc chậm, sách nói LibriVox, câu Tatoeba có giọng người thật và bảng 44 âm IPA. Mọi
+          thứ gom về một chỗ, nguồn nào cũng ghi rõ.
+        </p>
+        <div className={styles.heroActions}>
+          <Link href={ROUTES.FLASHCARDS} className={shared.primaryBtnLg}>
+            <span>Bắt đầu với Flashcard</span>
+            <ArrowRight size={18} />
+          </Link>
+          <a href="#modules" className={shared.textLink}>
+            <span>Xem cả 8 module</span>
+            <ArrowDown size={16} />
+          </a>
         </div>
       </div>
 
-      {/* Full-width horizontal metrics bar positioned directly below the hero grid */}
-      <LandingHeroMetrics />
+      {/* Card stack: Octo is the front of the top card; the cards behind show real entries from vocabulary.data */}
+      <div className={styles.heroStack} aria-hidden="true">
+        <div className={`${styles.stackCard} ${styles.stackBack2}`}>
+          <span className={styles.cardWord}>community</span>
+          <span className={styles.cardIpa}>/kəˈmjuːnəti/</span>
+          <span className={styles.cardMeaning}>Cộng đồng dân cư</span>
+        </div>
+        <div className={`${styles.stackCard} ${styles.stackBack1}`}>
+          <span className={styles.cardWord}>available</span>
+          <span className={styles.cardIpa}>/əˈveɪləbl/</span>
+          <span className={styles.cardMeaning}>Có sẵn, rảnh rỗi để sử dụng</span>
+        </div>
+        <div className={`${styles.stackCard} ${styles.stackFront}`}>
+          <Image src="/octo-mascot.jpg" alt="" width={420} height={420} priority className={styles.mascot} />
+        </div>
+      </div>
+
+      <dl className={styles.facts}>
+        {FACTS.map((f) => (
+          <div key={f.label} className={styles.fact}>
+            <dt className={styles.factValue}>{f.value}</dt>
+            <dd className={styles.factLabel}>{f.label}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }

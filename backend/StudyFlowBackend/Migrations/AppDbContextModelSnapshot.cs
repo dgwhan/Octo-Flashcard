@@ -559,6 +559,65 @@ namespace StudyFlowBackend.Migrations
                     b.ToTable("UserBadges");
                 });
 
+            modelBuilder.Entity("StudyFlowBackend.Models.UserGrammarProgress", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsPracticeCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsReviewCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTheoryCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastStudiedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("MasteryScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PracticeCorrectAnswers")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PracticeScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PracticeTotalQuestions")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TopicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "TopicId")
+                        .IsUnique();
+
+                    b.ToTable("GrammarProgresses");
+                });
+
             modelBuilder.Entity("StudyFlowBackend.Models.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -703,6 +762,17 @@ namespace StudyFlowBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("Badge");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudyFlowBackend.Models.UserGrammarProgress", b =>
+                {
+                    b.HasOne("StudyFlowBackend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

@@ -1,0 +1,18 @@
+.row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-primary);
+}
+
+.sucker {
+  width: calc(14px * var(--s));
+  height: calc(14px * var(--s));
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filled {
+  background: currentColor;
+}

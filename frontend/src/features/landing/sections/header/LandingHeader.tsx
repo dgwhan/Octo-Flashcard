@@ -1,130 +1,101 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, User, ArrowRight } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
+import { authApi } from "@/src/features/auth/api/auth.api";
+import { AuthModal } from "@/src/features/auth";
 import LanguageSwitcher from "@/src/components/layout/LanguageSwitcher";
+import shared from "../../landing.module.css";
 import styles from "./LandingHeader.module.css";
+
+const NAV = [
+  { href: "#modules", label: "8 module" },
+  { href: "#sources", label: "Học liệu" },
+  { href: "#method", label: "Phương pháp" },
+];
 
 export default function LandingHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      applyTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = prefersDark ? "dark" : "light";
-      setTheme(initialTheme);
-      applyTheme(initialTheme);
-    }
-  }, []);
+  const storedUser = typeof window !== "undefined" ? authApi.getStoredUser() : null;
 
-  const applyTheme = (newTheme: "light" | "dark") => {
-    const root = document.documentElement;
-    root.setAttribute("data-theme", newTheme);
-    if (newTheme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
-    } else {
-      root.classList.add("light");
-      root.classList.remove("dark");
-    }
-  };
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    applyTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
+  const openLogin = () => {
+    setIsAuthModalOpen(true);
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <header className={styles.header}>
-      <div className={styles.headerContainer}>
-        {/* Brand Logo */}
-        <Link href={ROUTES.HOME} className={styles.brand}>
-          <span>Octo Study</span>
-        </Link>
+    <>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <Link href={ROUTES.HOME} className={styles.brand}>
+            <Image src="/octo-mascot.jpg" alt="" width={36} height={36} className={styles.brandMark} />
+            <span>Octo Flashcard</span>
+          </Link>
 
-        {/* Desktop Navigation Anchors */}
-        <nav className={styles.navLinks} aria-label="Main Navigation">
-          <a href="#features" className={styles.navLink}>
-            Tính năng
-          </a>
-          <a href="#methodology" className={styles.navLink}>
-            Phương pháp
-          </a>
-        </nav>
+          <nav className={styles.navLinks} aria-label="Điều hướng trang">
+            {NAV.map((n) => (
+              <a key={n.href} href={n.href} className={styles.navLink}>
+                {n.label}
+              </a>
+            ))}
+          </nav>
 
-        {/* Action Area: Language Switcher & Dark/Light Switch Button */}
-        <div className={styles.headerActions}>
-          <LanguageSwitcher />
-
-          {/* Theme Switch Button */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className={styles.themeToggleBtn}
-            aria-label={theme === "dark" ? "Chuyển sang giao diện Sáng" : "Chuyển sang giao diện Tối"}
-            title={theme === "dark" ? "Giao diện Sáng" : "Giao diện Tối"}
-          >
-            {mounted && theme === "dark" ? (
-              <Sun size={18} className={styles.themeIcon} />
+          <div className={styles.headerActions}>
+            <LanguageSwitcher />
+            {storedUser ? (
+              <span className={styles.userName}>
+                <User size={15} />
+                {storedUser.username}
+              </span>
             ) : (
-              <Moon size={18} className={styles.themeIcon} />
+              <button type="button" onClick={openLogin} className={`${shared.ghostBtn} ${styles.desktopOnly}`}>
+                Đăng nhập
+              </button>
             )}
-          </button>
-
-          {/* Mobile Hamburger Toggle */}
-          <button
-            type="button"
-            className={styles.mobileMenuBtn}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle Navigation Menu"
-            aria-expanded={isMobileMenuOpen}
-          >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Floating Drawer */}
-      {isMobileMenuOpen && (
-        <div className={styles.mobileDrawer} role="dialog" aria-label="Mobile Navigation">
-          <a
-            href="#features"
-            className={styles.mobileNavLink}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Tính năng
-          </a>
-          <a
-            href="#methodology"
-            className={styles.mobileNavLink}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Phương pháp
-          </a>
-
-          <div className={styles.mobileDrawerFooter}>
+            <Link href={ROUTES.FLASHCARDS} className={`${shared.primaryBtn} ${styles.desktopOnly}`}>
+              <span>Vào học</span>
+              <ArrowRight size={16} />
+            </Link>
             <button
               type="button"
-              onClick={toggleTheme}
-              className={styles.mobileThemeToggleBtn}
+              className={styles.mobileMenuBtn}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Đóng menu" : "Mở menu"}
+              aria-expanded={isMobileMenuOpen}
             >
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-              <span>{theme === "dark" ? "Giao diện Sáng" : "Giao diện Tối"}</span>
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
-      )}
-    </header>
+
+        {isMobileMenuOpen && (
+          <div className={styles.mobileDrawer}>
+            {NAV.map((n) => (
+              <a key={n.href} href={n.href} className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+                {n.label}
+              </a>
+            ))}
+            <div className={styles.mobileDrawerActions}>
+              {!storedUser && (
+                <button type="button" onClick={openLogin} className={shared.ghostBtn}>
+                  Đăng nhập
+                </button>
+              )}
+              <Link href={ROUTES.FLASHCARDS} className={shared.primaryBtn} onClick={() => setIsMobileMenuOpen(false)}>
+                <span>Vào học</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        )}
+      </header>
+
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} redirectUrl={ROUTES.FLASHCARDS} />
+    </>
   );
 }

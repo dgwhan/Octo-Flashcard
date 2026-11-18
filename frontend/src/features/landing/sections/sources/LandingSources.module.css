@@ -1,0 +1,103 @@
+/* Sources: full-bleed band with a ledger table */
+.sourcesSection {
+  max-width: none;
+  background: var(--color-bg-card);
+  border-block: 1px solid var(--color-border);
+}
+
+.sourcesSection > * {
+  max-width: calc(var(--container) - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+.splitHead {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 3rem;
+}
+
+.splitLead {
+  color: var(--color-text-secondary);
+  line-height: var(--lh-body);
+  max-width: 28rem;
+}
+
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.ledger th,
+.ledger td {
+  text-align: left;
+  padding: 16px 12px 16px 0;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: baseline;
+}
+
+.ledger thead th {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom-color: var(--color-text-primary);
+}
+
+.ledger tbody th {
+  font-weight: 600;
+}
+
+.ledger td {
+  color: var(--color-text-secondary);
+}
+
+.license {
+  white-space: nowrap;
+  font-size: var(--fs-small);
+}
+
+.ledgerLink {
+  display: inline-flex;
+  color: var(--color-text-muted);
+}
+
+.ledgerLink:hover {
+  color: var(--color-primary-hover);
+}
+
+.ledgerLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .splitHead {
+    grid-template-columns: 1fr;
+  }
+
+  .ledger thead {
+    display: none;
+  }
+
+  .ledger tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .ledger th,
+  .ledger td {
+    border: none;
+    padding: 2px 0;
+  }
+
+  .ledger td:last-child {
+    grid-row: 1;
+    grid-column: 2;
+  }
+}

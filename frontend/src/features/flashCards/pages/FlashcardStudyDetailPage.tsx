@@ -177,7 +177,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
       )}
 
       {/* Cards List in this Set */}
-      <section className={styles.cardsListSection}>
+      {/* <section className={styles.cardsListSection}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>
             {t("study.cardListTitle")} ({set.flashcards.length})
@@ -197,7 +197,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* Edit Modal */}
       {isEditModalOpen && (

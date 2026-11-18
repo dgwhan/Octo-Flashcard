@@ -33,3 +33,5 @@ export * from "./ErrorMessage";
 
 export { default as TopProgressBar } from "./TopProgressBar";
 export * from "./TopProgressBar";
+
+export { default as SuckerRow } from "./SuckerRow";

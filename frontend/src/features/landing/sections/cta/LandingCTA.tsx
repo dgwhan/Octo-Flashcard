@@ -1,34 +1,26 @@
-"use client";
-
-import React from "react";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
+import { SuckerRow } from "@/src/components/ui";
+import shared from "../../landing.module.css";
 import styles from "./LandingCTA.module.css";
 
 export default function LandingCTA() {
   return (
-    <section className={styles.ctaSection} aria-label="Bắt đầu học ngay">
-      <div className={styles.ctaContainer}>
-        <h2 className={styles.ctaTitle}>Bắt đầu làm chủ tiếng Anh ngay hôm nay</h2>
-        <p className={styles.ctaSubtitle}>
-          Trải nghiệm toàn bộ hệ sinh thái học tập: Flashcard 3D, VOA Special English, Sách nói LibriVox, Tatoeba câu người thật và Bảng âm IPA hoàn toàn miễn phí.
-        </p>
-
-        <Link href={ROUTES.FLASHCARDS} className={styles.primaryBtn}>
-          <span>Học Thử Miễn Phí</span>
-        </Link>
-
-        <div className={styles.ctaFeaturesList}>
-          <span className={styles.ctaFeatureItem}>
-            <CheckCircle2 size={16} className={styles.checkIcon} /> Hoàn toàn miễn phí
-          </span>
-          <span className={styles.ctaFeatureItem}>
-            <CheckCircle2 size={16} className={styles.checkIcon} /> 100% Học liệu mở chính thống
-          </span>
-          <span className={styles.ctaFeatureItem}>
-            <CheckCircle2 size={16} className={styles.checkIcon} /> Tương thích đa thiết bị
-          </span>
+    <section className={styles.cta}>
+      <div className={styles.ctaInner}>
+        <SuckerRow count={8} filled={1} className={styles.ctaSuckers} />
+        <h2 className={styles.ctaTitle}>
+          Bắt đầu từ một từ
+          <br />
+          bạn vừa gặp hôm nay.
+        </h2>
+        <div className={styles.ctaSide}>
+          <p>Tạo một bộ thẻ, thêm vài từ, rồi lật thử. Miễn phí, chạy ngay trên trình duyệt.</p>
+          <Link href={ROUTES.FLASHCARDS_CREATE} className={`${shared.primaryBtnLg} ${styles.ctaBtn}`}>
+            <span>Tạo bộ thẻ đầu tiên</span>
+            <ArrowRight size={18} />
+          </Link>
         </div>
       </div>
     </section>

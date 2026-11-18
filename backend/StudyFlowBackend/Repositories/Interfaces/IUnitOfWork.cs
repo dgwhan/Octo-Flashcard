@@ -14,6 +14,7 @@ namespace StudyFlowBackend.Repositories.Interfaces
         IPetRepository Pets { get; }
         INotificationRepository Notifications { get; }
         IChatMessageRepository ChatMessages { get; }
+        IGrammarProgressRepository GrammarProgress { get; }
 
         Task<int> SaveChangesAsync();
     }

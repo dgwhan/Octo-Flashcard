@@ -309,3 +309,28 @@
       0 8px 10px -6px rgb(0 0 0 / 0.6);
   }
 }
+
+/* ==========================================================================
+   4. NON-COLOR TOKENS (type scale, spacing, easing) — single source (Part 4.5)
+   ========================================================================== */
+:root {
+  --fs-display: clamp(2.5rem, 5.8vw, 5.75rem);
+  --fs-h2: clamp(2rem, 4.2vw, 3.5rem);
+  --fs-h3: 1.25rem;
+  --fs-body: 1rem;
+  --fs-small: 0.8125rem;
+  --lh-tight: 1.02;
+  --lh-body: 1.6;
+  --tracking-display: -0.035em;
+  --tracking-label: 0.12em;
+
+  --space-section: clamp(4.5rem, 10vw, 8rem);
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --container: 1200px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur-base: 320ms;
+
+  --card-tilt: -4deg; /* angle of the card Octo holds up */
+}

@@ -1,25 +1,100 @@
-/* ==========================================================================
-   OCTO STUDY - LANDING PAGE CONTAINER
-   Pure solid background, zero clutter layout wrapper
-   ========================================================================== */
+/* Landing — shared primitives used by every section. Tokens live in src/styles/colors.css. */
 
 .landingWrapper {
-  width: 100%;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
+  background: var(--color-bg-main);
   color: var(--color-text-primary);
   overflow-x: clip;
-  position: relative;
 }
 
-:global([data-theme="dark"]) .landingWrapper,
-:global(.dark) .landingWrapper {
-  background-color: var(--color-bg-main, #0f172a);
+.section {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-section) var(--gutter);
 }
 
-/* Ambient glow disabled for pure solid background */
-.landingWrapper::before {
-  display: none;
+.eyebrow {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary-hover);
+  margin-bottom: 1rem;
+}
+
+.sectionHead {
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  max-width: 40rem;
+}
+
+.sectionTitle {
+  font-size: var(--fs-h2);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.divider {
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--gutter);
+}
+
+/* ================= BUTTONS / LINKS ================= */
+.primaryBtn,
+.primaryBtnLg {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-text-primary);
+  color: var(--color-bg-main);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.primaryBtn {
+  padding: 9px 16px;
+  font-size: 0.9rem;
+}
+
+.primaryBtnLg {
+  padding: 15px 24px;
+  font-size: 1rem;
+}
+
+.primaryBtn:hover,
+.primaryBtnLg:hover {
+  background: var(--color-primary-hover);
+  color: #fff;
+}
+
+.ghostBtn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  border-color: var(--color-text-primary);
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1.5px solid var(--color-primary);
+  padding-bottom: 2px;
+}
+
+:is(.primaryBtn, .primaryBtnLg, .ghostBtn, .textLink):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }

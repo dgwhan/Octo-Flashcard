@@ -32,6 +32,10 @@ export const ROUTES = {
   // Tra cứu từ điển Dictionary
   DICTIONARY: "/dictionary",
 
+  // Học ngữ pháp theo Roadmap
+  GRAMMAR: "/grammar",
+  GRAMMAR_DETAIL: (topicId: string) => `/grammar/${topicId}`,
+
   // Xác thực (Auth)
   AUTH: {
     LOGIN: "/auth/login",
@@ -52,6 +56,7 @@ export const ROUTE_PATH_MAP: Record<string, string> = {
   "/sentences": "TATOEBA",
   "/ipa": "IPA",
   "/dictionary": "DICTIONARY",
+  "/grammar": "GRAMMAR",
   "/auth/login": "LOGIN",
   "/auth/register": "REGISTER",
 };
@@ -88,6 +93,14 @@ export const API_ENDPOINTS = {
   // HealthController (Route: api/health)
   HEALTH: {
     PING: "/health/ping",
+  },
+
+  // GrammarController (Route: api/grammar)
+  GRAMMAR: {
+    BASE: "/grammar",
+    PROGRESS: "/grammar/progress",
+    TOPIC_PROGRESS: (topicId: string) => `/grammar/progress/${topicId}`,
+    RESET: (topicId: string) => `/grammar/progress/${topicId}/reset`,
   },
 } as const;
 

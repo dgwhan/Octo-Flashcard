@@ -154,3 +154,33 @@
     gap: 0.875rem;
   }
 }
+
+/* Module number (01–08): same numbering as the landing page's eight tentacles */
+.navNum {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.navItemActive .navNum {
+  color: var(--color-primary);
+}
+
+.sidebarCollapsed .navNum {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .sidebarCollapsed .navNum {
+    display: inline;
+  }
+}
+
+.navLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

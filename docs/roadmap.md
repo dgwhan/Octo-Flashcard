@@ -16,6 +16,8 @@
 
 | Module | Feature | Status | Notes |
 |--------|---------|--------|-------|
+| **Landing & Showcase** | Standalone Public Landing Page (`/`) | Complete | Dedicated header, hero with metrics, 6 pillars, open sources & footer |
+| | Separate AppShell & Console Redirection | Complete | Clean isolation of landing page from dashboard sidebar/app header |
 | **Security & Auth** | User Registration & Login (JWT) | Complete | Rate-limited, password hashed |
 | | Sensitive Data Masking in Storage | Complete | Obfuscated with salt (`_octo_sec_p_enc`), auto-purge of plaintext keys |
 | | Session Management (Remember Me) | Complete | Seamless tab/browser lifecycle sync |

@@ -21,6 +21,7 @@ namespace StudyFlowBackend.Data
         public DbSet<FlashcardSet> FlashcardSets { get; set; }
         public DbSet<Flashcard> Flashcards { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<UserGrammarProgress> GrammarProgresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -152,6 +153,20 @@ namespace StudyFlowBackend.Data
                 entity.HasOne(cm => cm.User)
                     .WithMany()
                     .HasForeignKey(cm => cm.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Cấu hình bảng tiến độ ngữ pháp UserGrammarProgress
+            modelBuilder.Entity<UserGrammarProgress>(entity =>
+            {
+                entity.HasKey(gp => gp.Id);
+
+                entity.HasIndex(gp => new { gp.UserId, gp.TopicId })
+                    .IsUnique();
+
+                entity.HasOne(gp => gp.User)
+                    .WithMany()
+                    .HasForeignKey(gp => gp.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
