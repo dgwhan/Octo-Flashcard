@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Plus, LogOut, Menu, User, BookA } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
-import { AuthModal } from "@/src/features/auth";
+import { AuthModal, useCurrentUser } from "@/src/features/auth";
 import { QuickLookupModal } from "@/src/features/dictionary";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
@@ -17,32 +17,6 @@ interface AppHeaderProps {
   onToggleSidebar?: () => void;
 }
 
-function useCurrentUser() {
-  const userJson = React.useSyncExternalStore(
-    (callback) => {
-      window.addEventListener("storage", callback);
-      window.addEventListener("octo-auth-change", callback);
-      return () => {
-        window.removeEventListener("storage", callback);
-        window.removeEventListener("octo-auth-change", callback);
-      };
-    },
-    () => {
-      const stored = authApi.getStoredUser();
-      return stored ? JSON.stringify(stored) : "";
-    },
-    () => ""
-  );
-
-  return React.useMemo(() => {
-    if (!userJson) return null;
-    try {
-      return JSON.parse(userJson) as { username: string; email: string };
-    } catch {
-      return null;
-    }
-  }, [userJson]);
-}
 
 export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
   const router = useRouter();

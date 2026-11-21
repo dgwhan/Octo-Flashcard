@@ -22,9 +22,9 @@ export interface TranslationSchema {
     createFlashcard: string;
     review: string;
     progress: string;
+    speaking: string;
     voa: string;
     vocabulary: string;
-    audiobooks: string;
     sentences: string;
     ipa: string;
     dictionary: string;

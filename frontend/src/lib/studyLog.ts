@@ -10,7 +10,7 @@ export function sessionMinutes(startedAt: Date, endedAt: Date): number {
  * Record finished study time as a focus session. The backend turns it into XP, the daily target and
  * the streak (FocusSessionService). Fire-and-forget: a failed log must never interrupt studying.
  */
-export async function logStudySession(mode: "Flashcard" | "Grammar", startedAt: Date, endedAt = new Date()) {
+export async function logStudySession(mode: "Flashcard" | "Grammar" | "Speaking", startedAt: Date, endedAt = new Date()) {
   if (!getAuthToken()) return;
   try {
     await apiClient.post("/focus/sessions", {

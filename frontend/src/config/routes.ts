@@ -20,10 +20,6 @@ export const ROUTES = {
   // Bộ từ vựng chuẩn hóa CEFR / NGSL / AWL
   VOCABULARY: "/vocabulary",
 
-  // Sách nói LibriVox (Public Domain Audiobooks)
-  AUDIOBOOKS: "/audiobooks",
-  AUDIOBOOKS_DETAIL: (slug: string) => `/audiobooks/${slug}`,
-
   // Collocations & Idioms (500 cụm từ)
   SENTENCES: "/sentences",
 
@@ -36,6 +32,14 @@ export const ROUTES = {
   // Học ngữ pháp theo Roadmap
   GRAMMAR: "/grammar",
   GRAMMAR_DETAIL: (topicId: string) => `/grammar/${topicId}`,
+
+  // Luyện nói (shadowing, phát âm, hội thoại AI, IELTS)
+  SPEAKING: "/speaking",
+  SPEAKING_SHADOWING: "/speaking/shadowing",
+  SPEAKING_SHADOWING_SET: (setId: string) => `/speaking/shadowing/${setId}`,
+  SPEAKING_PRONUNCIATION: "/speaking/pronunciation",
+  SPEAKING_ROLEPLAY: "/speaking/roleplay",
+  SPEAKING_IELTS: "/speaking/ielts",
 
   // Tiến độ học tập (streak, huy hiệu, lịch học)
   PROGRESS: "/progress",
@@ -56,9 +60,9 @@ export const ROUTE_PATH_MAP: Record<string, string> = {
   "/flashcards/create": "FLASHCARDS_CREATE",
   "/flashcards/review": "FLASHCARDS_REVIEW",
   "/progress": "PROGRESS",
+  "/speaking": "SPEAKING",
   "/voa": "VOA",
   "/vocabulary": "VOCABULARY",
-  "/audiobooks": "AUDIOBOOKS",
   "/sentences": "SENTENCES",
   "/ipa": "IPA",
   "/dictionary": "DICTIONARY",

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, BookOpen, MessageSquare, Compass, RotateCw, Flame } from "lucide-react";
+import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, MessageSquare, Compass, RotateCw, Flame, Mic } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import { MODULES } from "@/src/config/modules";
 
@@ -41,9 +41,6 @@ export default function AppSidebar({
     if (href === ROUTES.VOCABULARY) {
       return pathname === "/vocabulary";
     }
-    if (href === ROUTES.AUDIOBOOKS) {
-      return pathname === "/audiobooks" || pathname.startsWith("/audiobooks/");
-    }
     if (href === ROUTES.SENTENCES) {
       return pathname === "/sentences";
     }
@@ -52,6 +49,9 @@ export default function AppSidebar({
     }
     if (href === ROUTES.DICTIONARY) {
       return pathname === "/dictionary";
+    }
+    if (href === ROUTES.SPEAKING) {
+      return pathname === "/speaking" || pathname.startsWith("/speaking/");
     }
     if (href === ROUTES.GRAMMAR) {
       return pathname === "/grammar" || pathname.startsWith("/grammar/");
@@ -101,9 +101,9 @@ export default function AppSidebar({
       icon: Compass,
     },
     {
-      label: t("nav.audiobooks"),
-      href: ROUTES.AUDIOBOOKS,
-      icon: BookOpen,
+      label: t("nav.speaking"),
+      href: ROUTES.SPEAKING,
+      icon: Mic,
     },
     {
       label: t("nav.sentences"),

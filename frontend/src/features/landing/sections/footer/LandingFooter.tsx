@@ -4,8 +4,6 @@ import styles from "./LandingFooter.module.css";
 
 const SOURCE_LINKS = [
   { label: "VOA Learning English", href: "https://learningenglish.voanews.com" },
-  { label: "LibriVox", href: "https://librivox.org" },
-  { label: "Project Gutenberg", href: "https://www.gutenberg.org" },
   { label: "Internet Archive", href: "https://archive.org" },
   { label: "Free Dictionary API", href: "https://dictionaryapi.dev" },
   { label: "Datamuse", href: "https://www.datamuse.com/api" },

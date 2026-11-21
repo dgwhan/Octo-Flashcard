@@ -5,8 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, User, ArrowRight } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import { authApi } from "@/src/features/auth/api/auth.api";
-import { AuthModal } from "@/src/features/auth";
+import { AuthModal, useCurrentUser } from "@/src/features/auth";
 import LanguageSwitcher from "@/src/components/layout/LanguageSwitcher";
 import shared from "../../landing.module.css";
 import styles from "./LandingHeader.module.css";
@@ -21,7 +20,7 @@ export default function LandingHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const storedUser = typeof window !== "undefined" ? authApi.getStoredUser() : null;
+  const storedUser = useCurrentUser();
 
   const openLogin = () => {
     setIsAuthModalOpen(true);

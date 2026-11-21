@@ -1,0 +1,174 @@
+import type { Turn } from "./gemini";
+
+export interface Scenario {
+  id: string;
+  title: string;
+  level: "A2" | "B1" | "B2";
+  /** Shown to the learner (Vietnamese) */
+  goal: string;
+  /** For the AI (English) */
+  aiRole: string;
+  learnerRole: string;
+  learnerGoal: string;
+  opening: string;
+  hints: string[];
+}
+
+export const SCENARIOS: Scenario[] = [
+  {
+    id: "cafe",
+    title: "Gọi đồ ở quán cà phê",
+    level: "A2",
+    goal: "Gọi một đồ uống và một món ăn, hỏi giá rồi thanh toán.",
+    aiRole: "a friendly barista at a busy coffee shop in London",
+    learnerRole: "a customer",
+    learnerGoal: "order a drink and something to eat, ask the price and pay",
+    opening: "Hi there! What can I get for you today?",
+    hints: ["Can I have a…, please?", "What do you recommend?", "How much is that?", "Can I pay by card?"],
+  },
+  {
+    id: "airport",
+    title: "Làm thủ tục ở sân bay",
+    level: "A2",
+    goal: "Làm thủ tục chuyến bay, gửi hành lý và hỏi cửa ra máy bay.",
+    aiRole: "a check-in agent at an international airport",
+    learnerRole: "a passenger checking in for a flight",
+    learnerGoal: "check in, drop a suitcase and ask about the gate and boarding time",
+    opening: "Good morning. Can I see your passport, please? Where are you flying to today?",
+    hints: ["I'm flying to…", "I'd like a window seat.", "Which gate is it?", "What time does boarding start?"],
+  },
+  {
+    id: "hotel",
+    title: "Nhận phòng khách sạn",
+    level: "A2",
+    goal: "Nhận phòng đã đặt, hỏi giờ ăn sáng và mật khẩu wifi.",
+    aiRole: "a receptionist at the Riverside Hotel",
+    learnerRole: "a guest with a booking",
+    learnerGoal: "check in, ask about breakfast time and the wifi password",
+    opening: "Good evening, welcome to the Riverside Hotel. Do you have a reservation?",
+    hints: ["I have a reservation under the name…", "What time is breakfast?", "What's the wifi password?"],
+  },
+  {
+    id: "directions",
+    title: "Hỏi đường",
+    level: "A2",
+    goal: "Hỏi đường tới ga tàu gần nhất và mất bao lâu để đi bộ tới đó.",
+    aiRole: "a friendly local on a street in New York",
+    learnerRole: "a tourist who is lost",
+    learnerGoal: "ask how to get to the nearest subway station and how long it takes to walk",
+    opening: "Hey, you look a little lost. Can I help you?",
+    hints: ["Excuse me, how do I get to…?", "Is it far from here?", "Could you say that again, please?"],
+  },
+  {
+    id: "doctor",
+    title: "Đi khám bệnh",
+    level: "B1",
+    goal: "Mô tả triệu chứng, trả lời câu hỏi của bác sĩ và hỏi cách dùng thuốc.",
+    aiRole: "a doctor at a walk-in clinic",
+    learnerRole: "a patient who feels unwell",
+    learnerGoal: "describe symptoms, answer the doctor's questions and ask how to take the medicine",
+    opening: "Hello, please have a seat. What seems to be the problem today?",
+    hints: ["I've had a headache since…", "It hurts when I…", "How often should I take it?"],
+  },
+  {
+    id: "return",
+    title: "Đổi trả hàng",
+    level: "B1",
+    goal: "Đổi một chiếc áo sai cỡ hoặc bị lỗi, hỏi về hoàn tiền.",
+    aiRole: "a shop assistant in a clothing store",
+    learnerRole: "a customer returning a shirt",
+    learnerGoal: "explain the problem with a shirt and ask for an exchange or a refund",
+    opening: "Hi, how can I help you?",
+    hints: ["I bought this last week, but…", "Could I exchange it for a larger size?", "Can I get a refund?"],
+  },
+  {
+    id: "party",
+    title: "Làm quen bạn mới",
+    level: "B1",
+    goal: "Giới thiệu bản thân, hỏi về sở thích và hẹn gặp lại.",
+    aiRole: "Alex, an international student at a welcome party",
+    learnerRole: "a new student at the party",
+    learnerGoal: "introduce yourself, find a shared interest and suggest meeting again",
+    opening: "Hi! I don't think we've met. I'm Alex. Are you new here?",
+    hints: ["Nice to meet you, I'm…", "What do you do in your free time?", "We should grab a coffee sometime."],
+  },
+  {
+    id: "interview",
+    title: "Phỏng vấn xin việc",
+    level: "B2",
+    goal: "Giới thiệu bản thân, nói về điểm mạnh và hỏi lại nhà tuyển dụng một câu.",
+    aiRole: "a hiring manager interviewing candidates for a junior marketing position",
+    learnerRole: "a job candidate",
+    learnerGoal: "introduce yourself, explain your strengths with an example and ask the interviewer a question",
+    opening: "Thanks for coming in today. Could you start by telling me a little about yourself?",
+    hints: ["I have experience in…", "One of my strengths is…", "For example, in my last project…", "What does a typical day look like?"],
+  },
+  {
+    id: "meeting",
+    title: "Góp ý trong cuộc họp",
+    level: "B2",
+    goal: "Đưa ra đề xuất cho dự án bị trễ, đồng ý hoặc phản đối một cách lịch sự.",
+    aiRole: "a team lead running a meeting about a project that is two weeks behind schedule",
+    learnerRole: "a team member",
+    learnerGoal: "suggest a solution, give reasons and politely agree or disagree with other ideas",
+    opening: "So, the project is two weeks behind schedule. What do you think we should do?",
+    hints: ["I'd suggest that we…", "I see your point, but…", "What if we…?", "That makes sense to me."],
+  },
+  {
+    id: "complaint",
+    title: "Khiếu nại ở nhà hàng",
+    level: "B2",
+    goal: "Phàn nàn lịch sự về món ăn và đề nghị cách giải quyết.",
+    aiRole: "the manager of a restaurant",
+    learnerRole: "a customer unhappy with a meal",
+    learnerGoal: "complain politely about the food and the wait, and agree on a solution",
+    opening: "Good evening. I heard there was a problem with your meal?",
+    hints: ["I'm afraid my food was cold.", "We waited for almost an hour.", "Would it be possible to…?"],
+  },
+];
+
+export const getScenario = (id: string) => SCENARIOS.find((s) => s.id === id);
+
+/** How many learner turns before we nudge them to wrap up and get feedback. */
+export const MAX_TURNS = 12;
+
+export function rolePlaySystem(s: Scenario) {
+  return [
+    `You are role-playing as ${s.aiRole}. The learner plays ${s.learnerRole}; their goal is to ${s.learnerGoal}.`,
+    `The learner is a Vietnamese learner of English at CEFR level ${s.level}. Use natural spoken English suited to ${s.level}.`,
+    "Reply in 1 to 3 short sentences and usually end with one question so the conversation keeps going.",
+    "Stay in character. Do not correct mistakes during the conversation; feedback comes at the end.",
+    "If you cannot understand the learner, ask them to say it another way. If they write in Vietnamese, answer in simple English and encourage them to try in English.",
+    "The learner's words come from speech recognition, so ignore missing punctuation and small recognition errors.",
+    "Plain text only: no markdown, no emojis, no stage directions.",
+  ].join("\n");
+}
+
+export interface RolePlayFeedback {
+  summary: string;
+  goalReached: boolean;
+  scores: { fluency: number; grammar: number; vocabulary: number; interaction: number };
+  corrections: { original: string; better: string; explanation: string }[];
+  phrases: { phrase: string; meaning: string }[];
+}
+
+export const FEEDBACK_SYSTEM = [
+  "You are an English speaking coach for Vietnamese learners.",
+  "You receive the transcript of a role-play. Assess only the LEARNER's turns.",
+  "The learner's text comes from speech recognition: ignore punctuation, capitalisation and obvious recognition slips.",
+  "Return JSON only, with this exact shape:",
+  '{"summary": string, "goalReached": boolean, "scores": {"fluency": 1-5, "grammar": 1-5, "vocabulary": 1-5, "interaction": 1-5}, "corrections": [{"original": string, "better": string, "explanation": string}], "phrases": [{"phrase": string, "meaning": string}]}',
+  "summary: 2-3 sentences in Vietnamese, encouraging and specific.",
+  "corrections: at most 6, only real errors or clearly unnatural phrasing; original = the learner's words, better = a natural version, explanation = one short sentence in Vietnamese.",
+  "phrases: up to 5 useful English phrases for this situation that the learner did not use, with Vietnamese meanings.",
+].join("\n");
+
+export function feedbackRequest(s: Scenario, turns: Turn[]): Turn[] {
+  const transcript = turns.map((t) => `${t.role === "user" ? "LEARNER" : "PARTNER"}: ${t.text}`).join("\n");
+  return [
+    {
+      role: "user",
+      text: `Scenario: ${s.title} (${s.level}). Learner's goal: ${s.learnerGoal}.\n\nTranscript:\n${transcript}`,
+    },
+  ];
+}

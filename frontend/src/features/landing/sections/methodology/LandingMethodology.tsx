@@ -18,7 +18,7 @@ const PRINCIPLES = [
     num: "03",
     title: "Nghe thứ mình gần hiểu",
     term: "Comprehensible input · S. Krashen",
-    desc: "Truyện VOA đọc chậm và sách nói có văn bản đi kèm: hiểu được phần lớn, đoán được phần còn lại từ ngữ cảnh.",
+    desc: "Truyện VOA đọc chậm có transcript chạy theo giọng đọc: hiểu được phần lớn, đoán được phần còn lại từ ngữ cảnh.",
   },
 ];
 
