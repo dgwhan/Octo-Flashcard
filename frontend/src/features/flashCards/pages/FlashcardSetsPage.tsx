@@ -19,10 +19,10 @@ import { flashCardApi } from "../api/flashCard.api";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
-import { EditFlashcardSetModal } from "../components/actions/EditFlashcardSetModal";
+import { EditFlashcardSetModal } from "../components/EditFlashcardSetModal";
 import { SuckerRow } from "@/src/components/ui";
-import { readMasteredCount } from "../studyProgress";
-import { dueCount } from "../reviewQueue";
+import { readMasteredCount } from "../lib/studyProgress";
+import { dueCount } from "../lib/reviewQueue";
 import styles from "./FlashcardSetsPage.module.css";
 
 export const FlashcardSetsPage: React.FC = () => {

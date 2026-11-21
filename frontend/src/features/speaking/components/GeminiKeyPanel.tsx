@@ -11,7 +11,7 @@ import {
   maskKey,
   saveConfig,
   testConfig,
-} from "../gemini";
+} from "../lib/gemini";
 import styles from "../speaking.module.css";
 
 const subscribe = (cb: () => void) => {

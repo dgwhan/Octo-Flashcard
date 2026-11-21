@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { constructMetadata } from "@/src/config/seo";
-import { VOA_LESSONS, VoaLessonViewer } from "@/src/features/voa";
+import { VOA_LESSONS, VoaLessonPage } from "@/src/features/voa";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default async function VoaDetailPage({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const lesson = VOA_LESSONS.find((l) => l.slug === slug);
 
@@ -35,7 +35,7 @@ export default async function VoaDetailPage({ params }: PageProps) {
 
   return (
     <div style={{ padding: "24px 16px" }}>
-      <VoaLessonViewer lesson={lesson} />
+      <VoaLessonPage lesson={lesson} />
     </div>
   );
 }

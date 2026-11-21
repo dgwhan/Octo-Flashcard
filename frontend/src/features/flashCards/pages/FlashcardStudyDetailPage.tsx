@@ -10,7 +10,7 @@ import { FlashCardViewer } from "../components/FlashCardViewer";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
-import { EditFlashcardSetModal } from "../components/actions/EditFlashcardSetModal";
+import { EditFlashcardSetModal } from "../components/EditFlashcardSetModal";
 import styles from "./FlashcardStudyDetailPage.module.css";
 
 export const FlashcardStudyDetailPage: React.FC = () => {

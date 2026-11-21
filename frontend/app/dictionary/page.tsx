@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { DictionaryView } from "@/src/features/dictionary";
+import { DictionaryPage } from "@/src/features/dictionary";
 
 export const metadata: Metadata = constructMetadata({
   title: "Tra Từ Điển Anh - Anh Trực Tuyến & Phát Âm Chuẩn",
@@ -11,7 +11,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/dictionary",
 });
 
-export default function DictionaryPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.DICTIONARY}
@@ -20,7 +20,7 @@ export default function DictionaryPage() {
       lead="Định nghĩa, phiên âm, ví dụ và từ đồng nghĩa từ Free Dictionary API và Datamuse, kèm phát âm ở nhiều tốc độ."
       narrow
     >
-      <DictionaryView />
+      <DictionaryPage />
     </ModulePage>
   );
 }

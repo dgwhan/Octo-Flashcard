@@ -12,7 +12,7 @@ import {
   getSecureUser,
   clearSecureUser,
   purgeLegacyPlaintextStorage,
-} from "@/src/utils/secureStorage";
+} from "@/src/lib/secureStorage";
 
 export const authApi = {
   async login(data: LoginRequest): Promise<LoginResponse> {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import IeltsPractice from "@/src/features/speaking/components/IeltsPractice";
+import { IeltsPage } from "@/src/features/speaking";
 
 export const metadata: Metadata = constructMetadata({
   title: "Luyện IELTS Speaking có bấm giờ",
@@ -10,7 +10,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/speaking/ielts",
 });
 
-export default function IeltsPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.SPEAKING}
@@ -19,7 +19,7 @@ export default function IeltsPage() {
       lead="Chọn Part 1, 2 hoặc 3. Đồng hồ chạy như phòng thi; bạn nghe lại bản ghi, xem tốc độ nói và có thể nhờ AI ước lượng band."
       narrow
     >
-      <IeltsPractice />
+      <IeltsPage />
     </ModulePage>
   );
 }

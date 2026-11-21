@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
-import RegisterPage from "@/src/features/auth/pages/RegisterPage";
+import { RegisterPage } from "@/src/features/auth";
 
 export const metadata: Metadata = constructMetadata({
   title: "Đăng Ký Tài Khoản Miễn Phí",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { IpaChart } from "@/src/features/ipa";
+import { IpaPage } from "@/src/features/ipa";
 
 export const metadata: Metadata = constructMetadata({
   title: "Bảng Phiên Âm Quốc Tế IPA & Audio Phát Âm Chuẩn Miễn Phí",
@@ -11,7 +11,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/ipa",
 });
 
-export default function IpaPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.IPA}
@@ -19,7 +19,7 @@ export default function IpaPage() {
       title="44 âm IPA"
       lead="12 nguyên âm đơn, 8 nguyên âm đôi và 24 phụ âm. Mỗi âm có audio, ví dụ và cách đặt khẩu hình; chế độ luyện nghe giúp bạn tự kiểm tra."
     >
-      <IpaChart />
+      <IpaPage />
     </ModulePage>
   );
 }

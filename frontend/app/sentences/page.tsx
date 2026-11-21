@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { PhraseExplorer } from "@/src/features/phrases";
+import { PhrasesPage } from "@/src/features/phrases";
 
 export const metadata: Metadata = constructMetadata({
   title: "500 Collocations và Idioms tiếng Anh thông dụng kèm ví dụ",
@@ -11,7 +11,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/sentences",
 });
 
-export default function SentencesPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.SENTENCES}
@@ -20,7 +20,7 @@ export default function SentencesPage() {
       lead="500 cụm người bản ngữ dùng hằng ngày: 300 collocations (make a decision, heavy rain…) và 200 idioms (a piece of cake, break the ice…). Mỗi cụm có nghĩa, câu ví dụ, bản dịch và nút lưu thành flashcard."
       narrow
     >
-      <PhraseExplorer />
+      <PhrasesPage />
     </ModulePage>
   );
 }

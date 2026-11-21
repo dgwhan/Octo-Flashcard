@@ -1,9 +1,9 @@
 "use client";
 
 import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
-import { GrammarQuestion } from "../grammar.types";
-import { GrammarAnswer, isAnswerCorrect, correctAnswerText } from "../grammar.grading";
-import styles from "./GrammarTopicDetail.module.css";
+import { GrammarQuestion } from "../types";
+import { GrammarAnswer, isAnswerCorrect, correctAnswerText } from "../lib/grading";
+import styles from "../pages/GrammarTopicPage.module.css";
 
 interface QuestionListProps {
   idPrefix: string;

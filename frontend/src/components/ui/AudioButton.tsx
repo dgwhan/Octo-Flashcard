@@ -2,7 +2,7 @@
 
 import React, { useState, ButtonHTMLAttributes, forwardRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { naturalAudio } from "@/src/features/dictionary";
+import { naturalAudio } from "@/src/lib/audio/naturalAudio";
 import styles from "./AudioButton.module.css";
 
 export interface AudioButtonProps

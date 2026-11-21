@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { SHADOW_SETS, getShadowSet } from "@/src/features/speaking/shadowing.data";
-import SentenceDrill from "@/src/features/speaking/components/SentenceDrill";
-import { SpeechNotice } from "@/src/features/speaking/components/SpeechParts";
-import styles from "@/src/features/speaking/speaking.module.css";
+import { notFound } from "next/navigation";
+import { SHADOW_SETS, getShadowSet, ShadowingPage } from "@/src/features/speaking";
 
 interface PageProps {
   params: Promise<{ setId: string }>;
@@ -25,7 +20,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default async function ShadowingSetPage({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const set = getShadowSet((await params).setId);
   if (!set) notFound();
   return (
@@ -36,11 +31,7 @@ export default async function ShadowingSetPage({ params }: PageProps) {
       lead="Nghe mẫu (có thể chọn tốc độ chậm), bấm Nói theo, rồi xem từ nào cần luyện lại. Nói lại bao nhiêu lần cũng được; điểm cao nhất của mỗi câu được giữ."
       narrow
     >
-      <Link href={ROUTES.SPEAKING_SHADOWING} className={styles.back}>
-        <ArrowLeft size={15} aria-hidden="true" /> Chọn bộ câu khác
-      </Link>
-      <SpeechNotice />
-      <SentenceDrill label={set.title} items={set.sentences.map((s) => ({ display: s, target: s }))} />
+      <ShadowingPage set={set} />
     </ModulePage>
   );
 }

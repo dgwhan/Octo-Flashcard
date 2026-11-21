@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { constructMetadata } from "@/src/config/seo";
-import { GRAMMAR_ROADMAP_TOPICS, GrammarTopicDetail } from "@/src/features/grammar";
+import { GRAMMAR_ROADMAP_TOPICS, GrammarTopicPage } from "@/src/features/grammar";
 
 interface PageProps {
   params: Promise<{ topicId: string }>;
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   });
 }
 
-export default async function GrammarDetailPage({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
   const { topicId } = await params;
   const topic = GRAMMAR_ROADMAP_TOPICS.find((t) => t.id === topicId);
 
@@ -33,5 +33,5 @@ export default async function GrammarDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  return <GrammarTopicDetail topic={topic} />;
+  return <GrammarTopicPage topic={topic} />;
 }

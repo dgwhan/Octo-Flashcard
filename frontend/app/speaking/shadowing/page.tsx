@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { SHADOW_SETS } from "@/src/features/speaking/shadowing.data";
-import styles from "@/src/features/speaking/speaking.module.css";
+import { ShadowingSetsPage } from "@/src/features/speaking";
 
 export const metadata: Metadata = constructMetadata({
   title: "Shadowing: nghe và nói theo câu tiếng Anh",
@@ -12,7 +10,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/speaking/shadowing",
 });
 
-export default function ShadowingPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.SPEAKING}
@@ -21,19 +19,7 @@ export default function ShadowingPage() {
       lead="Chọn một bộ câu. Với mỗi câu: nghe mẫu, bấm micro và nói lại; máy đánh dấu từ nào nghe rõ, từ nào bị nuốt hoặc đọc sai."
       narrow
     >
-      <ul className={styles.setGrid}>
-        {SHADOW_SETS.map((s) => (
-          <li key={s.id}>
-            <Link href={ROUTES.SPEAKING_SHADOWING_SET(s.id)} className={styles.setCard}>
-              <span className={styles.setSource}>
-                {s.source} · {s.level}
-              </span>
-              <span className={styles.setTitle}>{s.title}</span>
-              <span className={styles.setCount}>{s.sentences.length} câu</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <ShadowingSetsPage />
     </ModulePage>
   );
 }

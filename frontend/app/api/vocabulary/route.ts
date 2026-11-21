@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { STANDARDIZED_VOCABULARY } from "@/src/features/vocabulary/vocabulary.data";
-import { VocabularyItem, CEFRLevel, FrameworkType } from "@/src/features/vocabulary/vocabulary.types";
+import { STANDARDIZED_VOCABULARY } from "@/src/features/vocabulary/data/vocabulary.data";
+import { VocabularyItem, CEFRLevel, FrameworkType } from "@/src/features/vocabulary/types";
 
 export const dynamic = "force-dynamic";
 

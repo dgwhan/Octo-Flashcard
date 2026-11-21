@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { VOA_LESSONS } from "@/src/features/voa/voa.data";
+import { VOA_LESSONS } from "@/src/features/voa/data/voa.data";
 
 export const dynamic = "force-dynamic";
 

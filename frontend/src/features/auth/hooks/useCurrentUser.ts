@@ -1,3 +1,5 @@
+"use client";
+
 import { useSyncExternalStore, useMemo } from "react";
 import { authApi } from "../api/auth.api";
 

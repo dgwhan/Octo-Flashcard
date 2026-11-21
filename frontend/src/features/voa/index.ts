@@ -1,4 +1,4 @@
-export * from "./voa.types";
-export * from "./voa.data";
-export { default as VoaLessonList } from "./components/VoaLessonList";
-export { default as VoaLessonViewer } from "./components/VoaLessonViewer";
+export * from "./types";
+export * from "./data/voa.data";
+export { default as VoaLessonsPage } from "./pages/VoaLessonsPage";
+export { default as VoaLessonPage } from "./pages/VoaLessonPage";

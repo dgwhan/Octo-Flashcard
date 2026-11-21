@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
-import { FlashcardStudyDetailPage } from "@/src/features/flashCards";
+import { FlashcardStudyDetailPage } from "@/src/features/flashcards";
 
 interface Props {
   params: Promise<{ id: string }>;

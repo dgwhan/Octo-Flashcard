@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import { GRAMMAR_TOPIC_SUMMARIES } from "@/src/features/grammar";
-import ProgressPage from "@/src/features/progress/ProgressPage";
+import { ProgressPage } from "@/src/features/progress";
 
 export const metadata: Metadata = constructMetadata({
   title: "Tiến độ của tôi",

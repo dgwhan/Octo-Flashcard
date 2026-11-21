@@ -6,7 +6,7 @@ import { PlusCircle, Check, Loader2, AlertCircle } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import { getAuthToken } from "@/src/lib/api";
 import { flashCardApi } from "../api/flashCard.api";
-import { saveToDefaultDeck, SAVED_DECK_TITLE } from "../savedDeck";
+import { saveToDefaultDeck, SAVED_DECK_TITLE } from "../lib/savedDeck";
 import styles from "./SaveToDeckButton.module.css";
 
 interface SaveToDeckButtonProps {

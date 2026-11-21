@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { Mic, Square, Info } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import type { SpeechCheck } from "../compare";
-import { tipsFor } from "../compare";
-import { useSpeechSupport } from "../useSpeechCapture";
+import type { SpeechCheck } from "../lib/compare";
+import { tipsFor } from "../lib/compare";
+import { useSpeechSupport } from "../hooks/useSpeechCapture";
 import styles from "../speaking.module.css";
 
 export function MicButton({

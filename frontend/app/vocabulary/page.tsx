@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { VocabularyHub } from "@/src/features/vocabulary";
+import { VocabularyPage } from "@/src/features/vocabulary";
 
 export const metadata: Metadata = constructMetadata({
   title: "Bộ Từ Vựng Chuẩn Hóa Theo Cấp Độ (A1 - C2), NGSL & AWL",
@@ -11,7 +11,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/vocabulary",
 });
 
-export default function VocabularyPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.VOCABULARY}
@@ -19,7 +19,7 @@ export default function VocabularyPage() {
       title="Từ vựng theo cấp độ"
       lead="Từ vựng xếp theo cấp A1–C2, đối chiếu NGSL (từ thông dụng) và AWL (từ học thuật). Tìm thêm từ theo chủ đề và tạo bộ flashcard chỉ với một nút."
     >
-      <VocabularyHub />
+      <VocabularyPage />
     </ModulePage>
   );
 }

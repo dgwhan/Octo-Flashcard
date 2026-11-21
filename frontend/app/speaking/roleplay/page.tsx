@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import RolePlay from "@/src/features/speaking/components/RolePlay";
+import { RolePlayPage } from "@/src/features/speaking";
 
 export const metadata: Metadata = constructMetadata({
   title: "Hội thoại nhập vai với AI",
@@ -10,7 +10,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/speaking/roleplay",
 });
 
-export default function RolePlayPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.SPEAKING}
@@ -19,7 +19,7 @@ export default function RolePlayPage() {
       lead="Chọn một tình huống, AI đóng vai người đối diện. Bạn nói (hoặc gõ) câu trả lời; khi xong, AI chỉ ra câu nên sửa và cụm từ nên dùng."
       narrow
     >
-      <RolePlay />
+      <RolePlayPage />
     </ModulePage>
   );
 }

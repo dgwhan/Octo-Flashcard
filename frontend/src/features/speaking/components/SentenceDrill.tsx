@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { ChevronLeft, ChevronRight, Flag } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
-import { speakingVoice } from "../voice";
+import { speakingVoice } from "../lib/voice/voice";
+import { kokoroStatus } from "../lib/voice/kokoro";
 import VoicePicker from "./VoicePicker";
-import SaveToDeckButton from "@/src/features/flashCards/components/SaveToDeckButton";
+import SaveToDeckButton from "@/src/features/flashcards/components/SaveToDeckButton";
 import { logStudySession } from "@/src/lib/studyLog";
-import { compareSpeech, SpeechCheck } from "../compare";
-import { useSpeechCapture, useSpeechSupport } from "../useSpeechCapture";
+import { compareSpeech, SpeechCheck } from "../lib/compare";
+import { useSpeechCapture, useSpeechSupport } from "../hooks/useSpeechCapture";
 import { MicButton, LiveTranscript, SpeechResult } from "./SpeechParts";
 import styles from "../speaking.module.css";
 
@@ -33,6 +34,16 @@ export default function SentenceDrill({ items, label }: { items: DrillItem[]; la
   const [done, setDone] = useState(false);
   const [startedAt, setStartedAt] = useState<Date | null>(null);
   const item = items[index];
+  const nextTarget = items[index + 1]?.target;
+  const kokoroState = useSyncExternalStore(kokoroStatus.subscribe, () => kokoroStatus.get().state, () => "idle");
+
+  // Kokoro takes a few seconds per sentence on the CPU: start on the shown sentence and the next one
+  // before the learner clicks, so "Nghe mẫu" usually plays at once.
+  useEffect(() => {
+    if (kokoroState !== "ready" || !item) return;
+    speakingVoice.prefetch(item.target, speed);
+    if (nextTarget) speakingVoice.prefetch(nextTarget, speed);
+  }, [kokoroState, item, nextTarget, speed]);
 
   const capture = useSpeechCapture({
     onEnd: (transcript) => {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
 import ModulePage from "@/src/components/layout/ModulePage";
 import { ROUTES } from "@/src/config/routes";
-import { VoaLessonList } from "@/src/features/voa";
+import { VoaLessonsPage } from "@/src/features/voa";
 
 export const metadata: Metadata = constructMetadata({
   title: "Học Tiếng Anh Theo Cấp Độ Với VOA Learning English",
@@ -11,7 +11,7 @@ export const metadata: Metadata = constructMetadata({
   path: "/voa",
 });
 
-export default function VoaHubPage() {
+export default function Page() {
   return (
     <ModulePage
       href={ROUTES.VOA}
@@ -19,7 +19,7 @@ export default function VoaHubPage() {
       title="Truyện đọc chậm"
       lead="Truyện ngắn kinh điển do VOA đọc chậm, chia theo ba cấp. Transcript chạy theo giọng đọc, chạm vào từ để tra nghĩa, cuối bài có câu hỏi kiểm tra."
     >
-      <VoaLessonList />
+      <VoaLessonsPage />
     </ModulePage>
   );
 }

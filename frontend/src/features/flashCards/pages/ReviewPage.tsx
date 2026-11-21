@@ -9,8 +9,8 @@ import { logStudySession } from "@/src/lib/studyLog";
 import { flipCard, dealCard } from "@/src/lib/motion";
 import { SuckerRow } from "@/src/components/ui";
 import { flashCardApi } from "../api/flashCard.api";
-import { GRADES, SrsGrade, parseState, reviewCard, previewDue, formatInterval } from "../srs";
-import { buildQueue, nextDueAt, QueueItem } from "../reviewQueue";
+import { GRADES, SrsGrade, parseState, reviewCard, previewDue, formatInterval } from "../lib/srs";
+import { buildQueue, nextDueAt, QueueItem } from "../lib/reviewQueue";
 import styles from "./ReviewPage.module.css";
 
 type Phase = "loading" | "auth" | "error" | "empty" | "review" | "done";

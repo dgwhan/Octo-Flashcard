@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { X, BookA } from "lucide-react";
-import DictionaryView from "./DictionaryView";
+import DictionaryPage from "../pages/DictionaryPage";
 
 interface QuickLookupModalProps {
   isOpen: boolean;
@@ -121,7 +121,7 @@ export default function QuickLookupModal({
             maxHeight: "calc(88vh - 80px)",
           }}
         >
-          <DictionaryView initialWord={word} isCompact />
+          <DictionaryPage initialWord={word} isCompact />
         </div>
       </div>
     </div>

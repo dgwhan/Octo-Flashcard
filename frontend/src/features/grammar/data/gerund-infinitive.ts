@@ -1,4 +1,4 @@
-import type { GrammarTopicInput } from "../grammar.types";
+import type { GrammarTopicInput } from "../types";
 
 const topic: GrammarTopicInput = {
   id: "gerund-infinitive",

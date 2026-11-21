@@ -1,30 +1,18 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import {
-  Volume2,
-  RotateCw,
-  RotateCcw,
-  ChevronLeft,
-  ChevronRight,
-  Shuffle,
-  ArrowLeftRight,
-  Maximize2,
-  Minimize2,
-  CheckCircle2,
-  XCircle,
-  Trophy,
-  Sparkles,
-  Lock,
-  LogIn,
-  UserCheck,
-} from "lucide-react";
 import { FlashCardResponse } from "@/src/types/flashCard";
 import { authApi } from "@/src/features/auth/api/auth.api";
-import { useTranslation } from "@/src/i18n";
 import { flipCard, dealCard, goldTick } from "@/src/lib/motion";
-import { studyProgressKey } from "../studyProgress";
+import { studyProgressKey } from "../lib/studyProgress";
+import StudyAuthGuard from "./study/StudyAuthGuard";
+import StudyComplete from "./study/StudyComplete";
+import StudyToolbar from "./study/StudyToolbar";
+import StudyProgress from "./study/StudyProgress";
+import CardFace from "./study/CardFace";
+import GradingBar from "./study/GradingBar";
+import StudyNav from "./study/StudyNav";
+import ShortcutGuide from "./study/ShortcutGuide";
 import styles from "./FlashCardViewer.module.css";
 
 export interface FlashCardViewerProps {
@@ -47,7 +35,6 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
   deckTitle,
   onCardMastered,
 }) => {
-  const { t } = useTranslation();
 
   // Check user authentication
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
@@ -357,30 +344,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
   if (!isLoggedIn) {
     const redirectTarget = deckId ? `/flashcards?setId=${deckId}` : "/flashcards";
     return (
-      <div className={styles.authGuardBox}>
-        <div className={styles.lockIconCircle}>
-          <Lock size={30} />
-        </div>
-        <h3 className={styles.authGuardTitle}>Yêu cầu đăng nhập để học tập</h3>
-        <p className={styles.authGuardDesc}>
-          Bạn cần đăng nhập tài khoản Octo Flashcard để sử dụng giao diện học thẻ 2 mặt, phát âm giọng đọc, theo dõi tỷ lệ nhớ và lưu trữ tiến độ cá nhân của bạn.
-        </p>
-        <div className={styles.authGuardButtons}>
-          <Link
-            href={`/auth/login?redirect=${encodeURIComponent(redirectTarget)}`}
-            className={styles.btnPrimaryAction}
-          >
-            <LogIn size={18} />
-            <span>Đăng nhập ngay</span>
-          </Link>
-          <Link
-            href={`/auth/register?redirect=${encodeURIComponent(redirectTarget)}`}
-            className={styles.btnSecondaryAction}
-          >
-            <span>Tạo tài khoản mới</span>
-          </Link>
-        </div>
-      </div>
+      <StudyAuthGuard redirectTarget={redirectTarget} />
     );
   }
 
@@ -399,60 +363,14 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
       totalCards > 0 ? Math.round((masteredCount / totalCards) * 100) : 0;
 
     return (
-      <div className={styles.completionCard}>
-        <div className={styles.trophyCircle}>
-          <Trophy size={40} />
-        </div>
-        <div>
-          <h2 className={styles.completionTitle}>{t("study.completedTitle")}</h2>
-          <p className={styles.completionDesc}>
-            {t("study.completedSubtitle")}
-          </p>
-        </div>
-
-        <div className={styles.summaryMetricsGrid}>
-          <div className={styles.metricBox}>
-            <span className={`${styles.metricValue} ${styles.metricSuccess}`}>
-              {masteredCount}
-            </span>
-            <span className={styles.metricLabel}>{t("study.mastered")} ({accuracyRate}%)</span>
-          </div>
-
-          <div className={styles.metricBox}>
-            <span className={`${styles.metricValue} ${styles.metricReview}`}>
-              {reviewCount}
-            </span>
-            <span className={styles.metricLabel}>{t("study.needReview")}</span>
-          </div>
-
-          <div className={styles.metricBox}>
-            <span className={styles.metricValue}>{totalCards}</span>
-            <span className={styles.metricLabel}>{t("flashcards.totalCards")}</span>
-          </div>
-        </div>
-
-        <div className={styles.completionActions}>
-          {reviewCount > 0 && (
-            <button
-              type="button"
-              className={styles.btnPrimaryAction}
-              onClick={handleReviewWeakCards}
-            >
-              <RotateCcw size={18} />
-              <span>{t("study.needReview")} ({reviewCount})</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            className={styles.btnSecondaryAction}
-            onClick={handleRestartAll}
-          >
-            <RotateCw size={18} />
-            <span>{t("study.restartStudy")}</span>
-          </button>
-        </div>
-      </div>
+      <StudyComplete
+        masteredCount={masteredCount}
+        reviewCount={reviewCount}
+        accuracyRate={accuracyRate}
+        totalCards={totalCards}
+        onReviewWeak={handleReviewWeakCards}
+        onRestart={handleRestartAll}
+      />
     );
   }
 
@@ -474,75 +392,25 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
       }`}
     >
       {/* Top Bar: User Progress Badge & Study Toolbar */}
-      <div className={styles.topBar}>
-        <div className={styles.userStatusBadge} title="Tiến độ học tập được lưu tự động cho tài khoản">
-          <span className={styles.userDot} />
-          <UserCheck size={14} />
-          <span>
-            Lưu cho: <span className={styles.userNameHighlight}>{currentUser?.username || "Tài khoản của bạn"}</span>
-          </span>
-        </div>
-
-        <div className={styles.topTools}>
-          <button
-            type="button"
-            className={`${styles.toolBtn} ${isShuffled ? styles.toolBtnActive : ""}`}
-            onClick={handleToggleShuffle}
-            title="Xáo trộn thứ tự thẻ (Phím S)"
-            aria-label="Shuffle cards"
-          >
-            <Shuffle size={14} />
-            <span>Xáo trộn</span>
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.toolBtn} ${isReversed ? styles.toolBtnActive : ""}`}
-            onClick={handleToggleReverse}
-            title="Đảo mặt thẻ (Định nghĩa <-> Thuật ngữ)"
-            aria-label="Reverse card faces"
-          >
-            <ArrowLeftRight size={14} />
-            <span>Đổi mặt hỏi</span>
-          </button>
-
-          <button
-            type="button"
-            className={styles.toolBtn}
-            onClick={handleToggleFullscreen}
-            title="Bật/Tắt toàn màn hình (Phím F)"
-            aria-label="Toggle fullscreen"
-          >
-            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          </button>
-        </div>
-      </div>
+      <StudyToolbar
+        username={currentUser?.username}
+        isShuffled={isShuffled}
+        isReversed={isReversed}
+        isFullscreen={isFullscreen}
+        onShuffle={handleToggleShuffle}
+        onReverse={handleToggleReverse}
+        onFullscreen={handleToggleFullscreen}
+      />
 
       {/* Progress Bar & Counters */}
-      <div className={styles.progressSection}>
-        <div className={styles.statsBar}>
-          <div className={styles.statPills}>
-            <span ref={masteredPillRef} className={styles.pillMastered} title="Số thẻ đã thuộc">
-              <CheckCircle2 size={13} />
-              <span>{masteredIds.size} Đã nhớ</span>
-            </span>
-            <span className={styles.pillReview} title="Số thẻ cần ôn lại">
-              <XCircle size={13} />
-              <span>{reviewIds.size} Cần ôn</span>
-            </span>
-          </div>
-          <span className={styles.counterText}>
-            Thẻ {currentIndex + 1} / {totalCards} ({Math.round(progressPercent)}%)
-          </span>
-        </div>
-
-        <div className={styles.progressTrack} role="progressbar" aria-valuenow={progressPercent}>
-          <div
-            className={styles.progressBarFill}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
+      <StudyProgress
+        masteredCount={masteredIds.size}
+        reviewCount={reviewIds.size}
+        currentIndex={currentIndex}
+        totalCards={totalCards}
+        progressPercent={progressPercent}
+        pillRef={masteredPillRef}
+      />
 
       {/* 3D Flippable Flashcard */}
       <div
@@ -558,166 +426,20 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
       >
         <div ref={innerRef} className={`${styles.cardInner} ${isFlipped ? styles.flipped : ""}`}>
           {/* MẶT TRƯỚC (Front Face) */}
-          <div className={`${styles.cardFace} ${styles.cardFront}`}>
-            <div className={styles.faceHeader}>
-              <div className={styles.tagGroup}>
-                <span className={styles.faceTag}>{frontTagLabel}</span>
-                <span className={styles.languageBadge}>
-                  {frontLanguage || "English"}
-                </span>
-              </div>
-              <button
-                type="button"
-                className={`${styles.audioBtn} ${isPlayingAudio ? styles.audioBtnActive : ""}`}
-                onClick={handlePronounce}
-                title="Phát âm từ vựng (Phím A)"
-                aria-label="Pronounce front text"
-              >
-                <Volume2 size={18} />
-              </button>
-            </div>
+          <CardFace tag={frontTagLabel} language={frontLanguage} text={frontText} isPlayingAudio={isPlayingAudio} onPronounce={handlePronounce} />
 
-            <div className={styles.faceBody}>
-              <p className={styles.faceText}>{frontText}</p>
-            </div>
-
-            <div className={styles.faceFooter}>
-              <span className={styles.hintText}>
-                <Sparkles size={14} />
-                Nhấn vào thẻ hoặc phím Space để lật xem đáp án
-              </span>
-              <span className={styles.flipBadge}>Mặt 1</span>
-            </div>
-          </div>
-
-          {/* MẶT SAU (Back Face) */}
-          <div className={`${styles.cardFace} ${styles.cardBack}`}>
-            <div className={styles.faceHeader}>
-              <div className={styles.tagGroup}>
-                <span className={`${styles.faceTag} ${styles.backTag}`}>
-                  {backTagLabel}
-                </span>
-                <span className={styles.languageBadge}>
-                  {backLanguage || "English"}
-                </span>
-              </div>
-              <button
-                type="button"
-                className={`${styles.audioBtn} ${isPlayingAudio ? styles.audioBtnActive : ""}`}
-                onClick={handlePronounce}
-                title="Phát âm định nghĩa (Phím A)"
-                aria-label="Pronounce back text"
-              >
-                <Volume2 size={18} />
-              </button>
-            </div>
-
-            <div className={styles.faceBody}>
-              <p className={styles.faceText}>{backText}</p>
-            </div>
-
-            <div className={styles.faceFooter}>
-              <span className={styles.hintText}>
-                <Sparkles size={14} />
-                Nhấn để quay lại mặt trước
-              </span>
-              <span className={styles.flipBadge}>Mặt 2</span>
-            </div>
-          </div>
+          <CardFace back tag={backTagLabel} language={backLanguage} text={backText} isPlayingAudio={isPlayingAudio} onPronounce={handlePronounce} />
         </div>
       </div>
 
       {/* Memory Assessment Action Buttons */}
-      <div className={styles.gradingBar}>
-        <button
-          type="button"
-          className={styles.btnGradingReview}
-          onClick={handleMarkReview}
-          title={t("study.needReview")}
-          aria-label={t("study.needReview")}
-        >
-          <XCircle size={18} />
-          <span>{t("study.needReview")}</span>
-          <span className={styles.shortcutPill}>1</span>
-        </button>
-
-        <button
-          type="button"
-          className={styles.btnFlipCenter}
-          onClick={handleFlip}
-          title={t("study.flipHint")}
-          aria-label="Flip card"
-        >
-          <RotateCw size={16} />
-          <span>{t("study.flipHint")}</span>
-          <span className={styles.shortcutPill}>Space</span>
-        </button>
-
-        <button
-          type="button"
-          className={styles.btnGradingMastered}
-          onClick={handleMarkMastered}
-          title={t("study.mastered")}
-          aria-label={t("study.mastered")}
-        >
-          <CheckCircle2 size={18} />
-          <span>{t("study.mastered")}</span>
-          <span className={styles.shortcutPill}>2</span>
-        </button>
-      </div>
+      <GradingBar onReview={handleMarkReview} onFlip={handleFlip} onMastered={handleMarkMastered} />
 
       {/* Navigation Controls Bar */}
-      <div className={styles.controlsBar}>
-        <button
-          type="button"
-          className={styles.controlBtn}
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-          title="Thẻ trước (Mũi tên trái)"
-          aria-label="Previous card"
-        >
-          <ChevronLeft size={20} />
-        </button>
-
-        <div className={styles.navGroup}>
-          <span className={styles.counter}>
-            {currentIndex + 1} / {totalCards}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          className={styles.controlBtn}
-          onClick={handleNext}
-          disabled={currentIndex === totalCards - 1}
-          title="Thẻ tiếp theo (Mũi tên phải)"
-          aria-label="Next card"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
+      <StudyNav currentIndex={currentIndex} totalCards={totalCards} onPrev={handlePrev} onNext={handleNext} />
 
       {/* Keyboard Shortcuts Hint Bar */}
-      <div className={styles.keyboardGuide}>
-        <span className={styles.kbdItem}>
-          <kbd className={styles.kbd}>Space</kbd> Lật thẻ
-        </span>
-        <span className={styles.kbdItem}>
-          <kbd className={styles.kbd}>←</kbd> <kbd className={styles.kbd}>→</kbd> Chuyển thẻ
-        </span>
-        <span className={styles.kbdItem}>
-          <kbd className={styles.kbd}>1</kbd> Cần ôn
-        </span>
-        <span className={styles.kbdItem}>
-          <kbd className={styles.kbd}>2</kbd> Đã nhớ
-        </span>
-        <span className={styles.kbdItem}>
-          <kbd className={styles.kbd}>A</kbd> Phát âm
-        </span>
-        <span className={styles.kbdItem}>
-          <kbd className={styles.kbd}>F</kbd> Toàn màn hình
-        </span>
-      </div>
+      <ShortcutGuide />
     </div>
   );
 };

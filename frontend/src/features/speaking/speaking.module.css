@@ -691,6 +691,19 @@
   box-shadow: 0 0 0 3px var(--color-primary-ring);
 }
 
+.voiceProgress {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.voiceProgress progress {
+  width: 10rem;
+  max-width: 100%;
+  accent-color: var(--color-primary);
+}
+
 .keyBar .linkBtn {
   display: inline-flex;
   align-items: center;

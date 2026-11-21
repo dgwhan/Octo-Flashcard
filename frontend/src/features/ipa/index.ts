@@ -1,4 +1,4 @@
-export * from "./ipa.types";
-export * from "./ipa.data";
-export * from "./ipa.audio";
-export { default as IpaChart } from "./components/IpaChart";
+export * from "./types";
+export * from "./data/ipa.data";
+export * from "./lib/ipa.audio";
+export { default as IpaPage } from "./pages/IpaPage";

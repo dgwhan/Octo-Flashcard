@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
-import { FlashcardSetsPage } from "@/src/features/flashCards";
+import { FlashcardSetsPage } from "@/src/features/flashcards";
 
 export const metadata: Metadata = constructMetadata({
   title: "Kho Bộ Thẻ Flashcard - Tổng Hợp",

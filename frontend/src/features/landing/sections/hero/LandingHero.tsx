@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import { GRAMMAR_ROADMAP_TOPICS } from "@/src/features/grammar/grammar.data"; // server component: data stays on the server
+import { GRAMMAR_ROADMAP_TOPICS } from "@/src/features/grammar/data"; // server component: data stays on the server
 import HeroCard from "./HeroCard";
 import shared from "../../landing.module.css";
 import styles from "./LandingHero.module.css";

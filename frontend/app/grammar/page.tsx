@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { constructMetadata } from "@/src/config/seo";
-import { GrammarRoadmapHub, GRAMMAR_TOPIC_SUMMARIES } from "@/src/features/grammar";
+import { GrammarRoadmapPage, GRAMMAR_TOPIC_SUMMARIES } from "@/src/features/grammar";
 
 export const metadata: Metadata = constructMetadata({
   title: `Lộ trình ngữ pháp tiếng Anh: ${GRAMMAR_TOPIC_SUMMARIES.length} chủ điểm từ A1 đến C1`,
@@ -9,6 +9,6 @@ export const metadata: Metadata = constructMetadata({
   path: "/grammar",
 });
 
-export default function GrammarPage() {
-  return <GrammarRoadmapHub topics={GRAMMAR_TOPIC_SUMMARIES} />;
+export default function Page() {
+  return <GrammarRoadmapPage topics={GRAMMAR_TOPIC_SUMMARIES} />;
 }
