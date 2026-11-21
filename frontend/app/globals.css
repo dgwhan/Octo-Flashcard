@@ -79,3 +79,14 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Loading spinners (lucide icons with className="animate-spin"); the project doesn't load Tailwind */
+.animate-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

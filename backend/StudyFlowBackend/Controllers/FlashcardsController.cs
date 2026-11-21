@@ -114,6 +114,25 @@ namespace StudyFlowBackend.Controllers
             }
         }
 
+        [HttpPut("{id}/items/{cardId}/review")]
+        public async Task<IActionResult> UpdateReviewState(Guid id, Guid cardId, [FromBody] UpdateFlashcardReviewDto dto)
+        {
+            var userId = _userUtils.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId)) return Unauthorized(ApiResponse<object>.ErrorResponse("Unauthorized"));
+            if (dto == null) return BadRequest(ApiResponse<object>.ErrorResponse("Dữ liệu ôn tập không hợp lệ"));
+
+            try
+            {
+                var card = await _flashcardService.UpdateReviewStateAsync(id, cardId, userId, dto);
+                if (card == null) return NotFound(ApiResponse<object>.ErrorResponse("Không tìm thấy thẻ"));
+                return Ok(ApiResponse<FlashcardDto>.SuccessResponse(card));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ApiResponse<object>.ErrorResponse(ex.Message));
+            }
+        }
+
         [HttpPost("{id}/items")]
         public async Task<IActionResult> AddFlashcardItem(Guid id, [FromBody] CreateFlashcardDto dto)
         {

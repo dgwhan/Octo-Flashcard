@@ -30,11 +30,12 @@
 }
 
 .pageTitle {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
   color: var(--color-text-primary);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.02;
 }
 
 .pageSubtitle {
@@ -54,7 +55,7 @@
   font-weight: 700;
   font-size: 0.9375rem;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  box-shadow: var(--shadow-md);
   transition: all var(--dur-fast) var(--ease-out);
 }
 
@@ -65,38 +66,24 @@
 
 /* Overview Metrics Row */
 .metricsRow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--color-border);
 }
 
 .metricCard {
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg, 14px);
-  padding: 16px 20px;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: var(--shadow-sm);
+  align-items: baseline;
 }
 
-.metricIconCircle {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md, 10px);
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .metricValue {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1;
   color: var(--color-text-primary);
-  line-height: 1.1;
 }
 
 .metricLabel {
@@ -152,43 +139,28 @@
 
 .setCard {
   background-color: var(--color-bg-card);
-  border: none;
-  outline: none;
-  border-radius: var(--radius-xl, 18px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
 }
 
 .setCard:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  transform: rotate(var(--card-tilt-rest)) translateY(-2px); /* the card-in-hand gesture */
 }
 
 .setCardHeader {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
-.setCardIconWrap {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md, 10px);
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
 
 .cardCountBadge {
   font-size: 12px;
@@ -203,10 +175,11 @@
 }
 
 .setCardTitle {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1.3;
+  line-height: 1.2;
   margin: 0;
   word-break: break-word;
 }
@@ -373,4 +346,58 @@
   .setsGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0 0 0.5rem;
+}
+
+.eyebrowNum {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.setCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.deckProgress {
+  display: inline-flex;
+}
+
+.previewMore {
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setCard:hover {
+    transform: none;
+  }
+}
+
+.metricLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.metricCta {
+  margin-left: 6px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.metricLink:hover .metricValue,
+.metricLink:focus-visible .metricValue {
+  color: var(--color-primary);
 }

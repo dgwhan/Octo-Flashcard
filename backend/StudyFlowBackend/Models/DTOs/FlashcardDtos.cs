@@ -10,6 +10,19 @@ namespace StudyFlowBackend.DTOs
         public string Answer { get; set; } = string.Empty;
         public Guid FlashcardSetId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime? Due { get; set; }
+        public string? ReviewState { get; set; }
+    }
+
+    public class UpdateFlashcardReviewDto
+    {
+        public DateTime Due { get; set; }
+        public string ReviewState { get; set; } = string.Empty;
+    }
+
+    public class GenerateFlashcardsFromTextDto
+    {
+        public string Text { get; set; } = string.Empty;
     }
 
     public class FlashcardSetDto

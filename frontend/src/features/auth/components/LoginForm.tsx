@@ -155,7 +155,7 @@ function LoginFormInner() {
           }}
         >
           <div className={`custom-checkbox ${rememberMe ? "checked" : ""}`}>
-            {rememberMe && <Check size={14} strokeWidth={3} color="#ffffff" />}
+            {rememberMe && <Check size={14} strokeWidth={3} />}
           </div>
           <span className="remember-label">Ghi nhớ đăng nhập / Remember me</span>
         </div>

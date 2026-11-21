@@ -23,6 +23,7 @@ import type { BadgeVariant } from "@/src/components/ui";
 import { flipCard, dealCard } from "@/src/lib/motion";
 import QuestionList from "./QuestionList";
 import { GrammarAnswer, scoreAnswers } from "../grammar.grading";
+import { logStudySession } from "@/src/lib/studyLog";
 import styles from "./GrammarTopicDetail.module.css";
 
 interface GrammarTopicDetailProps {
@@ -112,8 +113,19 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
     }
   };
 
+  // Each graded set counts the time since the page opened (or the last graded set) toward streak + heatmap
+  const studyStart = useRef<Date | null>(null);
+  useEffect(() => {
+    studyStart.current = new Date();
+  }, []);
+  const logGrammarTime = () => {
+    if (studyStart.current) logStudySession("Grammar", studyStart.current);
+    studyStart.current = new Date();
+  };
+
   // 2. Practice
   const handleSubmitPractice = async () => {
+    logGrammarTime();
     const questions = topic.practice;
     const attempt = scoreAnswers(questions, selectedAnswers);
     const { correct: correctCount, percent: score } = attempt;
@@ -144,6 +156,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
 
   // 2b. Advanced set: scored on the spot; progress keeps recording the core set only
   const handleSubmitAdvanced = () => {
+    logGrammarTime();
     const attempt = scoreAnswers(topic.advanced, advancedAnswers);
     setAdvancedAttempt(attempt);
     setIsAdvancedSubmitted(true);
@@ -157,6 +170,7 @@ export default function GrammarTopicDetail({ topic }: GrammarTopicDetailProps) {
 
   // 3. Mastery quiz
   const handleSubmitMasteryQuiz = async () => {
+    logGrammarTime();
     const score = scoreAnswers(topic.review.masteryQuiz, masteryAnswers).percent;
     setMasteryAttempt(score);
     setIsMasterySubmitted(true);

@@ -24,6 +24,7 @@ import { FlashCardResponse } from "@/src/types/flashCard";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { useTranslation } from "@/src/i18n";
 import { flipCard, dealCard, goldTick } from "@/src/lib/motion";
+import { studyProgressKey } from "../studyProgress";
 import styles from "./FlashCardViewer.module.css";
 
 export interface FlashCardViewerProps {
@@ -87,10 +88,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
   }, [cards]);
 
   // Storage key scoped to user and deck
-  const storageKey = useMemo(() => {
-    const uid = currentUser?.userId || "guest";
-    return `octo_flashcard_study_${uid}_${deckId}`;
-  }, [currentUser?.userId, deckId]);
+  const storageKey = useMemo(() => studyProgressKey(currentUser?.userId, deckId), [currentUser?.userId, deckId]);
 
   // Load study progress per user from LocalStorage
   useEffect(() => {

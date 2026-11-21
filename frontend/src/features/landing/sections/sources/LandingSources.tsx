@@ -6,7 +6,6 @@ const SOURCES = [
   { name: "VOA Learning English", license: "Public domain", use: "Truyện ngắn đọc chậm và transcript", link: "https://learningenglish.voanews.com" },
   { name: "LibriVox", license: "Public domain", use: "Sách nói do tình nguyện viên thu âm", link: "https://librivox.org" },
   { name: "Project Gutenberg", license: "Public domain", use: "Văn bản gốc đi kèm sách nói", link: "https://www.gutenberg.org" },
-  { name: "Tatoeba", license: "CC BY 2.0", use: "Câu song ngữ và bản thu giọng người", link: "https://tatoeba.org" },
   { name: "Internet Archive", license: "Thư viện mở", use: "Lưu trữ và phát file âm thanh", link: "https://archive.org" },
   { name: "Free Dictionary API · Datamuse", license: "API mở", use: "Định nghĩa, phiên âm, từ đồng nghĩa", link: "https://dictionaryapi.dev" },
   { name: "Wikimedia Commons", license: "CC BY-SA", use: "Bản thu âm của 44 âm IPA", link: "https://commons.wikimedia.org" },

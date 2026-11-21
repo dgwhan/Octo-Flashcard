@@ -84,7 +84,7 @@
 }
 
 .optionActive {
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--color-primary-light);
   color: var(--color-primary);
   font-weight: 600;
 }

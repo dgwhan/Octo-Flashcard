@@ -14,6 +14,7 @@ import {
 import { dictionaryApi } from "../dictionary.api";
 import { DictionaryEntry } from "../dictionary.types";
 import { ROUTES } from "@/src/config/routes";
+import SaveToDeckButton from "@/src/features/flashCards/components/SaveToDeckButton";
 
 const POPULAR_WORDS = [
   "resilience",
@@ -152,6 +153,7 @@ export default function DictionaryView({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown}
+          aria-label="Từ cần tra"
           placeholder="Nhập từ tiếng Anh để tra nghĩa, phát âm..."
           style={{
             flex: 1,
@@ -226,9 +228,9 @@ export default function DictionaryView({
                       handleSearch(w);
                     }}
                     style={{
-                      background: "rgba(16, 185, 129, 0.08)",
+                      background: "var(--color-primary-light)",
                       color: "var(--color-primary)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
+                      border: "1px solid var(--color-primary-ring)",
                       borderRadius: "8px",
                       padding: "5px 12px",
                       fontSize: "0.85rem",
@@ -280,9 +282,9 @@ export default function DictionaryView({
           style={{
             padding: "16px",
             borderRadius: "12px",
-            background: "rgba(239, 68, 68, 0.08)",
-            border: "1px solid rgba(239, 68, 68, 0.2)",
-            color: "#ef4444",
+            background: "var(--color-danger-light)",
+            border: "1px solid var(--color-danger-border)",
+            color: "var(--color-danger)",
             display: "flex",
             alignItems: "center",
             gap: "10px",
@@ -365,9 +367,9 @@ export default function DictionaryView({
                           display: "inline-flex",
                           alignItems: "center",
                           gap: "6px",
-                          background: "rgba(16, 185, 129, 0.12)",
+                          background: "var(--color-primary-light)",
                           color: "var(--color-primary)",
-                          border: "1px solid rgba(16, 185, 129, 0.25)",
+                          border: "1px solid var(--color-primary-ring)",
                           borderRadius: "10px",
                           padding: "8px 14px",
                           cursor: "pointer",
@@ -380,29 +382,10 @@ export default function DictionaryView({
                         <span>Nghe phát âm ({voiceSpeed}x)</span>
                       </button>
 
-                      <Link
-                        href={`${ROUTES.FLASHCARDS_CREATE}?word=${encodeURIComponent(
-                          entry.word
-                        )}&definition=${encodeURIComponent(
-                          entry.meanings[0]?.definitions[0]?.definition || ""
-                        )}&phonetic=${encodeURIComponent(primaryPhonetic || "")}`}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          background: "rgba(59, 130, 246, 0.1)",
-                          color: "#3b82f6",
-                          border: "1px solid rgba(59, 130, 246, 0.25)",
-                          borderRadius: "10px",
-                          padding: "8px 14px",
-                          fontWeight: 600,
-                          fontSize: "0.875rem",
-                          textDecoration: "none",
-                        }}
-                      >
-                        <PlusCircle size={18} />
-                        <span>Tạo thẻ Flashcard</span>
-                      </Link>
+                      <SaveToDeckButton
+                        front={primaryPhonetic ? `${entry.word} ${primaryPhonetic}` : entry.word}
+                        back={entry.meanings[0]?.definitions[0]?.definition || ""}
+                      />
                     </div>
 
                     {/* Speed selector bar */}
@@ -434,7 +417,7 @@ export default function DictionaryView({
                                 borderRadius: "5px",
                                 border: "none",
                                 backgroundColor: isSelected ? "var(--color-primary)" : "transparent",
-                                color: isSelected ? "#ffffff" : "var(--color-text-secondary)",
+                                color: isSelected ? "var(--color-text-inverse)" : "var(--color-text-secondary)",
                                 fontSize: "0.725rem",
                                 fontWeight: isSelected ? 700 : 500,
                                 cursor: "pointer",
@@ -463,7 +446,7 @@ export default function DictionaryView({
                           padding: "4px 10px",
                           borderRadius: "6px",
                           background: "rgba(99, 102, 241, 0.12)",
-                          color: "#6366f1",
+                          color: "var(--color-primary)",
                           fontSize: "0.825rem",
                           fontWeight: 700,
                           textTransform: "uppercase",

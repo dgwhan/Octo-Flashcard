@@ -138,7 +138,7 @@ export default function IpaChart() {
                   borderRadius: "10px",
                   border: isActive ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
                   backgroundColor: isActive ? "var(--color-primary)" : "transparent",
-                  color: isActive ? "#ffffff" : "var(--color-text-primary)",
+                  color: isActive ? "var(--color-text-inverse)" : "var(--color-text-primary)",
                   fontWeight: 600,
                   fontSize: "0.875rem",
                   cursor: "pointer",
@@ -169,7 +169,7 @@ export default function IpaChart() {
             borderRadius: "10px",
             border: isQuizMode ? "1px solid var(--color-warning)" : "1px solid var(--color-primary-ring)",
             backgroundColor: isQuizMode ? "var(--color-warning)" : "var(--color-primary-light)",
-            color: isQuizMode ? "var(--color-text-inverse, #ffffff)" : "var(--color-primary)",
+            color: isQuizMode ? "var(--color-text-inverse)" : "var(--color-primary)",
             fontWeight: 700,
             fontSize: "0.875rem",
             cursor: "pointer",
@@ -214,6 +214,7 @@ export default function IpaChart() {
           <button
             type="button"
             onClick={() => ipaAudio.playPhoneme(quizQuestion)}
+                aria-label="Nghe lại âm cần đoán"
             style={{
               width: "80px",
               height: "80px",
@@ -225,7 +226,7 @@ export default function IpaChart() {
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              boxShadow: "0 8px 24px rgba(16, 185, 129, 0.35)",
+              boxShadow: "0 8px 24px var(--color-primary-ring)",
               transition: "transform 0.15s ease",
             }}
           >
@@ -340,6 +341,16 @@ export default function IpaChart() {
               <div
                 key={item.id}
                 onClick={() => setSelectedPhoneme(item)}
+                // card holds nested buttons, so it can't be a <button>; give it button semantics + keys instead
+                role="button"
+                tabIndex={0}
+                aria-label={`Xem chi tiết âm /${item.symbol}/`}
+                onKeyDown={(e) => {
+                  if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    setSelectedPhoneme(item);
+                  }
+                }}
                 style={{
                   backgroundColor: "var(--color-bg-card)",
                   border: isPlaying ? "2px solid var(--color-primary)" : "1px solid var(--color-border)",
@@ -351,7 +362,7 @@ export default function IpaChart() {
                   cursor: "pointer",
                   position: "relative",
                   transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                  boxShadow: isPlaying ? "0 8px 20px rgba(16, 185, 129, 0.2)" : "0 2px 6px rgba(0, 0, 0, 0.03)",
+                  boxShadow: isPlaying ? "0 8px 20px var(--color-primary-ring)" : "0 2px 6px rgba(0, 0, 0, 0.03)",
                 }}
               >
                 {/* Header with symbol & audio button */}
@@ -372,12 +383,13 @@ export default function IpaChart() {
                     type="button"
                     onClick={(e) => playSound(item, e)}
                     title="Nghe phát âm chuẩn"
+                    aria-label={`Nghe âm /${item.symbol}/`}
                     style={{
                       width: "38px",
                       height: "38px",
                       borderRadius: "50%",
-                      backgroundColor: isPlaying ? "var(--color-primary)" : "rgba(16, 185, 129, 0.12)",
-                      color: isPlaying ? "#ffffff" : "var(--color-primary)",
+                      backgroundColor: isPlaying ? "var(--color-primary)" : "var(--color-primary-light)",
+                      color: isPlaying ? "var(--color-text-inverse)" : "var(--color-primary)",
                       border: "none",
                       display: "flex",
                       alignItems: "center",
@@ -409,13 +421,19 @@ export default function IpaChart() {
                 {/* Example Words with highlight */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   {item.examples.slice(0, 2).map((ex, exIdx) => (
-                    <div
+                    <button
+                      type="button"
                       key={exIdx}
                       onClick={(e) => playWord(ex.word, e)}
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        width: "100%",
+                        border: "none",
+                        font: "inherit",
+                        textAlign: "left",
+                        cursor: "pointer",
                         fontSize: "0.875rem",
                         color: "var(--color-text-primary)",
                         padding: "4px 8px",
@@ -423,12 +441,13 @@ export default function IpaChart() {
                         backgroundColor: "var(--color-bg-alt)",
                       }}
                       title="Bấm để nghe từ này"
+                      aria-label={`Nghe từ ${ex.word}`}
                     >
                       <span>
                         <b>{ex.word}</b> <span style={{ color: "var(--color-text-secondary)", fontSize: "0.8rem" }}>{ex.ipa}</span>
                       </span>
-                      <Volume2 size={14} style={{ color: "var(--color-text-secondary)" }} />
-                    </div>
+                      <Volume2 size={14} aria-hidden="true" style={{ color: "var(--color-text-secondary)" }} />
+                    </button>
                   ))}
                 </div>
 
@@ -468,8 +487,12 @@ export default function IpaChart() {
             padding: "16px",
           }}
           onClick={() => setSelectedPhoneme(null)}
+          onKeyDown={(e) => e.key === "Escape" && setSelectedPhoneme(null)}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Chi tiết âm /${selectedPhoneme.symbol}/`}
             style={{
               backgroundColor: "var(--color-bg-card)",
               borderRadius: "20px",
@@ -521,6 +544,8 @@ export default function IpaChart() {
               <button
                 type="button"
                 onClick={() => setSelectedPhoneme(null)}
+                aria-label="Đóng chi tiết âm"
+                autoFocus // move focus into the dialog so Escape and Tab work from the start
                 style={{
                   background: "transparent",
                   border: "none",
@@ -543,8 +568,8 @@ export default function IpaChart() {
                   justifyContent: "space-between",
                   padding: "14px 18px",
                   borderRadius: "12px",
-                  background: "rgba(16, 185, 129, 0.08)",
-                  border: "1px solid rgba(16, 185, 129, 0.2)",
+                  background: "var(--color-primary-light)",
+                  border: "1px solid var(--color-primary-ring)",
                 }}
               >
                 <div style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--color-text-primary)" }}>

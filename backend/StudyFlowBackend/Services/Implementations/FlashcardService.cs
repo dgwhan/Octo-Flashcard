@@ -162,6 +162,24 @@ namespace StudyFlowBackend.Services.Implementations
             return MapToDto(card);
         }
 
+        public async Task<FlashcardDto?> UpdateReviewStateAsync(Guid setId, Guid cardId, string userId, UpdateFlashcardReviewDto dto)
+        {
+            // Trust boundary: the state is opaque to the server, but must be small, valid JSON.
+            if (string.IsNullOrWhiteSpace(dto.ReviewState) || dto.ReviewState.Length > 2000)
+                throw new InvalidOperationException("Review state is missing or too large.");
+            try { System.Text.Json.JsonDocument.Parse(dto.ReviewState).Dispose(); }
+            catch (System.Text.Json.JsonException) { throw new InvalidOperationException("Review state must be valid JSON."); }
+
+            var set = await _flashcardRepository.GetSetByIdAsync(setId, userId); // ownership check
+            var card = set?.Flashcards.FirstOrDefault(c => c.Id == cardId);
+            if (card == null) return null;
+
+            card.Due = DateTime.SpecifyKind(dto.Due, DateTimeKind.Utc);
+            card.ReviewState = dto.ReviewState;
+            await _flashcardRepository.SaveChangesAsync();
+            return MapToDto(card);
+        }
+
         public async Task<bool> DeleteFlashcardSetAsync(Guid id, string userId)
         {
             var set = await _flashcardRepository.GetSetByIdAsync(id, userId);
@@ -210,7 +228,9 @@ namespace StudyFlowBackend.Services.Implementations
                 Question = f.Question,
                 Answer = f.Answer,
                 FlashcardSetId = f.FlashcardSetId,
-                CreatedAt = f.CreatedAt
+                CreatedAt = f.CreatedAt,
+                Due = f.Due,
+                ReviewState = f.ReviewState
             };
         }
 

@@ -1,0 +1,349 @@
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter) 5rem;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.eyebrow {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.title {
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.lead {
+  max-width: 38rem;
+  color: var(--color-text-secondary);
+  line-height: var(--lh-body);
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-text-secondary);
+}
+
+.primaryBtn {
+  display: inline-flex;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--color-text-primary);
+  color: var(--color-bg-main);
+  font-weight: 600;
+}
+
+.primaryBtn:hover {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.gold {
+  color: var(--color-gold);
+}
+
+/* ---------- Stats ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-block: 1px solid var(--color-border);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+}
+
+.stat + .stat {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--color-border);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statValue small {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.statNote {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+.weekRow {
+  margin-top: 6px;
+}
+
+.meter {
+  display: block;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-muted);
+  overflow: hidden;
+}
+
+.meter > span {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.meter > .meterGold {
+  background: var(--color-gold);
+}
+
+/* ---------- Next actions ---------- */
+.next {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-block: 2rem 3rem;
+}
+
+.nextItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.nextItem:hover,
+.nextItem:focus-visible {
+  border-color: var(--color-primary);
+}
+
+.nextNum {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-primary);
+}
+
+.nextText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nextText span {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Blocks ---------- */
+.block {
+  margin-bottom: 3rem;
+}
+
+.blockHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.blockTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.blockNote {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Heatmap ---------- */
+.heatWrap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 10px;
+  overflow-x: auto;
+}
+
+.heatDays {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.heatDays span {
+  line-height: 1;
+  align-self: center;
+}
+
+.heat {
+  display: flex;
+  gap: 4px;
+}
+
+.heatCol {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+  gap: 4px;
+  flex: 0 0 auto;
+  width: clamp(14px, 3.2vw, 24px);
+}
+
+.cell {
+  display: block;
+  aspect-ratio: 1;
+  min-width: 14px;
+  border-radius: 4px;
+  background: var(--color-bg-muted);
+}
+
+.cell[data-level="1"] {
+  background: color-mix(in srgb, var(--color-primary) 25%, var(--color-bg-muted));
+}
+
+.cell[data-level="2"] {
+  background: color-mix(in srgb, var(--color-primary) 50%, var(--color-bg-muted));
+}
+
+.cell[data-level="3"] {
+  background: color-mix(in srgb, var(--color-primary) 75%, var(--color-bg-muted));
+}
+
+.cell[data-level="4"] {
+  background: var(--color-primary);
+}
+
+.legend {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.legend .cell {
+  width: 12px;
+  min-width: 12px;
+}
+
+/* ---------- Badges ---------- */
+.badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+}
+
+.badge {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.badge[data-unlocked="false"] {
+  background: transparent;
+  border-style: dashed;
+}
+
+.badge[data-unlocked="false"] .badgeName {
+  color: var(--color-text-secondary);
+}
+
+.badgeIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-muted);
+  color: var(--color-text-muted);
+}
+
+.badge[data-unlocked="true"] .badgeIcon {
+  background: color-mix(in srgb, var(--color-gold) 18%, transparent);
+  color: var(--color-gold);
+}
+
+.badgeName {
+  display: block;
+  font-weight: 600;
+}
+
+.badgeDesc {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.badgeMeta {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 720px) {
+  .stats,
+  .next {
+    grid-template-columns: 1fr;
+  }
+
+  .stat,
+  .stat + .stat {
+    padding: 1.25rem 0;
+    border-left: 0;
+  }
+
+  .stat + .stat {
+    border-top: 1px solid var(--color-border);
+  }
+}

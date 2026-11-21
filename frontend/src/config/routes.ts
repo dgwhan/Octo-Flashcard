@@ -10,6 +10,7 @@ export const ROUTES = {
   // Chức năng Flashcard
   FLASHCARDS: "/flashcards",
   FLASHCARDS_CREATE: "/flashcards/create",
+  FLASHCARDS_REVIEW: "/flashcards/review",
   FLASHCARDS_DETAIL: (id: string | number) => `/flashcards/${id}`,
 
   // VOA Learning English (Phân cấp theo Level)
@@ -23,8 +24,8 @@ export const ROUTES = {
   AUDIOBOOKS: "/audiobooks",
   AUDIOBOOKS_DETAIL: (slug: string) => `/audiobooks/${slug}`,
 
-  // Tatoeba Project (Câu ví dụ audio người thật)
-  TATOEBA: "/sentences",
+  // Collocations & Idioms (500 cụm từ)
+  SENTENCES: "/sentences",
 
   // Bảng phiên âm IPA
   IPA: "/ipa",
@@ -35,6 +36,9 @@ export const ROUTES = {
   // Học ngữ pháp theo Roadmap
   GRAMMAR: "/grammar",
   GRAMMAR_DETAIL: (topicId: string) => `/grammar/${topicId}`,
+
+  // Tiến độ học tập (streak, huy hiệu, lịch học)
+  PROGRESS: "/progress",
 
   // Xác thực (Auth)
   AUTH: {
@@ -50,10 +54,12 @@ export const ROUTE_PATH_MAP: Record<string, string> = {
   "/": "HOME",
   "/flashcards": "FLASHCARDS",
   "/flashcards/create": "FLASHCARDS_CREATE",
+  "/flashcards/review": "FLASHCARDS_REVIEW",
+  "/progress": "PROGRESS",
   "/voa": "VOA",
   "/vocabulary": "VOCABULARY",
   "/audiobooks": "AUDIOBOOKS",
-  "/sentences": "TATOEBA",
+  "/sentences": "SENTENCES",
   "/ipa": "IPA",
   "/dictionary": "DICTIONARY",
   "/grammar": "GRAMMAR",

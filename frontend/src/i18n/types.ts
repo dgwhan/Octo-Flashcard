@@ -20,6 +20,8 @@ export interface TranslationSchema {
     home: string;
     flashcards: string;
     createFlashcard: string;
+    review: string;
+    progress: string;
     voa: string;
     vocabulary: string;
     audiobooks: string;

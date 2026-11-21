@@ -9,10 +9,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-bg-subtle);
-  background-image:
-    radial-gradient(at 15% 15%, var(--color-primary-ring) 0px, transparent 50%),
-    radial-gradient(at 85% 85%, var(--color-primary-ring) 0px, transparent 50%);
+  background-color: var(--color-bg-main); /* plain paper; Part 3 rules out decorative blobs */
   padding: 24px;
 }
 
@@ -225,6 +222,7 @@
 .custom-checkbox.checked {
   background: var(--color-primary);
   border-color: var(--color-primary);
+  color: var(--color-text-inverse);
 }
 
 .remember-label {
@@ -335,8 +333,8 @@
 .spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #ffffff;
+  border: 2px solid var(--color-primary-ring);
+  border-top-color: var(--color-text-inverse);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

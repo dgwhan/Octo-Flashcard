@@ -25,6 +25,8 @@ function normalizeCard(raw: any, setId?: string): FlashcardItem {
     definition: a,
     flashcardSetId: raw.flashcardSetId || setId,
     createdAt: raw.createdAt || new Date().toISOString(),
+    due: raw.due ?? null,
+    reviewState: raw.reviewState ?? null,
     termLanguage: raw.termLanguage || "English",
     definitionLanguage: raw.definitionLanguage || "Vietnamese",
   };
@@ -121,6 +123,15 @@ export const flashCardApi = {
    * DELETE /api/flashcards/{id}
    * Deletes a flashcard set by id
    */
+  /** Save a card's FSRS schedule (PUT /flashcards/{setId}/items/{cardId}/review). */
+  async updateReview(setId: string, cardId: string, review: { due: Date; reviewState: string }): Promise<FlashcardItem> {
+    const res = await apiClient.put<any>(`/flashcards/${setId}/items/${cardId}/review`, {
+      due: review.due.toISOString(),
+      reviewState: review.reviewState,
+    });
+    return normalizeCard(res, setId);
+  },
+
   async delete(id: string): Promise<void> {
     await apiClient.delete<void>(API_ENDPOINTS.FLASHCARDS.DELETE(id));
   },

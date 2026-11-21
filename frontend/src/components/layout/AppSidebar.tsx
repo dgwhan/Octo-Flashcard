@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, BookOpen, MessageSquare, Compass } from "lucide-react";
+import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, BookOpen, MessageSquare, Compass, RotateCw, Flame } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import { MODULES } from "@/src/config/modules";
 
@@ -30,7 +30,7 @@ export default function AppSidebar({
       return pathname === "/" || pathname === "/home";
     }
     if (href === ROUTES.FLASHCARDS) {
-      return pathname === "/flashcards" || (pathname.startsWith("/flashcards/") && pathname !== "/flashcards/create");
+      return pathname === "/flashcards" || (pathname.startsWith("/flashcards/") && pathname !== "/flashcards/create" && pathname !== "/flashcards/review");
     }
     if (href === ROUTES.FLASHCARDS_CREATE) {
       return pathname === "/flashcards/create";
@@ -44,7 +44,7 @@ export default function AppSidebar({
     if (href === ROUTES.AUDIOBOOKS) {
       return pathname === "/audiobooks" || pathname.startsWith("/audiobooks/");
     }
-    if (href === ROUTES.TATOEBA) {
+    if (href === ROUTES.SENTENCES) {
       return pathname === "/sentences";
     }
     if (href === ROUTES.IPA) {
@@ -76,6 +76,16 @@ export default function AppSidebar({
       icon: PlusCircle,
     },
     {
+      label: t("nav.review"),
+      href: ROUTES.FLASHCARDS_REVIEW,
+      icon: RotateCw,
+    },
+    {
+      label: t("nav.progress"),
+      href: ROUTES.PROGRESS,
+      icon: Flame,
+    },
+    {
       label: t("nav.voa"),
       href: ROUTES.VOA,
       icon: Headphones,
@@ -97,7 +107,7 @@ export default function AppSidebar({
     },
     {
       label: t("nav.sentences"),
-      href: ROUTES.TATOEBA,
+      href: ROUTES.SENTENCES,
       icon: MessageSquare,
     },
     {

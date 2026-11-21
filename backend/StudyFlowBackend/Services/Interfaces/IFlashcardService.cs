@@ -12,6 +12,7 @@ namespace StudyFlowBackend.Services
         Task<FlashcardSetDto> CreateFlashcardSetAsync(string userId, CreateFlashcardSetDto dto);
         Task<FlashcardSetDto?> UpdateFlashcardSetAsync(Guid id, string userId, UpdateFlashcardSetDto dto);
         Task<FlashcardDto?> AddFlashcardItemAsync(Guid setId, string userId, CreateFlashcardDto dto);
+        Task<FlashcardDto?> UpdateReviewStateAsync(Guid setId, Guid cardId, string userId, UpdateFlashcardReviewDto dto);
         Task<bool> DeleteFlashcardSetAsync(Guid id, string userId);
         Task<List<FlashcardDto>> SearchRelevantFlashcardsAsync(string userId, string queryText, int limit = 15);
         Task<int> GetTotalFlashcardCountAsync(string userId);

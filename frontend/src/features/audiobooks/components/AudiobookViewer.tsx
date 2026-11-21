@@ -178,7 +178,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                 display: "inline-block",
                 padding: "3px 8px",
                 borderRadius: "6px",
-                backgroundColor: "rgba(16, 185, 129, 0.12)",
+                backgroundColor: "var(--color-primary-light)",
                 color: "var(--color-primary)",
                 fontSize: "0.775rem",
                 fontWeight: 700,
@@ -233,9 +233,9 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
-                color: "#ef4444",
+                color: "var(--color-danger)",
                 fontSize: "0.85rem",
-                backgroundColor: "rgba(239, 68, 68, 0.08)",
+                backgroundColor: "var(--color-danger-light)",
                 padding: "8px 12px",
                 borderRadius: "8px",
               }}
@@ -251,6 +251,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
               <button
                 type="button"
                 onClick={togglePlay}
+                aria-label={isPlaying ? "Tạm dừng" : "Phát audio"}
                 style={{
                   width: "48px",
                   height: "48px",
@@ -262,7 +263,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                   alignItems: "center",
                   justifyContent: "center",
                   cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                  boxShadow: "0 4px 12px var(--color-primary-ring)",
                 }}
               >
                 {isPlaying ? <Pause size={22} /> : <Play size={22} style={{ marginLeft: "2px" }} />}
@@ -348,7 +349,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                       borderRadius: "6px",
                       border: isSelected ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
                       backgroundColor: isSelected ? "var(--color-primary)" : "var(--color-bg-card)",
-                      color: isSelected ? "#ffffff" : "var(--color-text-primary)",
+                      color: isSelected ? "var(--color-text-inverse)" : "var(--color-text-primary)",
                       fontSize: "0.775rem",
                       fontWeight: 600,
                       cursor: "pointer",
@@ -364,6 +365,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
           {/* Range Slider */}
           <input
             type="range"
+              aria-label="Tua audio"
             min={0}
             max={duration || 100}
             value={currentTime}
@@ -401,7 +403,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                     padding: "8px 14px",
                     borderRadius: "10px",
                     border: isCurrent ? "2px solid var(--color-primary)" : "1px solid var(--color-border)",
-                    backgroundColor: isCurrent ? "rgba(16, 185, 129, 0.12)" : "var(--color-bg-alt)",
+                    backgroundColor: isCurrent ? "var(--color-primary-light)" : "var(--color-bg-alt)",
                     color: isCurrent ? "var(--color-primary)" : "var(--color-text-secondary)",
                     fontWeight: isCurrent ? 700 : 500,
                     fontSize: "0.85rem",
@@ -424,9 +426,9 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
           style={{
             padding: "10px 14px",
             borderRadius: "10px",
-            background: "rgba(59, 130, 246, 0.08)",
-            border: "1px solid rgba(59, 130, 246, 0.2)",
-            color: "#3b82f6",
+            background: "var(--color-info-light)",
+            border: "1px solid var(--color-info-border)",
+            color: "var(--color-info)",
             fontSize: "0.85rem",
             display: "flex",
             alignItems: "center",
@@ -474,7 +476,7 @@ export default function AudiobookViewer({ book }: AudiobookViewerProps) {
                       transition: "background-color 0.15s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "rgba(16, 185, 129, 0.15)";
+                      e.currentTarget.style.backgroundColor = "var(--color-primary-light)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = "transparent";

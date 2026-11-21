@@ -87,6 +87,7 @@ export default function AudiobookList() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Tìm sách nói theo tên hoặc tác giả"
             placeholder="Tìm theo tên tác phẩm, tác giả (vd: Pride, Doyle, Dickens)... Nhấn Enter"
             style={{
               width: "100%",
@@ -152,7 +153,7 @@ export default function AudiobookList() {
               fontSize: "0.8rem",
               fontWeight: 500,
               backgroundColor: searchQuery === kw ? "var(--color-primary)" : "var(--color-bg-card)",
-              color: searchQuery === kw ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
+              color: searchQuery === kw ? "var(--color-text-inverse)" : "var(--color-text-secondary)",
               border: "1px solid var(--color-border)",
               cursor: "pointer",
             }}
@@ -226,8 +227,8 @@ export default function AudiobookList() {
                     style={{
                       padding: "3px 8px",
                       borderRadius: "6px",
-                      background: "rgba(16, 185, 129, 0.9)",
-                      color: "#ffffff",
+                      background: "var(--color-primary)",
+                      color: "var(--color-text-inverse)",
                       fontSize: "0.75rem",
                       fontWeight: 700,
                     }}
@@ -252,9 +253,9 @@ export default function AudiobookList() {
                   <span>{book.author} ({book.year})</span>
                 </div>
 
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "var(--color-text-primary)", lineHeight: 1.4 }}>
+                <h2 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "var(--color-text-primary)", lineHeight: 1.4 }}>
                   {book.title}
-                </h3>
+                </h2>
 
                 <p
                   style={{

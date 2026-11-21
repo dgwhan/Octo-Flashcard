@@ -1,6 +1,6 @@
 .cardItem {
-  background-color: #ffffff;
-  border: 1.5px solid #e2e8f0;
+  background-color: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 20px 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
@@ -11,7 +11,7 @@
 }
 
 .cardItem:hover {
-  border-color: #cbd5e1;
+  border-color: var(--color-border-hover);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
@@ -19,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1.5px solid #f1f5f9;
+  border-bottom: 1.5px solid var(--color-border);
   padding-bottom: 12px;
 }
 
@@ -60,7 +60,7 @@
 .deleteBtn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
 .cardGrid {
@@ -94,7 +94,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #334155;
+  color: var(--color-text-secondary);
 }
 
 .required {
@@ -108,23 +108,23 @@
   font-size: 0.8125rem;
   font-weight: 600;
   border-radius: var(--radius-md);
-  border: 1.5px solid #cbd5e1;
-  background-color: #f8fafc;
-  color: #334155;
+  border: 1.5px solid var(--color-border-hover);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
   outline: none;
   cursor: pointer;
   transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
 }
 
 .languageSelect:hover {
-  border-color: #94a3b8;
-  background-color: #f1f5f9;
+  border-color: var(--color-text-muted);
+  background-color: var(--color-bg-muted);
 }
 
 .languageSelect:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px var(--color-primary-ring);
-  background-color: #ffffff;
+  background-color: var(--color-bg-card);
 }
 
 .textInput,
@@ -134,9 +134,9 @@
   min-height: 46px;
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  border: 1.5px solid #cbd5e1;
-  background-color: #ffffff;
-  color: #0f172a;
+  border: 1.5px solid var(--color-border-hover);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-primary);
   font-size: 0.9375rem;
   font-weight: 500;
   font-family: inherit;
@@ -148,13 +148,13 @@
 
 .textInput::placeholder,
 .textareaInput::placeholder {
-  color: #94a3b8;
+  color: var(--color-text-muted);
   font-weight: 400;
 }
 
 .textInput:hover,
 .textareaInput:hover {
-  border-color: #94a3b8;
+  border-color: var(--color-text-muted);
 }
 
 .textareaInput {
@@ -169,7 +169,7 @@
 .textareaInput:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-ring);
-  background-color: #ffffff;
+  background-color: var(--color-bg-card);
 }
 
 .inputError {

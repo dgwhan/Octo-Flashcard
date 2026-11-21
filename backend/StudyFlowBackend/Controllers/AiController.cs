@@ -78,6 +78,30 @@ namespace StudyFlowBackend.Controllers
             return Ok(ApiResponse<ChatResponseDto>.SuccessResponse(responseDto));
         }
 
+        // Generate cards from pasted text (e.g. a VOA story). Returns them for review; nothing is saved here.
+        [HttpPost("generate-flashcards-from-text")]
+        public async Task<IActionResult> GenerateFlashcardsFromText([FromBody] GenerateFlashcardsFromTextDto request)
+        {
+            var user = await _userUtils.GetCurrentUserAsync();
+            if (user == null) return Unauthorized();
+
+            var text = request?.Text?.Trim() ?? string.Empty;
+            if (text.Length < 40) return BadRequest(ApiResponse<object>.ErrorResponse("Đoạn văn quá ngắn (cần ít nhất 40 ký tự)."));
+            if (text.Length > 8000) return BadRequest(ApiResponse<object>.ErrorResponse("Đoạn văn quá dài (tối đa 8000 ký tự)."));
+
+            if (!await _chatService.CheckAndIncrementAiLimitAsync(user))
+                return StatusCode(429, ApiResponse<object>.ErrorResponse("Bạn đã dùng hết lượt AI hôm nay. Hãy thử lại vào ngày mai."));
+
+            var cards = await _geminiService.GenerateFlashcardsFromTextAsync(text);
+            if (cards == null || cards.Count == 0)
+            {
+                await _chatService.DecrementAiLimitAsync(user);
+                return StatusCode(503, ApiResponse<object>.ErrorResponse("AI chưa tạo được thẻ (có thể backend chưa cấu hình GEMINI_API_KEY)."));
+            }
+
+            return Ok(ApiResponse<List<CreateFlashcardDto>>.SuccessResponse(cards));
+        }
+
         [HttpPost("generate-flashcards")]
         public async Task<IActionResult> GenerateFlashcards([FromBody] GenerateFlashcardsRequestDto request)
         {

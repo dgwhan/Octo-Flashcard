@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ROUTES.VOCABULARY,
     ROUTES.GRAMMAR,
     ROUTES.AUDIOBOOKS,
-    ROUTES.TATOEBA,
+    ROUTES.SENTENCES,
     ROUTES.IPA,
     ROUTES.DICTIONARY,
   ];

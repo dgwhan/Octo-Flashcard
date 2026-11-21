@@ -112,11 +112,11 @@ export default function VoaLessonList() {
                 padding: "16px 18px",
                 borderRadius: "14px",
                 border: isActive ? "2px solid var(--color-primary)" : "1px solid var(--color-border)",
-                backgroundColor: isActive ? "rgba(16, 185, 129, 0.08)" : "var(--color-bg-card)",
+                backgroundColor: isActive ? "var(--color-primary-light)" : "var(--color-bg-card)",
                 cursor: "pointer",
                 textAlign: "left",
                 transition: "all 0.15s ease",
-                boxShadow: isActive ? "0 4px 14px rgba(16, 185, 129, 0.15)" : "none",
+                boxShadow: isActive ? "0 4px 14px var(--color-primary-light)" : "none",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
@@ -135,7 +135,7 @@ export default function VoaLessonList() {
                     padding: "2px 8px",
                     borderRadius: "9999px",
                     backgroundColor: isActive ? "var(--color-primary)" : "var(--color-bg-alt)",
-                    color: isActive ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
+                    color: isActive ? "var(--color-text-inverse)" : "var(--color-text-secondary)",
                     fontWeight: 600,
                   }}
                 >
@@ -177,6 +177,7 @@ export default function VoaLessonList() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Tìm bài đọc VOA"
             placeholder="Tìm kiếm bài đọc hoặc chủ đề..."
             style={{
               width: "100%",
@@ -203,7 +204,7 @@ export default function VoaLessonList() {
                   padding: "4px 10px",
                   borderRadius: "8px",
                   border: isCatActive ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
-                  backgroundColor: isCatActive ? "rgba(16, 185, 129, 0.12)" : "transparent",
+                  backgroundColor: isCatActive ? "var(--color-primary-light)" : "transparent",
                   color: isCatActive ? "var(--color-primary)" : "var(--color-text-secondary)",
                   fontSize: "0.8rem",
                   fontWeight: 600,
@@ -229,7 +230,7 @@ export default function VoaLessonList() {
           }}
         >
           <BookOpen size={40} style={{ color: "var(--color-text-secondary)", marginBottom: "12px" }} />
-          <h3 style={{ margin: "0 0 6px 0", color: "var(--color-text-primary)" }}>Không tìm thấy bài học phù hợp</h3>
+          <h2 style={{ margin: "0 0 6px 0", color: "var(--color-text-primary)" }}>Không tìm thấy bài học phù hợp</h2>
           <p style={{ margin: 0, color: "var(--color-text-secondary)", fontSize: "0.9rem" }}>
             Vui lòng thử chọn cấp độ hoặc từ khóa tìm kiếm khác.
           </p>
@@ -283,8 +284,8 @@ export default function VoaLessonList() {
                       style={{
                         padding: "4px 10px",
                         borderRadius: "8px",
-                        backgroundColor: badge.color,
-                        color: "#ffffff",
+                        backgroundColor: "var(--color-bg-card)", // solid chip stays readable over any cover image
+                        color: "var(--color-text-primary)",
                         fontSize: "0.75rem",
                         fontWeight: 700,
                         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
@@ -317,7 +318,7 @@ export default function VoaLessonList() {
                     </span>
                   </div>
 
-                  <h3
+                  <h2
                     style={{
                       fontSize: "1.1rem",
                       fontWeight: 700,
@@ -327,7 +328,7 @@ export default function VoaLessonList() {
                     }}
                   >
                     {lesson.title}
-                  </h3>
+                  </h2>
 
                   <p
                     style={{

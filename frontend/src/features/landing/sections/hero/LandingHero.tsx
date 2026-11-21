@@ -27,7 +27,7 @@ export default function LandingHero() {
           <span className={styles.heroLine}>tiếng Anh.</span>
         </h1>
         <p className={styles.heroLead}>
-          Flashcard tự tạo, truyện VOA đọc chậm, sách nói LibriVox, câu Tatoeba có giọng người thật và bảng 44 âm IPA. Mọi
+          Flashcard tự tạo, truyện VOA đọc chậm, sách nói LibriVox, 500 collocations và idioms và bảng 44 âm IPA. Mọi
           thứ gom về một chỗ, nguồn nào cũng ghi rõ.
         </p>
         <div className={styles.heroActions}>

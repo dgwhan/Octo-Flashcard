@@ -1,0 +1,271 @@
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--gutter) 5rem;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.eyebrowNum {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.title {
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.lead {
+  max-width: 36rem;
+  color: var(--color-text-secondary);
+  line-height: var(--lh-body);
+}
+
+/* ---------- States ---------- */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-text-secondary);
+  line-height: var(--lh-body);
+}
+
+.stateTitle {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  color: var(--color-text-primary);
+}
+
+.gold {
+  color: var(--color-gold);
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  background: var(--color-text-primary);
+  color: var(--color-bg-main);
+  font-weight: 600;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.primaryBtn:hover {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  border-bottom: 1.5px solid var(--color-primary);
+  padding-bottom: 2px;
+}
+
+/* ---------- Session ---------- */
+.session {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-muted);
+  overflow: hidden;
+}
+
+.track span {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+  transition: width var(--dur-base) var(--ease-out);
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  --card-tilt-rest: -1deg;
+  transform: rotate(var(--card-tilt-rest));
+  perspective: 2400px;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.scene:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 6px;
+  border-radius: var(--radius-lg);
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 48px 32px 40px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-lg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+.faceTag {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+.faceText {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  line-height: 1.3;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  position: absolute;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Grades ---------- */
+.grades {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.gradeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+
+.gradeBtn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.gradeBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gradeBtn[data-grade="Quên"]:hover:not(:disabled) {
+  border-color: var(--color-danger);
+}
+
+.gradeBtn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.gradeLabel {
+  font-weight: 600;
+}
+
+.gradeLabel kbd {
+  margin-left: 4px;
+  padding: 0 5px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  font: inherit;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.gradeNext {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.error {
+  font-size: 0.875rem;
+  color: var(--color-danger);
+}
+
+@media (max-width: 520px) {
+  .grades {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

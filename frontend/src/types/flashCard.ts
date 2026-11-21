@@ -9,6 +9,9 @@ export interface FlashcardItem {
   answer: string;
   flashcardSetId?: string;
   createdAt?: string;
+  /** Spaced repetition: next due time (ISO) and the FSRS card state (JSON). Absent = never reviewed. */
+  due?: string | null;
+  reviewState?: string | null;
 
   // Aliases for compatibility
   term?: string;

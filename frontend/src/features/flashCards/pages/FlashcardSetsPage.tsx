@@ -7,7 +7,6 @@ import {
   Layers,
   Plus,
   Search,
-  BookOpen,
   Pencil,
   Trash2,
   Play,
@@ -21,6 +20,9 @@ import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
 import { EditFlashcardSetModal } from "../components/actions/EditFlashcardSetModal";
+import { SuckerRow } from "@/src/components/ui";
+import { readMasteredCount } from "../studyProgress";
+import { dueCount } from "../reviewQueue";
 import styles from "./FlashcardSetsPage.module.css";
 
 export const FlashcardSetsPage: React.FC = () => {
@@ -34,6 +36,7 @@ export const FlashcardSetsPage: React.FC = () => {
 
   // Edit / Add Items Modal state
   const [editingSet, setEditingSet] = useState<FlashcardSet | null>(null);
+  const userId = typeof window !== "undefined" ? authApi.getStoredUser()?.userId : undefined;
 
   // 1. Kiểm tra đăng nhập và nạp danh sách bộ flashcard
   useEffect(() => {
@@ -77,6 +80,8 @@ export const FlashcardSetsPage: React.FC = () => {
   const totalCardsCount = useMemo(() => {
     return sets.reduce((acc, s) => acc + (s.flashcards?.length || 0), 0);
   }, [sets]);
+
+  const dueToday = useMemo(() => dueCount(sets), [sets]);
 
   // Handle Set updated from modal
   const handleSetUpdated = (updatedSet: FlashcardSet) => {
@@ -170,6 +175,9 @@ export const FlashcardSetsPage: React.FC = () => {
       <header className={styles.headerSection}>
         <div className={styles.headerTop}>
           <div className={styles.titleGroup}>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowNum}>01</span>Flashcard
+            </p>
             <h1 className={styles.pageTitle}>{t("flashcards.hubTitle")}</h1>
             <p className={styles.pageSubtitle}>
               {t("flashcards.hubSubtitle")}
@@ -185,9 +193,6 @@ export const FlashcardSetsPage: React.FC = () => {
         {/* Overview Metrics Row */}
         <div className={styles.metricsRow}>
           <div className={styles.metricCard}>
-            <div className={styles.metricIconCircle}>
-              <Layers size={22} />
-            </div>
             <div>
               <div className={styles.metricValue}>{sets.length}</div>
               <div className={styles.metricLabel}>{t("flashcards.totalSets")}</div>
@@ -195,14 +200,22 @@ export const FlashcardSetsPage: React.FC = () => {
           </div>
 
           <div className={styles.metricCard}>
-            <div className={styles.metricIconCircle}>
-              <BookOpen size={22} />
-            </div>
             <div>
               <div className={styles.metricValue}>{totalCardsCount}</div>
               <div className={styles.metricLabel}>{t("flashcards.totalCards")}</div>
             </div>
           </div>
+
+          {totalCardsCount > 0 && (
+            <Link href={ROUTES.FLASHCARDS_REVIEW} className={`${styles.metricCard} ${styles.metricLink}`}>
+              <div>
+                <div className={styles.metricValue}>{dueToday}</div>
+                <div className={styles.metricLabel}>
+                  Thẻ cần ôn hôm nay <span className={styles.metricCta}>Ôn ngay →</span>
+                </div>
+              </div>
+            </Link>
+          )}
         </div>
 
         {/* Search & Filter Bar */}
@@ -256,16 +269,22 @@ export const FlashcardSetsPage: React.FC = () => {
           {filteredSets.map((set) => {
             const cardCount = set.flashcards?.length || 0;
             const previewCards = set.flashcards?.slice(0, 3) || [];
+            const mastered = Math.min(readMasteredCount(userId, set.id), cardCount);
 
             return (
               <div key={set.id} className={styles.setCard}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <div className={styles.setCardBody}>
                   <div className={styles.setCardHeader}>
-                    <div className={styles.setCardIconWrap}>
-                      <Layers size={20} />
-                    </div>
                     <span className={styles.cardCountBadge}>
                       {cardCount} {t("flashcards.cardsCount")}
+                    </span>
+                    {/* deck progress as 8 suckers: how much of the deck is already "mastered" in the study viewer */}
+                    <span
+                      className={styles.deckProgress}
+                      aria-label={`Đã thuộc ${mastered}/${cardCount} thẻ`}
+                      title={`Đã thuộc ${mastered}/${cardCount}`}
+                    >
+                      <SuckerRow count={8} filled={cardCount ? Math.round((mastered / cardCount) * 8) : 0} />
                     </span>
                   </div>
 
@@ -280,7 +299,7 @@ export const FlashcardSetsPage: React.FC = () => {
                         </span>
                       ))}
                       {cardCount > 3 && (
-                        <span className={styles.previewChip} style={{ fontWeight: 700 }}>
+                        <span className={`${styles.previewChip} ${styles.previewMore}`}>
                           +{cardCount - 3} {t("flashcards.cardsCount")}
                         </span>
                       )}

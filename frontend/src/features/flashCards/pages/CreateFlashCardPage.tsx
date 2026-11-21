@@ -8,6 +8,7 @@ import { flashCardApi } from "../api/flashCard.api";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
+import AiCardsPanel from "../components/AiCardsPanel";
 import styles from "./CreateFlashCardPage.module.css";
 
 interface CardInput {
@@ -31,15 +32,16 @@ export const CreateFlashCardPage: React.FC = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
+      // Two link styles exist: ?word=&definition=&phonetic= (VOA, Dictionary) and ?front=&back= (Vocabulary)
       const params = new URLSearchParams(window.location.search);
       const word = params.get("word");
-      const def = params.get("definition");
       const phonetic = params.get("phonetic");
-      if (word) {
-        setTitle(`Từ vựng mới: ${word}`);
-        const front = phonetic ? `${word} [${phonetic}]` : word;
+      const front = params.get("front") || (word && phonetic ? `${word} [${phonetic}]` : word);
+      const back = params.get("back") ?? params.get("definition") ?? "";
+      if (front) {
+        setTitle(`Từ vựng mới: ${word || front}`);
         setCards([
-          { question: front, answer: def || "" },
+          { question: front, answer: back },
           { question: "", answer: "" },
         ]);
       }
@@ -58,6 +60,12 @@ export const CreateFlashCardPage: React.FC = () => {
 
   const handleAddCard = () => {
     setCards((prev) => [...prev, { question: "", answer: "" }]);
+  };
+
+  // AI cards go after the ones the user already filled; empty rows are dropped
+  const handleAiCards = (generated: CardInput[], sourceTitle?: string) => {
+    setCards((prev) => [...prev.filter((c) => c.question.trim() || c.answer.trim()), ...generated]);
+    setTitle((prev) => prev || sourceTitle || "Từ vựng do AI gợi ý");
   };
 
   const handleRemoveCard = (index: number) => {
@@ -140,6 +148,8 @@ export const CreateFlashCardPage: React.FC = () => {
           {error}
         </div>
       )}
+
+      <AiCardsPanel onCards={handleAiCards} />
 
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {/* Title */}

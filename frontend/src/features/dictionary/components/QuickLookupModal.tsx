@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { X, BookA } from "lucide-react";
 import DictionaryView from "./DictionaryView";
 
@@ -15,10 +15,21 @@ export default function QuickLookupModal({
   onClose,
   word = "",
 }: QuickLookupModalProps) {
+  // Escape closes the dialog (keyboard users had no way out besides the X button)
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tra từ điển nhanh"
       style={{
         position: "fixed",
         inset: 0,
@@ -63,7 +74,7 @@ export default function QuickLookupModal({
                 width: "36px",
                 height: "36px",
                 borderRadius: "10px",
-                background: "rgba(16, 185, 129, 0.12)",
+                background: "var(--color-primary-light)",
                 color: "var(--color-primary)",
                 display: "flex",
                 alignItems: "center",
@@ -85,6 +96,7 @@ export default function QuickLookupModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Đóng"
             style={{
               background: "transparent",
               border: "none",

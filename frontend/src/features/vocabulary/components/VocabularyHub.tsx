@@ -18,6 +18,7 @@ import {
 import { STANDARDIZED_VOCABULARY } from "../vocabulary.data";
 import { VocabularyItem, CEFRLevel, FrameworkType } from "../vocabulary.types";
 import { ROUTES } from "@/src/config/routes";
+import SaveToDeckButton from "@/src/features/flashCards/components/SaveToDeckButton";
 import { naturalAudio } from "@/src/features/dictionary";
 
 export default function VocabularyHub() {
@@ -159,7 +160,7 @@ export default function VocabularyHub() {
             padding: "12px",
             borderRadius: "12px",
             border: selectedLevel === "all" ? "2px solid var(--color-primary)" : "1px solid var(--color-border)",
-            backgroundColor: selectedLevel === "all" ? "rgba(16, 185, 129, 0.12)" : "var(--color-bg-card)",
+            backgroundColor: selectedLevel === "all" ? "var(--color-primary-light)" : "var(--color-bg-card)",
             color: selectedLevel === "all" ? "var(--color-primary)" : "var(--color-text-primary)",
             fontWeight: 700,
             cursor: "pointer",
@@ -272,7 +273,7 @@ export default function VocabularyHub() {
                     padding: "6px 10px",
                     borderRadius: "8px",
                     border: isActive ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
-                    backgroundColor: isActive ? "rgba(16, 185, 129, 0.12)" : "transparent",
+                    backgroundColor: isActive ? "var(--color-primary-light)" : "transparent",
                     color: isActive ? "var(--color-primary)" : "var(--color-text-secondary)",
                     fontSize: "0.8rem",
                     fontWeight: 600,
@@ -323,7 +324,7 @@ export default function VocabularyHub() {
                 fontSize: "0.85rem",
                 fontWeight: isActive ? 700 : 500,
                 backgroundColor: isActive ? "var(--color-primary)" : "var(--color-bg-card)",
-                color: isActive ? "var(--color-text-inverse, #ffffff)" : "var(--color-text-secondary)",
+                color: isActive ? "var(--color-text-inverse)" : "var(--color-text-secondary)",
                 border: "1px solid var(--color-border)",
                 cursor: "pointer",
                 transition: "all 0.15s ease",
@@ -394,7 +395,7 @@ export default function VocabularyHub() {
                     display: "flex",
                     flexDirection: "column",
                     gap: "14px",
-                    boxShadow: isPlaying ? "0 4px 16px rgba(16, 185, 129, 0.15)" : "var(--shadow-card)",
+                    boxShadow: isPlaying ? "0 4px 16px var(--color-primary-light)" : "var(--shadow-card)",
                     transition: "all 0.2s ease",
                   }}
                 >
@@ -402,9 +403,9 @@ export default function VocabularyHub() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                        <h3 style={{ fontSize: "1.35rem", fontWeight: 800, margin: 0, color: "var(--color-text-primary)" }}>
+                        <h2 style={{ fontSize: "1.35rem", fontWeight: 800, margin: 0, color: "var(--color-text-primary)" }}>
                           {item.word}
-                        </h3>
+                        </h2>
                         <span
                           style={{
                             fontSize: "0.75rem",
@@ -437,8 +438,8 @@ export default function VocabularyHub() {
                         width: "38px",
                         height: "38px",
                         borderRadius: "50%",
-                        backgroundColor: isPlaying ? "var(--color-primary)" : "rgba(16, 185, 129, 0.12)",
-                        color: isPlaying ? "#ffffff" : "var(--color-primary)",
+                        backgroundColor: isPlaying ? "var(--color-primary)" : "var(--color-primary-light)",
+                        color: isPlaying ? "var(--color-text-inverse)" : "var(--color-primary)",
                         border: "none",
                         display: "flex",
                         alignItems: "center",
@@ -472,7 +473,6 @@ export default function VocabularyHub() {
                       color: "var(--color-text-primary)",
                       fontStyle: "italic",
                       lineHeight: 1.45,
-                      borderLeft: "3px solid var(--color-primary)",
                     }}
                   >
                     &ldquo;{item.example}&rdquo;
@@ -519,24 +519,11 @@ export default function VocabularyHub() {
                       ))}
                     </div>
 
-                    <Link
-                      href={`${ROUTES.FLASHCARDS_CREATE}?front=${encodeURIComponent(
-                        item.word
-                      )}&back=${encodeURIComponent(`${item.vietnamese}\n\n${item.example}`)}`}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "4px",
-                        fontSize: "0.775rem",
-                        fontWeight: 600,
-                        color: "var(--color-primary)",
-                        textDecoration: "none",
-                      }}
-                      title="Lưu vào bộ thẻ học Flashcard"
-                    >
-                      <PlusCircle size={13} />
-                      Thêm thẻ
-                    </Link>
+                    <SaveToDeckButton
+                      front={item.word}
+                      back={`${item.vietnamese}
+                      ${item.example}`}
+                    />
                   </div>
                 </div>
               );

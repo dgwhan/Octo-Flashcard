@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { VoaLesson } from "../voa.types";
 import { ROUTES } from "@/src/config/routes";
+import SaveToDeckButton from "@/src/features/flashCards/components/SaveToDeckButton";
+import { AI_SOURCE_KEY, AI_MAX_CHARS } from "@/src/features/flashCards/components/AiCardsPanel";
 import { QuickLookupModal } from "@/src/features/dictionary";
 
 interface VoaLessonViewerProps {
@@ -229,7 +231,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
             style={{
               padding: "4px 10px",
               borderRadius: "8px",
-              backgroundColor: "rgba(16, 185, 129, 0.12)",
+              backgroundColor: "var(--color-primary-light)",
               color: "var(--color-primary)",
               fontSize: "0.8rem",
               fontWeight: 700,
@@ -253,8 +255,8 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
             style={{
               padding: "4px 10px",
               borderRadius: "8px",
-              backgroundColor: "rgba(59, 130, 246, 0.1)",
-              color: "#3b82f6",
+              backgroundColor: "var(--color-info-light)",
+              color: "var(--color-info)",
               fontSize: "0.8rem",
               fontWeight: 600,
             }}
@@ -284,9 +286,9 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              backgroundColor: "rgba(239, 68, 68, 0.1)",
-              border: "1px solid rgba(239, 68, 68, 0.25)",
-              color: "#ef4444",
+              backgroundColor: "var(--color-danger-light)",
+              border: "1px solid var(--color-danger-border)",
+              color: "var(--color-danger)",
               fontSize: "0.85rem",
               display: "flex",
               alignItems: "center",
@@ -316,6 +318,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
               <button
                 type="button"
                 onClick={togglePlay}
+                aria-label={isPlaying ? "Tạm dừng" : "Phát audio"}
                 style={{
                   width: "50px",
                   height: "50px",
@@ -327,7 +330,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                   alignItems: "center",
                   justifyContent: "center",
                   cursor: "pointer",
-                  boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
+                  boxShadow: "0 4px 14px var(--color-primary-ring)",
                   transition: "transform 0.15s ease",
                 }}
               >
@@ -374,7 +377,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                       borderRadius: "6px",
                       border: isSelected ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
                       backgroundColor: isSelected ? "var(--color-primary)" : "var(--color-bg-card)",
-                      color: isSelected ? "#ffffff" : "var(--color-text-primary)",
+                      color: isSelected ? "var(--color-text-inverse)" : "var(--color-text-primary)",
                       fontSize: "0.775rem",
                       fontWeight: 600,
                       cursor: "pointer",
@@ -391,6 +394,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
           <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center" }}>
             <input
               type="range"
+              aria-label="Tua audio"
               min={0}
               max={duration > 0 ? duration : 100}
               step={0.5}
@@ -454,9 +458,9 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
             style={{
               padding: "12px 16px",
               borderRadius: "12px",
-              background: "rgba(59, 130, 246, 0.08)",
-              border: "1px solid rgba(59, 130, 246, 0.2)",
-              color: "#3b82f6",
+              background: "var(--color-info-light)",
+              border: "1px solid var(--color-info-border)",
+              color: "var(--color-info)",
               fontSize: "0.875rem",
               display: "flex",
               alignItems: "center",
@@ -497,7 +501,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                   style={{
                     padding: "8px 12px",
                     borderRadius: "10px",
-                    backgroundColor: isCurrent ? "rgba(16, 185, 129, 0.08)" : "transparent",
+                    backgroundColor: isCurrent ? "var(--color-primary-light)" : "transparent",
                     borderLeft: isCurrent ? "4px solid var(--color-primary)" : "4px solid transparent",
                     transition: "all 0.2s ease",
                   }}
@@ -514,7 +518,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                           transition: "background 0.12s ease",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = "rgba(16, 185, 129, 0.2)";
+                          e.currentTarget.style.backgroundColor = "var(--color-primary-ring)";
                           e.currentTarget.style.color = "var(--color-primary)";
                         }}
                         onMouseLeave={(e) => {
@@ -536,6 +540,31 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
       {/* TAB 2: KEY VOCABULARY */}
       {activeTab === "vocabulary" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Link
+            href={`${ROUTES.FLASHCARDS_CREATE}?ai=1`}
+            onClick={() => {
+              try {
+                sessionStorage.setItem(
+                  AI_SOURCE_KEY,
+                  JSON.stringify({ title: `VOA: ${lesson.title}`, text: lesson.paragraphs.join("\n\n").slice(0, AI_MAX_CHARS) })
+                );
+              } catch {
+                // storage blocked: the create page opens with an empty AI panel
+              }
+            }}
+            style={{
+              alignSelf: "flex-start",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              fontWeight: 600,
+              color: "var(--color-text-primary)",
+              borderBottom: "1.5px solid var(--color-primary)",
+              paddingBottom: "2px",
+            }}
+          >
+            <Sparkles size={16} aria-hidden="true" /> Tạo thêm thẻ từ cả bài bằng AI
+          </Link>
           {lesson.vocabulary.map((vocab, vIdx) => (
             <div
               key={vIdx}
@@ -564,7 +593,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                         padding: "2px 8px",
                         borderRadius: "6px",
                         background: "rgba(99, 102, 241, 0.12)",
-                        color: "#6366f1",
+                        color: "var(--color-primary)",
                         fontSize: "0.75rem",
                         fontWeight: 700,
                         textTransform: "uppercase",
@@ -586,7 +615,7 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                       display: "inline-flex",
                       alignItems: "center",
                       gap: "6px",
-                      background: "rgba(16, 185, 129, 0.12)",
+                      background: "var(--color-primary-light)",
                       color: "var(--color-primary)",
                       border: "none",
                       borderRadius: "8px",
@@ -600,28 +629,10 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                     <span>Phát âm</span>
                   </button>
 
-                  <Link
-                    href={`${ROUTES.FLASHCARDS_CREATE}?word=${encodeURIComponent(
-                      vocab.word
-                    )}&definition=${encodeURIComponent(vocab.vietnameseMeaning)}&phonetic=${encodeURIComponent(
-                      vocab.ipa
-                    )}`}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      background: "rgba(59, 130, 246, 0.1)",
-                      color: "#3b82f6",
-                      borderRadius: "8px",
-                      padding: "6px 12px",
-                      fontSize: "0.85rem",
-                      fontWeight: 600,
-                      textDecoration: "none",
-                    }}
-                  >
-                    <PlusCircle size={16} />
-                    <span>Lưu vào Flashcard</span>
-                  </Link>
+                  <SaveToDeckButton
+                    front={vocab.ipa ? `${vocab.word} ${vocab.ipa}` : vocab.word}
+                    back={vocab.vietnameseMeaning}
+                  />
                 </div>
               </div>
 
@@ -728,8 +739,8 @@ export default function VoaLessonViewer({ lesson }: VoaLessonViewerProps) {
                       marginTop: "6px",
                       padding: "10px 14px",
                       borderRadius: "8px",
-                      background: "rgba(16, 185, 129, 0.08)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
+                      background: "var(--color-primary-light)",
+                      border: "1px solid var(--color-primary-ring)",
                       fontSize: "0.875rem",
                       color: "var(--color-text-primary)",
                     }}

@@ -239,11 +239,17 @@ namespace StudyFlowBackend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("Due")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<Guid>("FlashcardSetId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Question")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReviewState")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

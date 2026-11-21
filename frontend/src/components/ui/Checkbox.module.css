@@ -102,7 +102,7 @@
   left: 2px;
   width: 18px;
   height: 18px;
-  background-color: #ffffff;
+  background-color: var(--color-bg-card);
   border-radius: var(--radius-full, 9999px);
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition-normal, 0.2s ease);

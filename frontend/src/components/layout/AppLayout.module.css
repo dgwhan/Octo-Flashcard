@@ -28,7 +28,7 @@
   position: fixed;
   inset: 0;
   top: 64px;
-  background-color: rgba(15, 23, 42, 0.4);
+  background-color: var(--color-overlay);
   backdrop-filter: blur(2px);
   z-index: 35;
   animation: fadeIn 0.2s ease-out;
