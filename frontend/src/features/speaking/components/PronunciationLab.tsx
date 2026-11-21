@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
+import { speakingVoice } from "../voice";
 import type { SoundGroup } from "../pronunciation.data";
 import { spokenForm } from "../pronunciation.data";
 import SentenceDrill from "./SentenceDrill";
@@ -36,7 +37,7 @@ export default function PronunciationLab({ groups }: { groups: LabGroup[] }) {
             <span key={p.symbol} className={styles.phoneme}>
               <span className={styles.phonemeSymbol}>/{p.symbol}/</span>
               {p.audioUrl && (
-                <AudioButton text={p.symbol} audioUrl={p.audioUrl} size="sm" variant="subtle" aria-label={`Nghe âm /${p.symbol}/`} />
+                <AudioButton player={speakingVoice} text={p.symbol} audioUrl={p.audioUrl} size="sm" variant="subtle" aria-label={`Nghe âm /${p.symbol}/`} />
               )}
             </span>
           ))}

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Timer, Loader2, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
+import { speakingVoice } from "../voice";
 import { logStudySession } from "@/src/lib/studyLog";
 import { wordsPerMinute } from "../compare";
 import { generate, parseJson } from "../gemini";
@@ -19,6 +20,7 @@ import {
 } from "../ielts";
 import { useSpeechCapture } from "../useSpeechCapture";
 import GeminiKeyPanel, { useGeminiConfig } from "./GeminiKeyPanel";
+import VoicePicker from "./VoicePicker";
 import { MicButton, LiveTranscript, SpeechNotice, formatSeconds } from "./SpeechParts";
 import styles from "../speaking.module.css";
 
@@ -300,7 +302,7 @@ export default function IeltsPractice() {
                 </p>
                 <p className={styles.sample} lang="en">
                   {score.sample.answer}
-                  <AudioButton text={score.sample.answer} size="sm" variant="subtle" aria-label="Nghe câu trả lời mẫu" />
+                  <AudioButton player={speakingVoice} text={score.sample.answer} size="sm" variant="subtle" aria-label="Nghe câu trả lời mẫu" />
                 </p>
               </>
             )}
@@ -320,6 +322,7 @@ export default function IeltsPractice() {
         ) : (
           <GeminiKeyPanel purpose="Chấm band IELTS" />
         )}
+        <VoicePicker />
 
         <div className={styles.row}>
           <button type="button" className={styles.secondaryBtn} onClick={() => open(session)}>

@@ -665,6 +665,38 @@
   font-size: 0.9rem;
 }
 
+.voiceField {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.voiceField select {
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  font: inherit;
+  font-weight: 500;
+}
+
+.voiceField select:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+.keyBar .linkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .keyBar > span {
   flex: 1;
   min-width: 12rem;

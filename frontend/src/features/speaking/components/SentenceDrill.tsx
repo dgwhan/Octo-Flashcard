@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Flag } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
+import { speakingVoice } from "../voice";
+import VoicePicker from "./VoicePicker";
 import SaveToDeckButton from "@/src/features/flashCards/components/SaveToDeckButton";
 import { logStudySession } from "@/src/lib/studyLog";
 import { compareSpeech, SpeechCheck } from "../compare";
@@ -80,7 +82,7 @@ export default function SentenceDrill({ items, label }: { items: DrillItem[]; la
               {missed.map((w) => (
                 <li key={w}>
                   <span lang="en">{w}</span>
-                  <AudioButton text={w} size="sm" variant="subtle" aria-label={`Nghe từ ${w}`} />
+                  <AudioButton player={speakingVoice} text={w} size="sm" variant="subtle" aria-label={`Nghe từ ${w}`} />
                   <SaveToDeckButton front={w} back="Từ cần luyện phát âm" label="Lưu" />
                 </li>
               ))}
@@ -105,63 +107,66 @@ export default function SentenceDrill({ items, label }: { items: DrillItem[]; la
   }
 
   return (
-    <section className={styles.panel} aria-label={label}>
-      <div className={styles.drillMeta}>
-        <span>{label}</span>
-        <span className={styles.count}>
-          {index + 1} / {items.length}
-        </span>
-      </div>
-      <div className={styles.track} aria-hidden="true">
-        <span style={{ width: `${((index + 1) / items.length) * 100}%` }} />
-      </div>
-
-      <p className={styles.target} lang="en">
-        {item.display}
-      </p>
-
-      <div className={styles.controls}>
-        <AudioButton text={item.target} speed={speed} size="lg" aria-label={`Nghe mẫu: ${item.target}`} />
-        <div className={styles.speed} role="group" aria-label="Tốc độ nghe mẫu">
-          {SPEEDS.map((s) => (
-            <button key={s} type="button" aria-pressed={speed === s} onClick={() => setSpeed(s)}>
-              {s === 1 ? "Bình thường" : "Chậm"}
-            </button>
-          ))}
+    <div className={styles.stack}>
+      <VoicePicker />
+      <section className={styles.panel} aria-label={label}>
+        <div className={styles.drillMeta}>
+          <span>{label}</span>
+          <span className={styles.count}>
+            {index + 1} / {items.length}
+          </span>
         </div>
-        <MicButton listening={capture.listening} onStart={begin} onStop={capture.stop} label="Nói theo" />
-      </div>
+        <div className={styles.track} aria-hidden="true">
+          <span style={{ width: `${((index + 1) / items.length) * 100}%` }} />
+        </div>
 
-      <LiveTranscript transcript={capture.listening ? capture.transcript : ""} interim={capture.interim} />
-      {capture.error && (
-        <p className={styles.error} role="alert">
-          {capture.error}
+        <p className={styles.target} lang="en">
+          {item.display}
         </p>
-      )}
-      {check && <SpeechResult check={check} heard={heard} />}
-      {capture.audioUrl && (
-        <div className={styles.playback}>
-          <span>Giọng của bạn:</span>
-          <audio controls src={capture.audioUrl} />
-        </div>
-      )}
 
-      <div className={styles.nav}>
-        <button type="button" className={styles.navBtn} onClick={() => go(index - 1)} disabled={index === 0}>
-          <ChevronLeft size={16} aria-hidden="true" /> Câu trước
-        </button>
-        <button type="button" className={styles.navBtn} onClick={finish} disabled={!startedAt}>
-          <Flag size={15} aria-hidden="true" /> Kết thúc
-        </button>
-        <button
-          type="button"
-          className={styles.navBtn}
-          onClick={() => (index === items.length - 1 ? finish() : go(index + 1))}
-          disabled={index === items.length - 1 && !startedAt}
-        >
-          {index === items.length - 1 ? "Hoàn thành" : "Câu sau"} <ChevronRight size={16} aria-hidden="true" />
-        </button>
-      </div>
-    </section>
+        <div className={styles.controls}>
+          <AudioButton player={speakingVoice} text={item.target} speed={speed} size="lg" aria-label={`Nghe mẫu: ${item.target}`} />
+          <div className={styles.speed} role="group" aria-label="Tốc độ nghe mẫu">
+            {SPEEDS.map((s) => (
+              <button key={s} type="button" aria-pressed={speed === s} onClick={() => setSpeed(s)}>
+                {s === 1 ? "Bình thường" : "Chậm"}
+              </button>
+            ))}
+          </div>
+          <MicButton listening={capture.listening} onStart={begin} onStop={capture.stop} label="Nói theo" />
+        </div>
+
+        <LiveTranscript transcript={capture.listening ? capture.transcript : ""} interim={capture.interim} />
+        {capture.error && (
+          <p className={styles.error} role="alert">
+            {capture.error}
+          </p>
+        )}
+        {check && <SpeechResult check={check} heard={heard} />}
+        {capture.audioUrl && (
+          <div className={styles.playback}>
+            <span>Giọng của bạn:</span>
+            <audio controls src={capture.audioUrl} />
+          </div>
+        )}
+
+        <div className={styles.nav}>
+          <button type="button" className={styles.navBtn} onClick={() => go(index - 1)} disabled={index === 0}>
+            <ChevronLeft size={16} aria-hidden="true" /> Câu trước
+          </button>
+          <button type="button" className={styles.navBtn} onClick={finish} disabled={!startedAt}>
+            <Flag size={15} aria-hidden="true" /> Kết thúc
+          </button>
+          <button
+            type="button"
+            className={styles.navBtn}
+            onClick={() => (index === items.length - 1 ? finish() : go(index + 1))}
+            disabled={index === items.length - 1 && !startedAt}
+          >
+            {index === items.length - 1 ? "Hoàn thành" : "Câu sau"} <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }

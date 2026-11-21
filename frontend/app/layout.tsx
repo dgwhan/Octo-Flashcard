@@ -87,7 +87,7 @@ export default function RootLayout({
       className={`h-full antialiased ${fraunces.variable} ${beVietnam.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <I18nProvider>
           <AppLayout>{children}</AppLayout>
         </I18nProvider>

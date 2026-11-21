@@ -14,6 +14,8 @@ export interface AudioButtonProps
   speed?: number;
   onPlayStart?: () => void;
   onPlayEnd?: () => void;
+  /** Audio engine; defaults to the shared dictionary voice. */
+  player?: { play(text: string, audioUrl?: string, speed?: number): Promise<void>; stop(): void };
 }
 
 export const AudioButton = forwardRef<HTMLButtonElement, AudioButtonProps>(
@@ -26,6 +28,7 @@ export const AudioButton = forwardRef<HTMLButtonElement, AudioButtonProps>(
       speed = 1.0,
       onPlayStart,
       onPlayEnd,
+      player = naturalAudio,
       className = "",
       disabled,
       title = "Nghe phát âm chuẩn",
@@ -40,7 +43,7 @@ export const AudioButton = forwardRef<HTMLButtonElement, AudioButtonProps>(
       if (disabled) return;
 
       if (isPlaying) {
-        naturalAudio.stop();
+        player.stop();
         setIsPlaying(false);
         onPlayEnd?.();
         return;
@@ -50,7 +53,7 @@ export const AudioButton = forwardRef<HTMLButtonElement, AudioButtonProps>(
       onPlayStart?.();
 
       try {
-        await naturalAudio.play(text, audioUrl, speed);
+        await player.play(text, audioUrl, speed);
       } catch (err) {
         console.warn("[AudioButton] Lỗi phát âm:", err);
       } finally {

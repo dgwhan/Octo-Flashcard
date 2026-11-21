@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Send, Loader2, RotateCcw, ArrowLeft, Check, X } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
-import { naturalAudio } from "@/src/features/dictionary";
+import { speakingVoice } from "../voice";
 import SaveToDeckButton from "@/src/features/flashCards/components/SaveToDeckButton";
 import { logStudySession } from "@/src/lib/studyLog";
 import { generate, parseJson, Turn } from "../gemini";
@@ -18,6 +18,7 @@ import {
 } from "../roleplay";
 import { useSpeechCapture } from "../useSpeechCapture";
 import GeminiKeyPanel, { useGeminiConfig } from "./GeminiKeyPanel";
+import VoicePicker from "./VoicePicker";
 import { MicButton, LiveTranscript, SpeechNotice } from "./SpeechParts";
 import styles from "../speaking.module.css";
 
@@ -50,7 +51,7 @@ export default function RolePlay() {
   useEffect(
     () => () => {
       abortRef.current?.abort();
-      naturalAudio.stop();
+      speakingVoice.stop();
     },
     []
   );
@@ -60,7 +61,7 @@ export default function RolePlay() {
   }, [turns]);
 
   const speak = (text: string) => {
-    if (autoSpeak) naturalAudio.play(text).catch(() => {});
+    if (autoSpeak) speakingVoice.play(text).catch(() => {});
   };
 
   const begin = (s: Scenario) => {
@@ -76,7 +77,7 @@ export default function RolePlay() {
   const leave = () => {
     abortRef.current?.abort();
     capture.stop();
-    naturalAudio.stop();
+    speakingVoice.stop();
     setScenario(null);
     setTurns([]);
     setFeedback(null);
@@ -114,7 +115,7 @@ export default function RolePlay() {
   const review = async () => {
     if (!scenario || !config) return;
     capture.stop();
-    naturalAudio.stop();
+    speakingVoice.stop();
     setBusy(true);
     setError("");
     try {
@@ -136,6 +137,7 @@ export default function RolePlay() {
     return (
       <div className={styles.stack}>
         <GeminiKeyPanel purpose="Hội thoại nhập vai" />
+        <VoicePicker />
         <ul className={styles.setGrid}>
           {SCENARIOS.map((s) => (
             <li key={s.id}>
@@ -194,7 +196,7 @@ export default function RolePlay() {
                   </p>
                   <p className={styles.better} lang="en">
                     {c.better}
-                    <AudioButton text={c.better} size="sm" variant="subtle" aria-label={`Nghe: ${c.better}`} />
+                    <AudioButton player={speakingVoice} text={c.better} size="sm" variant="subtle" aria-label={`Nghe: ${c.better}`} />
                   </p>
                   <p className={styles.muted}>{c.explanation}</p>
                 </li>
@@ -252,7 +254,7 @@ export default function RolePlay() {
             <li key={i} className={styles.bubble} data-role={t.role}>
               <span lang="en">{t.text}</span>
               {t.role === "model" && (
-                <AudioButton text={t.text} size="sm" variant="ghost" aria-label="Nghe lại câu này" />
+                <AudioButton player={speakingVoice} text={t.text} size="sm" variant="ghost" aria-label="Nghe lại câu này" />
               )}
             </li>
           ))}
