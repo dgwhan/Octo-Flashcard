@@ -1,32 +1,15 @@
 /**
- * Voice for the speaking module, never Google Translate's voice.
+ * The app's voice, used by every AudioButton; never Google Translate's voice.
  * Order: native recording (given URL, or dictionary audio for a single word) → Kokoro (open model running in the
- * browser, once downloaded) or Gemini TTS with the user's key → the best non-Google voice the browser has.
+ * browser, once downloaded) or Gemini TTS with the user's key (via our API) → the best non-Google browser voice.
+ * The choice and default speed come from the user's settings (Settings page), so they follow the account.
  */
-import { dictionaryApi } from "@/src/features/dictionary";
-import { TTS_VOICE, loadConfig, synthesize } from "../gemini";
-import { KOKORO_DEFAULT, isKokoroCached, kokoroGenerate, kokoroStatus, loadKokoro } from "./kokoro";
+import { TTS_VOICE, aiSpeech } from "../ai";
+import { getUserSettings } from "../userSettings";
+import { KOKORO_DEFAULT, isKokoroCached, kokoroGenerate, kokoroStatus } from "./kokoro";
 
 /** "" = automatic, "kokoro:<voice>", "gemini:<voice>" or "browser:<voice name>". */
-const PREF_KEY = "octo_speaking_voice";
-export const VOICE_EVENT = "octo-speaking-voice";
-
-export function getVoicePref(): string {
-  try {
-    return localStorage.getItem(PREF_KEY) ?? "";
-  } catch {
-    return "";
-  }
-}
-
-export function setVoicePref(value: string) {
-  try {
-    localStorage.setItem(PREF_KEY, value);
-  } catch {
-    // storage blocked (private mode): the choice is not kept, playback stays on automatic
-  }
-  window.dispatchEvent(new Event(VOICE_EVENT));
-}
+export const getVoicePref = (): string => getUserSettings().voice;
 
 /** English browser voices, Google's excluded. */
 export const browserVoices = () =>
@@ -47,15 +30,16 @@ function cachedUrl(key: string, make: () => Promise<Blob>): Promise<string> {
   return url;
 }
 
-/** Kokoro voice to use: the chosen one, or the default once the model is on this device. */
+/**
+ * Kokoro voice to use: the chosen one, or the default once the model is on this device.
+ * A Kokoro choice synced from another device does not start the ~90 MB download by itself: the browser voice
+ * plays until the learner downloads the model from Settings.
+ */
 function kokoroVoice(pref: string): string | undefined {
   const ready = kokoroStatus.get().state === "ready" || isKokoroCached();
-  if (pref.startsWith("kokoro:")) {
-    if (ready) return pref.slice(7);
-    loadKokoro(); // not downloaded yet: start now, answer with the browser voice meanwhile
-    return;
-  }
-  return !pref && ready ? KOKORO_DEFAULT : undefined;
+  if (!ready) return;
+  if (pref.startsWith("kokoro:")) return pref.slice(7);
+  return pref ? undefined : KOKORO_DEFAULT;
 }
 const kokoroUrl = (voice: string, text: string, speed: number) =>
   cachedUrl(`kokoro|${voice}|${speed}|${text}`, () => kokoroGenerate(text, voice, speed));
@@ -75,9 +59,15 @@ function playUrl(url: string, speed: number, id: number): Promise<void> {
   });
 }
 
+interface DictionaryPhonetics {
+  phonetics?: { audio?: string }[];
+}
+
 async function nativeWordAudio(word: string): Promise<string | undefined> {
   if (!/^[a-z'-]+$/i.test(word)) return;
-  const entries = await dictionaryApi.lookup(word).catch(() => []);
+  const entries: DictionaryPhonetics[] = await fetch(`/api/dictionary?word=${encodeURIComponent(word.toLowerCase())}`)
+    .then((r) => (r.ok ? r.json() : []))
+    .catch(() => []);
   const audios = entries.flatMap((e) => e.phonetics ?? []).map((p) => p.audio).filter((a): a is string => !!a);
   return audios.find((a) => /-us\.mp3$/.test(a)) ?? audios[0];
 }
@@ -104,9 +94,10 @@ function browserVoice(text: string, speed: number, id: number, name?: string): P
   });
 }
 
-export const speakingVoice = {
-  async play(text: string, audioUrl?: string, speed = 1): Promise<void> {
-    speakingVoice.stop();
+export const voicePlayer = {
+  async play(text: string, audioUrl?: string, speedArg?: number): Promise<void> {
+    voicePlayer.stop();
+    const speed = speedArg ?? getUserSettings().voiceSpeed;
     const id = ++run;
     const clean = text.trim();
     if (!clean) return;
@@ -123,20 +114,20 @@ export const speakingVoice = {
     const pref = getVoicePref();
     const browserName = pref.startsWith("browser:") ? pref.slice(8) : undefined;
     const gemini = pref.startsWith("gemini:") ? pref.slice(7) : TTS_VOICE;
-    const key = loadConfig()?.key;
+    const hasKey = getUserSettings().hasGeminiKey;
 
     const kokoro = kokoroVoice(pref);
     if (kokoro) {
       try {
         return await playUrl(await kokoroUrl(kokoro, clean, speed), 1, id); // Kokoro already spoke at `speed`
       } catch (err) {
-        console.warn("[speakingVoice] Kokoro failed, using browser voice", err);
+        console.warn("[voicePlayer] Kokoro failed, using browser voice", err);
       }
-    } else if (key && !browserName && !pref.startsWith("kokoro:")) {
+    } else if (hasKey && !browserName && !pref.startsWith("kokoro:")) {
       try {
-        return await playUrl(await cachedUrl(`${gemini}|${clean}`, () => synthesize(key, clean, gemini)), speed, id);
+        return await playUrl(await cachedUrl(`${gemini}|${clean}`, () => aiSpeech(clean, gemini)), speed, id);
       } catch (err) {
-        console.warn("[speakingVoice] Gemini TTS failed, using browser voice", err);
+        console.warn("[voicePlayer] Gemini TTS failed, using browser voice", err);
       }
     }
 
@@ -144,7 +135,8 @@ export const speakingVoice = {
   },
 
   /** Generate Kokoro audio ahead of a click. Never calls Gemini, so it costs no API quota. */
-  prefetch(text: string, speed = 1) {
+  prefetch(text: string, speedArg?: number) {
+    const speed = speedArg ?? getUserSettings().voiceSpeed;
     const clean = text.trim();
     const kokoro = clean && kokoroVoice(getVoicePref());
     if (kokoro) kokoroUrl(kokoro, clean, speed).catch(() => {});

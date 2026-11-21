@@ -1,5 +1,5 @@
 import { DictionaryEntry } from "../types";
-import { naturalAudio } from "@/src/lib/audio/naturalAudio";
+import { voicePlayer } from "@/src/lib/voice/voice";
 
 const cache = new Map<string, DictionaryEntry[]>();
 
@@ -37,10 +37,10 @@ export const dictionaryApi = {
   },
 
   playPronunciation(word: string, audioUrl?: string, speed: number = 1.0): void {
-    naturalAudio.play(word, audioUrl, speed);
+    voicePlayer.play(word, audioUrl, speed);
   },
 
   speakWebSpeech(text: string, speed: number = 1.0): void {
-    naturalAudio.play(text, undefined, speed);
+    voicePlayer.play(text, undefined, speed);
   },
 };

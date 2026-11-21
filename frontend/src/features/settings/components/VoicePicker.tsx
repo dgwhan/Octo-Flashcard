@@ -2,44 +2,33 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Volume2 } from "lucide-react";
-import { GEMINI_VOICES } from "../lib/gemini";
-import { KOKORO_SIZE_MB, KOKORO_VOICES, isKokoroCached, kokoroStatus, loadKokoro } from "../lib/voice/kokoro";
-import { VOICE_EVENT, browserVoices, getVoicePref, setVoicePref, speakingVoice } from "../lib/voice/voice";
-import { useGeminiConfig } from "./GeminiKeyPanel";
-import styles from "../speaking.module.css";
+import { GEMINI_VOICES } from "@/src/lib/ai";
+import { useUserSettings, updateUserSettings } from "@/src/lib/userSettings";
+import { KOKORO_SIZE_MB, KOKORO_VOICES, isKokoroCached, kokoroStatus, loadKokoro } from "@/src/lib/voice/kokoro";
+import { browserVoices, voicePlayer } from "@/src/lib/voice/voice";
+import styles from "../settings.module.css";
 
 const SAMPLE = "Hi there! This is how I sound when we practise speaking together.";
-
-const subscribe = (cb: () => void) => {
-  window.addEventListener(VOICE_EVENT, cb);
-  window.addEventListener("storage", cb);
-  return () => {
-    window.removeEventListener(VOICE_EVENT, cb);
-    window.removeEventListener("storage", cb);
-  };
-};
-
 const KOKORO_GROUPS = ["Mỹ · Nữ", "Mỹ · Nam", "Anh · Nữ", "Anh · Nam"] as const;
 const IDLE = { state: "idle", percent: 0 } as const;
+const noop = () => () => {};
 
-/** Lets the learner pick the speaking module's voice: Kokoro (in-browser AI), Gemini (with a key) or a browser voice. */
+/**
+ * The app-wide voice: Kokoro (in-browser AI), Gemini (needs the user's key) or a browser voice.
+ * The choice is saved to the account, so every page and device uses it.
+ */
 export default function VoicePicker() {
-  const pref = useSyncExternalStore(subscribe, getVoicePref, () => "");
-  const hasKey = !!useGeminiConfig();
+  const { settings } = useUserSettings();
   const kokoro = useSyncExternalStore(kokoroStatus.subscribe, kokoroStatus.get, () => IDLE);
-  const cached = useSyncExternalStore(subscribe, isKokoroCached, () => false);
+  const cached = useSyncExternalStore(noop, isKokoroCached, () => false);
   const kokoroOn = kokoro.state === "ready" || cached;
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [error, setError] = useState("");
 
   // Already downloaded: warm the model up from disk so the first click is fast.
   useEffect(() => {
     if (cached) loadKokoro();
   }, [cached]);
-
-  const choose = (value: string) => {
-    setVoicePref(value);
-    if (value.startsWith("kokoro:")) loadKokoro();
-  };
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
     if (typeof speechSynthesis === "undefined") return;
@@ -50,16 +39,23 @@ export default function VoicePicker() {
     return () => speechSynthesis.removeEventListener("voiceschanged", load);
   }, []);
 
+  const choose = (value: string) => {
+    setError("");
+    if (value.startsWith("kokoro:")) loadKokoro();
+    updateUserSettings({ voice: value }).catch((err) => setError(err instanceof Error ? err.message : "Không lưu được."));
+  };
+
   // A Gemini choice without a key would silently play a browser voice: show "automatic" instead.
-  const value = pref.startsWith("gemini:") && !hasKey ? "" : pref;
+  const value = settings.voice.startsWith("gemini:") && !settings.hasGeminiKey ? "" : settings.voice;
 
   return (
-    <div className={styles.keyBar}>
+    <div className={styles.voiceBar}>
       <label className={styles.voiceField}>
         <span>Giọng đọc</span>
         <select value={value} onChange={(e) => choose(e.target.value)}>
           <option value="">
-            Tự động ({kokoroOn ? "Kokoro · Heart" : hasKey ? "giọng AI Gemini Kore" : "giọng tốt nhất của trình duyệt"})
+            Tự động (
+            {kokoroOn ? "Kokoro · Heart" : settings.hasGeminiKey ? "giọng AI Gemini Kore" : "giọng tốt nhất của trình duyệt"})
           </option>
           {KOKORO_GROUPS.map((g) => (
             <optgroup key={g} label={`Kokoro AI trên máy · ${g}`}>
@@ -70,7 +66,7 @@ export default function VoicePicker() {
               ))}
             </optgroup>
           ))}
-          {hasKey &&
+          {settings.hasGeminiKey &&
             (["Nữ", "Nam"] as const).map((g) => (
               <optgroup key={g} label={`Giọng AI Gemini · ${g}`}>
                 {GEMINI_VOICES.filter((v) => v.gender === g).map((v) => (
@@ -91,11 +87,13 @@ export default function VoicePicker() {
           )}
         </select>
       </label>
-      <button type="button" className={styles.linkBtn} onClick={() => speakingVoice.play(SAMPLE)}>
+      <button type="button" className={styles.linkBtn} onClick={() => voicePlayer.play(SAMPLE)}>
         <Volume2 size={14} aria-hidden="true" /> Nghe thử
       </button>
-      <span>
-        {kokoro.state === "loading" ? (
+      <span className={styles.voiceNote}>
+        {error ? (
+          <span className={styles.error}>{error}</span>
+        ) : kokoro.state === "loading" ? (
           <span className={styles.voiceProgress} role="status">
             Đang tải giọng Kokoro… {kokoro.percent}%
             <progress max={100} value={kokoro.percent} aria-label="Tiến độ tải giọng Kokoro" />
@@ -111,7 +109,7 @@ export default function VoicePicker() {
           "Giọng Kokoro chạy ngay trên máy bạn: không cần key, không giới hạn. Từ đơn và âm IPA vẫn dùng bản thu người bản xứ."
         ) : (
           <>
-            Kokoro là giọng AI tự nhiên chạy ngay trên máy, không cần key và không giới hạn. Chỉ tải một lần (~
+            Kokoro là giọng AI tự nhiên chạy ngay trên máy, không cần key và không giới hạn. Chỉ tải một lần cho mỗi máy (~
             {KOKORO_SIZE_MB} MB).{" "}
             <button type="button" className={styles.linkBtn} onClick={loadKokoro}>
               Tải giọng Kokoro

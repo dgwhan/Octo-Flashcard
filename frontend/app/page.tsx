@@ -3,9 +3,9 @@ import { constructMetadata } from "@/src/config/seo";
 import { LandingPage } from "@/src/features/landing";
 
 export const metadata: Metadata = constructMetadata({
-  title: "Một con bạch tuộc, tám cách học tiếng Anh",
+  title: "Nghe hiểu, nói được, nhớ thật lâu",
   description:
-    "Flashcard tự tạo, truyện VOA đọc chậm, luyện nói có AI, 500 collocations và idioms, bảng 44 âm IPA và 35 chủ đề ngữ pháp từ A1 đến C1. Miễn phí, nguồn học liệu nào cũng ghi rõ.",
+    "Học tiếng Anh miễn phí cho người Việt: ôn flashcard theo lịch lặp lại ngắt quãng, nghe truyện VOA đọc chậm, luyện nói được chấm từng từ, hội thoại với AI, 500 cụm từ và 35 chủ điểm ngữ pháp A1–C1.",
   path: "/",
 });
 

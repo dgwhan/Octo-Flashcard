@@ -13,7 +13,8 @@ frontend/
     │   └── layout/            Khung app: header, sidebar, ModulePage
     ├── config/                routes, seo, modules (8 module)
     ├── i18n/
-    ├── lib/                   Dùng chung nhiều feature: api client, motion, studyLog, secureStorage, utils, audio/naturalAudio
+    ├── lib/                   Dùng chung nhiều feature: api client, motion, studyLog, secureStorage, utils,
+    │                          userSettings (cài đặt theo tài khoản), ai (gọi AI qua server), voice/ (giọng đọc toàn app)
     ├── styles/                Token màu (colors.css)
     ├── types/                 Kiểu dữ liệu dùng chung ≥ 2 feature (auth, flashCard)
     └── features/<tên>/
@@ -37,7 +38,8 @@ frontend/
 | landing | pages, sections (các khối của landing) |
 | phrases | data (collocations, idioms), lib (text), pages, types |
 | progress | lib (heatmap), pages |
-| speaking | components, data (shadowing, pronunciation, scenarios, ielts), hooks, lib (compare, gemini, prompts, voice/), pages, types |
+| settings | components (VoicePicker, VoiceSpeed, GeminiKeySettings, AiKeyNotice), pages |
+| speaking | components, data (shadowing, pronunciation, scenarios, ielts), hooks, lib (compare, prompts), pages, types |
 | voa | components (LessonAudioBar, ReadingTab, VocabularyTab, QuizTab), data, pages, types |
 | vocabulary | components (VocabularyFilters, WordCard), data, lib (levelBadge), pages, types |
 

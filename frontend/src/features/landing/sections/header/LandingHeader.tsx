@@ -32,7 +32,7 @@ export default function LandingHeader() {
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link href={ROUTES.HOME} className={styles.brand}>
-            <Image src="/octo-mascot.jpg" alt="" width={36} height={36} className={styles.brandMark} />
+            <Image src="/mascot.png" alt="" width={206} height={262} className={styles.brandMark} />
             <span>Octo Flashcard</span>
           </Link>
 

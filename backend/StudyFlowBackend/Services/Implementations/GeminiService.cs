@@ -28,6 +28,14 @@ namespace StudyFlowBackend.Services.Implementations
             _modelName = configuration["Gemini:Model"] ?? "gemini-3.1-flash-lite";
         }
 
+        /// <summary>Key goes in a header, never the URL, so it cannot leak into HttpClient or proxy logs.</summary>
+        private Task<HttpResponseMessage> PostWithKeyAsync(string url, string key, HttpContent content)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
+            request.Headers.Add("x-goog-api-key", key);
+            return _httpClient.SendAsync(request);
+        }
+
         public async Task<(string Reply, List<AiActionSuggestionDto> Actions, bool IsSuccess)> ProcessChatWithContextAsync(
             string userMessage, 
             List<ChatMessageDto> history, 
@@ -39,7 +47,7 @@ namespace StudyFlowBackend.Services.Implementations
                 return ("Error: Gemini API key not configured in the backend.", new List<AiActionSuggestionDto>(), false);
             }
 
-            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_modelName}:generateContent?key={_apiKey}";
+            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_modelName}:generateContent";
 
             // Tạo context từ các flashcard liên quan
             var contextBuilder = new StringBuilder();
@@ -158,7 +166,7 @@ namespace StudyFlowBackend.Services.Implementations
                 var jsonPayload = JsonSerializer.Serialize(payload);
                 var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync(url, requestContent);
+                var response = await PostWithKeyAsync(url, _apiKey, requestContent);
                 var responseString = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -211,15 +219,18 @@ namespace StudyFlowBackend.Services.Implementations
             return ("Unable to receive response from AI: Empty response or invalid structure.", new List<AiActionSuggestionDto>(), false);
         }
 
-        public async Task<List<CreateFlashcardDto>> GenerateFlashcardsFromTextAsync(string documentText)
+        public async Task<List<CreateFlashcardDto>> GenerateFlashcardsFromTextAsync(string documentText, string? apiKey = null, string? model = null)
         {
             var result = new List<CreateFlashcardDto>();
-            if (string.IsNullOrEmpty(_apiKey)) 
+            // A user's own key (from Settings) wins over the server key
+            var key = string.IsNullOrEmpty(apiKey) ? _apiKey : apiKey;
+            var modelName = string.IsNullOrEmpty(model) ? _modelName : model;
+            if (string.IsNullOrEmpty(key)) 
             {
                 throw new InvalidOperationException("Error: Gemini API key not configured in the backend.");
             }
 
-            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{_modelName}:generateContent?key={_apiKey}";
+            var url = $"https://generativelanguage.googleapis.com/v1beta/models/{modelName}:generateContent";
 
             var systemPrompt = "You are an smart learning assistant. Your task is to read the scanned document text provided below and generate a list of up to 10 flashcards (concise question and corresponding answer pairs) to help the student review and memorize effectively.\n" +
                                "Respond strictly in the following JSON array format:\n" +
@@ -250,7 +261,7 @@ namespace StudyFlowBackend.Services.Implementations
                 var jsonPayload = JsonSerializer.Serialize(payload);
                 var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync(url, requestContent);
+                var response = await PostWithKeyAsync(url, key, requestContent);
                 var responseString = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)

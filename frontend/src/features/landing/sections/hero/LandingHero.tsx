@@ -1,38 +1,41 @@
 import Link from "next/link";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import { GRAMMAR_ROADMAP_TOPICS } from "@/src/features/grammar/data"; // server component: data stays on the server
+// Server component: these data files stay on the server, only the counts reach the page
+import { GRAMMAR_ROADMAP_TOPICS } from "@/src/features/grammar/data";
+import { PHRASES } from "@/src/features/phrases/data";
+import { SCENARIOS } from "@/src/features/speaking/data/scenarios";
 import HeroCard from "./HeroCard";
 import shared from "../../landing.module.css";
 import styles from "./LandingHero.module.css";
 
-// Real counts taken from the app's own data files (ipa.data, grammar.data, voa.data).
+// Real counts taken from the app's own data files.
 const FACTS = [
-  { value: "8", label: "module học trong một chỗ" },
-  { value: "44", label: "âm IPA có audio" },
+  { value: String(PHRASES.length), label: "cụm từ và thành ngữ có câu ví dụ" },
   { value: String(GRAMMAR_ROADMAP_TOPICS.length), label: "chủ điểm ngữ pháp A1–C1" },
-  { value: "7", label: "truyện VOA đọc chậm" },
+  { value: String(SCENARIOS.length), label: "tình huống hội thoại với AI" },
+  { value: "44", label: "âm IPA có bản thu người thật" },
 ];
 
 export default function LandingHero() {
   return (
     <section className={styles.hero}>
       <div className={styles.heroText}>
-        <p className={shared.eyebrow}>Học tiếng Anh cho người Việt · Học liệu mở</p>
+        <p className={shared.eyebrow}>Học tiếng Anh cho người Việt · Miễn phí, học liệu mở</p>
         <h1 className={styles.heroTitle}>
-          <span className={styles.heroLine}>Một con bạch tuộc,</span>
+          <span className={styles.heroLine}>Nghe hiểu,</span>
+          <span className={styles.heroLine}>nói được,</span>
           <span className={styles.heroLine}>
-            <em>tám</em> cách học
+            <em>nhớ</em> thật lâu.
           </span>
-          <span className={styles.heroLine}>tiếng Anh.</span>
         </h1>
         <p className={styles.heroLead}>
-          Flashcard tự tạo, truyện VOA đọc chậm, 500 collocations và idioms, luyện nói có AI và bảng 44 âm IPA. Mọi
-          thứ gom về một chỗ, nguồn nào cũng ghi rõ.
+          Nghe truyện VOA đọc chậm, nói lại từng câu và được chấm từng từ, hội thoại với AI, rồi giữ mọi từ mới trong
+          bộ thẻ tự nhắc ôn đúng lúc sắp quên. Tám kỹ năng trong một chỗ, miễn phí, nguồn học liệu nào cũng ghi rõ.
         </p>
         <div className={styles.heroActions}>
           <Link href={ROUTES.FLASHCARDS} className={shared.primaryBtnLg}>
-            <span>Bắt đầu với Flashcard</span>
+            <span>Bắt đầu học</span>
             <ArrowRight size={18} />
           </Link>
           <a href="#modules" className={shared.textLink}>

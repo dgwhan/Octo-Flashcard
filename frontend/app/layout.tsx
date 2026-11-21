@@ -52,7 +52,7 @@ export const metadata: Metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "Octo Flashcard: một con bạch tuộc, tám cách học tiếng Anh",
+        alt: "Octo Flashcard: nghe hiểu, nói được, nhớ thật lâu",
       },
     ],
   },

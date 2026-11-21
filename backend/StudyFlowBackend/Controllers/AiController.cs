@@ -21,19 +21,22 @@ namespace StudyFlowBackend.Controllers
         private readonly IScannedDocumentService _documentService;
         private readonly IChatService _chatService;
         private readonly IUserUtils _userUtils;
+        private readonly IUserSettingsService _settings;
 
         public AiController(
             IGeminiService geminiService,
             IFlashcardService flashcardService,
             IScannedDocumentService documentService,
             IChatService chatService,
-            IUserUtils userUtils)
+            IUserUtils userUtils,
+            IUserSettingsService settings)
         {
             _geminiService = geminiService;
             _flashcardService = flashcardService;
             _documentService = documentService;
             _chatService = chatService;
             _userUtils = userUtils;
+            _settings = settings;
         }
 
         [HttpGet("history")]
@@ -89,14 +92,26 @@ namespace StudyFlowBackend.Controllers
             if (text.Length < 40) return BadRequest(ApiResponse<object>.ErrorResponse("Đoạn văn quá ngắn (cần ít nhất 40 ký tự)."));
             if (text.Length > 8000) return BadRequest(ApiResponse<object>.ErrorResponse("Đoạn văn quá dài (tối đa 8000 ký tự)."));
 
-            if (!await _chatService.CheckAndIncrementAiLimitAsync(user))
-                return StatusCode(429, ApiResponse<object>.ErrorResponse("Bạn đã dùng hết lượt AI hôm nay. Hãy thử lại vào ngày mai."));
+            // With their own key (Settings) the user pays for the call, so the shared daily limit does not apply
+            var own = await _settings.GetGeminiCredentialsAsync(user.Id);
+            if (own == null && !await _chatService.CheckAndIncrementAiLimitAsync(user))
+                return StatusCode(429, ApiResponse<object>.ErrorResponse("Bạn đã dùng hết lượt AI hôm nay. Thêm API key Gemini của bạn trong Cài đặt để dùng tiếp."));
 
-            var cards = await _geminiService.GenerateFlashcardsFromTextAsync(text);
+            List<CreateFlashcardDto> cards;
+            try
+            {
+                cards = await _geminiService.GenerateFlashcardsFromTextAsync(text, own?.ApiKey, own?.Model);
+            }
+            catch (InvalidOperationException)
+            {
+                // no server key and no user key
+                await _chatService.DecrementAiLimitAsync(user);
+                return StatusCode(503, ApiResponse<object>.ErrorResponse("Chưa có API key để tạo thẻ. Thêm API key Gemini của bạn trong Cài đặt."));
+            }
             if (cards == null || cards.Count == 0)
             {
-                await _chatService.DecrementAiLimitAsync(user);
-                return StatusCode(503, ApiResponse<object>.ErrorResponse("AI chưa tạo được thẻ (có thể backend chưa cấu hình GEMINI_API_KEY)."));
+                if (own == null) await _chatService.DecrementAiLimitAsync(user);
+                return StatusCode(503, ApiResponse<object>.ErrorResponse("AI chưa tạo được thẻ. Thử lại sau hoặc kiểm tra API key trong Cài đặt."));
             }
 
             return Ok(ApiResponse<List<CreateFlashcardDto>>.SuccessResponse(cards));

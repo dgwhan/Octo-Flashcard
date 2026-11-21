@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "Octo Flashcard",
   shortName: "OctoCard",
   description:
-    "Nền tảng học từ vựng và ngoại ngữ thông minh bằng phương pháp lật thẻ Flashcard 2 mặt, phát âm Audio chuẩn và tự đánh giá độ ghi nhớ.",
+    "Học tiếng Anh miễn phí cho người Việt: nghe truyện đọc chậm, luyện nói được chấm từng từ, hội thoại với AI và ôn flashcard đúng lúc sắp quên.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   ogImage: "/og.png",
   keywords: [

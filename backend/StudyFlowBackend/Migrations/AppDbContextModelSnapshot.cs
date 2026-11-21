@@ -659,6 +659,38 @@ namespace StudyFlowBackend.Migrations
                     b.ToTable("UserNotifications");
                 });
 
+            modelBuilder.Entity("StudyFlowBackend.Models.UserSettings", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GeminiApiKeyHint")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("GeminiApiKeyProtected")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GeminiModel")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Voice")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<double>("VoiceSpeed")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserSettings");
+                });
+
             modelBuilder.Entity("StudyFlowBackend.Models.ChatMessage", b =>
                 {
                     b.HasOne("StudyFlowBackend.Models.User", "User")
@@ -788,6 +820,17 @@ namespace StudyFlowBackend.Migrations
                     b.HasOne("StudyFlowBackend.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudyFlowBackend.Models.UserSettings", b =>
+                {
+                    b.HasOne("StudyFlowBackend.Models.User", "User")
+                        .WithOne()
+                        .HasForeignKey("StudyFlowBackend.Models.UserSettings", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

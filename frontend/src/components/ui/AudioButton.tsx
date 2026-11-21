@@ -2,7 +2,7 @@
 
 import React, { useState, ButtonHTMLAttributes, forwardRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { naturalAudio } from "@/src/lib/audio/naturalAudio";
+import { voicePlayer } from "@/src/lib/voice/voice";
 import styles from "./AudioButton.module.css";
 
 export interface AudioButtonProps
@@ -25,10 +25,10 @@ export const AudioButton = forwardRef<HTMLButtonElement, AudioButtonProps>(
       audioUrl,
       size = "md",
       variant = "primary",
-      speed = 1.0,
+      speed,
       onPlayStart,
       onPlayEnd,
-      player = naturalAudio,
+      player = voicePlayer,
       className = "",
       disabled,
       title = "Nghe phát âm chuẩn",

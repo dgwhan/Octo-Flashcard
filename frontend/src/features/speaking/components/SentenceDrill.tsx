@@ -3,9 +3,9 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { ChevronLeft, ChevronRight, Flag } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
-import { speakingVoice } from "../lib/voice/voice";
-import { kokoroStatus } from "../lib/voice/kokoro";
-import VoicePicker from "./VoicePicker";
+import { voicePlayer } from "@/src/lib/voice/voice";
+import { kokoroStatus } from "@/src/lib/voice/kokoro";
+import { VoicePicker } from "@/src/features/settings";
 import SaveToDeckButton from "@/src/features/flashcards/components/SaveToDeckButton";
 import { logStudySession } from "@/src/lib/studyLog";
 import { compareSpeech, SpeechCheck } from "../lib/compare";
@@ -41,8 +41,8 @@ export default function SentenceDrill({ items, label }: { items: DrillItem[]; la
   // before the learner clicks, so "Nghe mẫu" usually plays at once.
   useEffect(() => {
     if (kokoroState !== "ready" || !item) return;
-    speakingVoice.prefetch(item.target, speed);
-    if (nextTarget) speakingVoice.prefetch(nextTarget, speed);
+    voicePlayer.prefetch(item.target, speed);
+    if (nextTarget) voicePlayer.prefetch(nextTarget, speed);
   }, [kokoroState, item, nextTarget, speed]);
 
   const capture = useSpeechCapture({
@@ -93,7 +93,7 @@ export default function SentenceDrill({ items, label }: { items: DrillItem[]; la
               {missed.map((w) => (
                 <li key={w}>
                   <span lang="en">{w}</span>
-                  <AudioButton player={speakingVoice} text={w} size="sm" variant="subtle" aria-label={`Nghe từ ${w}`} />
+                  <AudioButton player={voicePlayer} text={w} size="sm" variant="subtle" aria-label={`Nghe từ ${w}`} />
                   <SaveToDeckButton front={w} back="Từ cần luyện phát âm" label="Lưu" />
                 </li>
               ))}
@@ -136,7 +136,7 @@ export default function SentenceDrill({ items, label }: { items: DrillItem[]; la
         </p>
 
         <div className={styles.controls}>
-          <AudioButton player={speakingVoice} text={item.target} speed={speed} size="lg" aria-label={`Nghe mẫu: ${item.target}`} />
+          <AudioButton player={voicePlayer} text={item.target} speed={speed} size="lg" aria-label={`Nghe mẫu: ${item.target}`} />
           <div className={styles.speed} role="group" aria-label="Tốc độ nghe mẫu">
             {SPEEDS.map((s) => (
               <button key={s} type="button" aria-pressed={speed === s} onClick={() => setSpeed(s)}>

@@ -144,7 +144,7 @@
 }
 
 .faceFront {
-  background: #fff; /* mascot artwork has a white ground */
+  background: var(--color-bg-card);
   justify-content: center;
   align-items: center;
 }
@@ -198,8 +198,9 @@
   color: var(--color-text-primary);
 }
 
+/* Source art is ~300px: keep it near native size so the 2D line work stays crisp */
 .mascot {
-  width: 100%;
+  width: min(62%, 260px);
   height: auto;
 }
 

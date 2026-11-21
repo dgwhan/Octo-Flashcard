@@ -5,7 +5,7 @@ import { SOUND_GROUPS, spokenForm } from "../data/pronunciation.data";
 import { SCENARIOS } from "../data/scenarios";
 import { feedbackRequest, rolePlaySystem } from "./prompts";
 import { PART1_TOPICS, CUE_CARDS } from "../data/ielts";
-import { parseJson, maskKey, pcmToWav, extractPcm, trimTail } from "./gemini";
+import { parseJson, pcmToWav, extractPcm, trimTail } from "@/src/lib/ai";
 import { IPA_PHONEMES } from "@/src/features/ipa/data/ipa.data";
 
 describe("speech comparison", () => {
@@ -94,7 +94,6 @@ describe("gemini helpers", () => {
   it("parses fenced JSON and masks keys", () => {
     expect(parseJson<{ a: number }>('```json\n{"a": 1}\n```')).toEqual({ a: 1 });
     expect(() => parseJson("not json")).toThrow();
-    expect(maskKey("AIzaSyExampleKey1234")).toBe("AIza…1234");
   });
 });
 

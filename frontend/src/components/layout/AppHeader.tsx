@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Search, Plus, LogOut, Menu, User, BookA } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
@@ -70,6 +71,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
         </button>
 
         <Link href={ROUTES.HOME} className={styles.brandLink}>
+          <Image src="/mascot.png" alt="" width={206} height={262} className={styles.brandMark} />
           <span className={styles.brandName}>Octo Flashcard</span>
         </Link>
       </div>
@@ -166,7 +168,7 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
         onClose={() => setIsAuthModalOpen(false)}
         title={t("auth.authRequiredTitle")}
         description={t("auth.authRequiredDesc")}
-        redirectUrl={ROUTES.FLASHCARDS_CREATE}
+        redirectUrl={ROUTES.PROGRESS}
       />
 
       {/* Global Quick Dictionary Lookup Modal */}

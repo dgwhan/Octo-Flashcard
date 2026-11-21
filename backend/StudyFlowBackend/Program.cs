@@ -1,5 +1,6 @@
 using System.Text;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +28,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+
+// Data Protection encrypts per-user secrets (Gemini keys). Its key ring must survive restarts and be shared by
+// every instance, otherwise stored keys can no longer be decrypted: set DataProtection__KeysPath to a persistent volume.
+builder.Services.AddDataProtection()
+    .SetApplicationName("OctoFlashcard")
+    .PersistKeysToFileSystem(new DirectoryInfo(
+        builder.Configuration["DataProtection:KeysPath"]
+        ?? Path.Combine(builder.Environment.ContentRootPath, "App_Data", "dp-keys")));
 
 // Configure CORS to allow frontend origin connections
 builder.Services.AddCors(options =>
@@ -142,6 +151,8 @@ builder.Services.AddScoped<IStorageQuotaService, StorageQuotaService>();
 builder.Services.AddScoped<IFlashcardService, FlashcardService>();
 builder.Services.AddScoped<IGrammarService, GrammarService>();
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
+builder.Services.AddHttpClient<IUserGeminiClient, UserGeminiClient>();
+builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
 builder.Services.AddHostedService<ReminderWorker>();
 builder.Services.AddHostedService<TrashCleanupService>();
 

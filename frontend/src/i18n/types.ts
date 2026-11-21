@@ -23,6 +23,11 @@ export interface TranslationSchema {
     review: string;
     progress: string;
     speaking: string;
+    settings: string;
+    groupFlashcards: string;
+    groupLearn: string;
+    groupSpeak: string;
+    groupTools: string;
     voa: string;
     vocabulary: string;
     sentences: string;

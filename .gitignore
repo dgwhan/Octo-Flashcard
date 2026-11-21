@@ -12,3 +12,5 @@ frontend/.next/
 
 # local development settings
 **/appsettings.Development.json
+# ASP.NET Data Protection key ring (decrypts stored user API keys) - never commit
+**/App_Data/

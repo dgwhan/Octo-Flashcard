@@ -44,6 +44,12 @@
   text-decoration: none;
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.brandMark {
+  width: auto;
+  height: 32px;
 }
 
 .brandName {

@@ -44,6 +44,9 @@ export const ROUTES = {
   // Tiến độ học tập (streak, huy hiệu, lịch học)
   PROGRESS: "/progress",
 
+  // Cài đặt tài khoản (giọng đọc, API key)
+  SETTINGS: "/settings",
+
   // Xác thực (Auth)
   AUTH: {
     LOGIN: "/auth/login",
@@ -61,6 +64,7 @@ export const ROUTE_PATH_MAP: Record<string, string> = {
   "/flashcards/review": "FLASHCARDS_REVIEW",
   "/progress": "PROGRESS",
   "/speaking": "SPEAKING",
+  "/settings": "SETTINGS",
   "/voa": "VOA",
   "/vocabulary": "VOCABULARY",
   "/sentences": "SENTENCES",

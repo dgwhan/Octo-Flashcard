@@ -3,16 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Send, Loader2, RotateCcw, ArrowLeft, Check, X } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
-import { speakingVoice } from "../lib/voice/voice";
+import { voicePlayer } from "@/src/lib/voice/voice";
 import SaveToDeckButton from "@/src/features/flashcards/components/SaveToDeckButton";
 import { logStudySession } from "@/src/lib/studyLog";
-import { generate, parseJson, Turn } from "../lib/gemini";
+import { aiGenerate, parseJson, AiTurn as Turn } from "@/src/lib/ai";
+import { useUserSettings } from "@/src/lib/userSettings";
 import { SCENARIOS, MAX_TURNS } from "../data/scenarios";
 import { rolePlaySystem, FEEDBACK_SYSTEM, feedbackRequest } from "../lib/prompts";
 import type { Scenario, RolePlayFeedback } from "../types";
 import { useSpeechCapture } from "../hooks/useSpeechCapture";
-import GeminiKeyPanel, { useGeminiConfig } from "../components/GeminiKeyPanel";
-import VoicePicker from "../components/VoicePicker";
+import { AiKeyNotice, VoicePicker } from "@/src/features/settings";
 import { MicButton, LiveTranscript, SpeechNotice } from "../components/SpeechParts";
 import styles from "../speaking.module.css";
 
@@ -26,7 +26,7 @@ const SCORE_LABELS: [keyof RolePlayFeedback["scores"], string][] = [
 ];
 
 export default function RolePlayPage() {
-  const config = useGeminiConfig();
+  const hasKey = useUserSettings().settings.hasGeminiKey;
   const [scenario, setScenario] = useState<Scenario | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
@@ -45,7 +45,7 @@ export default function RolePlayPage() {
   useEffect(
     () => () => {
       abortRef.current?.abort();
-      speakingVoice.stop();
+      voicePlayer.stop();
     },
     []
   );
@@ -55,7 +55,7 @@ export default function RolePlayPage() {
   }, [turns]);
 
   const speak = (text: string) => {
-    if (autoSpeak) speakingVoice.play(text).catch(() => {});
+    if (autoSpeak) voicePlayer.play(text).catch(() => {});
   };
 
   const begin = (s: Scenario) => {
@@ -71,7 +71,7 @@ export default function RolePlayPage() {
   const leave = () => {
     abortRef.current?.abort();
     capture.stop();
-    speakingVoice.stop();
+    voicePlayer.stop();
     setScenario(null);
     setTurns([]);
     setFeedback(null);
@@ -81,12 +81,12 @@ export default function RolePlayPage() {
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
-    return generate({ config: config!, system, turns: history, json, signal: ctrl.signal });
+    return aiGenerate({ system, turns: history, json, signal: ctrl.signal });
   };
 
   const send = async () => {
     const text = draft.trim();
-    if (!text || !scenario || !config || busy) return;
+    if (!text || !scenario || !hasKey || busy) return;
     const next: Turn[] = [...turns, { role: "user", text }];
     setTurns(next);
     setDraft("");
@@ -107,9 +107,9 @@ export default function RolePlayPage() {
   };
 
   const review = async () => {
-    if (!scenario || !config) return;
+    if (!scenario || !hasKey) return;
     capture.stop();
-    speakingVoice.stop();
+    voicePlayer.stop();
     setBusy(true);
     setError("");
     try {
@@ -130,12 +130,12 @@ export default function RolePlayPage() {
   if (!scenario) {
     return (
       <div className={styles.stack}>
-        <GeminiKeyPanel purpose="Hội thoại nhập vai" />
+        <AiKeyNotice feature="Hội thoại nhập vai" />
         <VoicePicker />
         <ul className={styles.setGrid}>
           {SCENARIOS.map((s) => (
             <li key={s.id}>
-              <button type="button" className={styles.setCard} onClick={() => begin(s)} disabled={!config}>
+              <button type="button" className={styles.setCard} onClick={() => begin(s)} disabled={!hasKey}>
                 <span className={styles.setSource}>{s.level}</span>
                 <span className={styles.setTitle}>{s.title}</span>
                 <span className={styles.setCount}>{s.goal}</span>
@@ -143,7 +143,6 @@ export default function RolePlayPage() {
             </li>
           ))}
         </ul>
-        {!config && <p className={styles.muted}>Nhập API key ở trên để bắt đầu một tình huống.</p>}
       </div>
     );
   }
@@ -190,7 +189,7 @@ export default function RolePlayPage() {
                   </p>
                   <p className={styles.better} lang="en">
                     {c.better}
-                    <AudioButton player={speakingVoice} text={c.better} size="sm" variant="subtle" aria-label={`Nghe: ${c.better}`} />
+                    <AudioButton player={voicePlayer} text={c.better} size="sm" variant="subtle" aria-label={`Nghe: ${c.better}`} />
                   </p>
                   <p className={styles.muted}>{c.explanation}</p>
                 </li>
@@ -248,7 +247,7 @@ export default function RolePlayPage() {
             <li key={i} className={styles.bubble} data-role={t.role}>
               <span lang="en">{t.text}</span>
               {t.role === "model" && (
-                <AudioButton player={speakingVoice} text={t.text} size="sm" variant="ghost" aria-label="Nghe lại câu này" />
+                <AudioButton player={voicePlayer} text={t.text} size="sm" variant="ghost" aria-label="Nghe lại câu này" />
               )}
             </li>
           ))}

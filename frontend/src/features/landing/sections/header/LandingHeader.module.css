@@ -27,8 +27,8 @@
 }
 
 .brandMark {
-  border-radius: var(--radius-sm);
-  background: #fff;
+  width: auto;
+  height: 36px;
 }
 
 .navLinks {

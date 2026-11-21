@@ -1,5 +1,5 @@
 /** System prompts and request builders for the Gemini calls (role-play feedback, IELTS scoring). */
-import type { Turn } from "./gemini";
+import type { AiTurn as Turn } from "@/src/lib/ai";
 import type { IeltsAnswer, IeltsPart, Scenario } from "../types";
 
 export function rolePlaySystem(s: Scenario) {

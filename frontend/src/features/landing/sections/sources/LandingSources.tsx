@@ -8,6 +8,8 @@ const SOURCES = [
   { name: "Free Dictionary API · Datamuse", license: "API mở", use: "Định nghĩa, phiên âm, từ đồng nghĩa", link: "https://dictionaryapi.dev" },
   { name: "Wikimedia Commons", license: "CC BY-SA", use: "Bản thu âm của 44 âm IPA", link: "https://commons.wikimedia.org" },
   { name: "NGSL · AWL · CEFR-J", license: "Nghiên cứu mở", use: "Danh sách và cấp độ từ vựng", link: "https://www.newgeneralservicelist.com" },
+  { name: "Kokoro TTS", license: "Apache 2.0", use: "Giọng đọc AI chạy ngay trên máy bạn", link: "https://huggingface.co/hexgrad/Kokoro-82M" },
+  { name: "Google Gemini", license: "API, key của bạn", use: "Hội thoại nhập vai, chấm IELTS, tạo thẻ bằng AI", link: "https://ai.google.dev" },
 ];
 
 export default function LandingSources() {

@@ -10,15 +10,15 @@ const PRINCIPLES = [
   },
   {
     num: "02",
-    title: "Ôn đúng chỗ còn yếu",
-    term: "Đã thuộc / Cần ôn",
-    desc: "Thẻ nào đã thuộc thì đánh dấu và để sang một bên. Lần học sau chỉ còn những thẻ bạn chưa chắc.",
+    title: "Ôn đúng lúc sắp quên",
+    term: "Lặp lại ngắt quãng · FSRS",
+    desc: "Sau mỗi thẻ bạn chấm Quên, Khó, Được hay Dễ. Thuật toán tính ngày ôn tiếp theo: thẻ dễ giãn ra vài tuần, thẻ khó quay lại ngay trong buổi.",
   },
   {
     num: "03",
-    title: "Nghe thứ mình gần hiểu",
-    term: "Comprehensible input · S. Krashen",
-    desc: "Truyện VOA đọc chậm có transcript chạy theo giọng đọc: hiểu được phần lớn, đoán được phần còn lại từ ngữ cảnh.",
+    title: "Nghe gần hiểu, rồi nói lại",
+    term: "Comprehensible input · Shadowing",
+    desc: "Nghe truyện VOA đọc chậm và câu mẫu ở mức hiểu được phần lớn, rồi nói lại từng câu. Máy đánh dấu từ bị nuốt để bạn sửa ngay.",
   },
 ];
 

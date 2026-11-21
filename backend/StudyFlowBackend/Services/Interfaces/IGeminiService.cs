@@ -12,6 +12,6 @@ namespace StudyFlowBackend.Services
             List<FlashcardDto> contextCards,
             string userTimeZoneId = "Asia/Ho_Chi_Minh");
 
-        Task<List<CreateFlashcardDto>> GenerateFlashcardsFromTextAsync(string documentText);
+        Task<List<CreateFlashcardDto>> GenerateFlashcardsFromTextAsync(string documentText, string? apiKey = null, string? model = null);
     }
 }

@@ -16,7 +16,7 @@ export default function LandingCTA() {
           bạn vừa gặp hôm nay.
         </h2>
         <div className={styles.ctaSide}>
-          <p>Tạo một bộ thẻ, thêm vài từ, rồi lật thử. Miễn phí, chạy ngay trên trình duyệt.</p>
+          <p>Tạo một bộ thẻ, thêm vài từ, mai quay lại ôn đúng những thẻ đến hạn. Miễn phí, chạy ngay trên trình duyệt.</p>
           <Link href={ROUTES.FLASHCARDS_CREATE} className={`${shared.primaryBtnLg} ${styles.ctaBtn}`}>
             <span>Tạo bộ thẻ đầu tiên</span>
             <ArrowRight size={18} />

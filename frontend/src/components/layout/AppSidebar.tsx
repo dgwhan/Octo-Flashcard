@@ -3,11 +3,24 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Layers, PlusCircle, X, Headphones, Volume2, Search, GraduationCap, MessageSquare, Compass, RotateCw, Flame, Mic } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Home,
+  Layers,
+  PlusCircle,
+  X,
+  Headphones,
+  Volume2,
+  Search,
+  GraduationCap,
+  MessageSquare,
+  Compass,
+  RotateCw,
+  Flame,
+  Mic,
+  Settings,
+} from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import { MODULES } from "@/src/config/modules";
-
-const NUM_BY_HREF: Record<string, string> = Object.fromEntries(MODULES.map((m) => [m.href, m.num]));
 import { useTranslation } from "@/src/i18n";
 import styles from "./AppSidebar.module.css";
 
@@ -17,156 +30,113 @@ interface AppSidebarProps {
   onCloseMobile?: () => void;
 }
 
-export default function AppSidebar({
-  isCollapsed = false,
-  isMobileOpen = false,
-  onCloseMobile,
-}: AppSidebarProps) {
+interface NavItem {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  /** Also active on sub-pages (e.g. /grammar/present-simple) */
+  nested?: boolean;
+}
+
+interface NavGroup {
+  /** No title for the first group: today's essentials */
+  title?: string;
+  items: NavItem[];
+}
+
+export default function AppSidebar({ isCollapsed = false, isMobileOpen = false, onCloseMobile }: AppSidebarProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
-  const isNavActive = (href: string) => {
-    if (href === ROUTES.HOME) {
-      return pathname === "/" || pathname === "/home";
-    }
-    if (href === ROUTES.FLASHCARDS) {
-      return pathname === "/flashcards" || (pathname.startsWith("/flashcards/") && pathname !== "/flashcards/create" && pathname !== "/flashcards/review");
-    }
-    if (href === ROUTES.FLASHCARDS_CREATE) {
-      return pathname === "/flashcards/create";
-    }
-    if (href === ROUTES.VOA) {
-      return pathname === "/voa" || pathname.startsWith("/voa/");
-    }
-    if (href === ROUTES.VOCABULARY) {
-      return pathname === "/vocabulary";
-    }
-    if (href === ROUTES.SENTENCES) {
-      return pathname === "/sentences";
-    }
-    if (href === ROUTES.IPA) {
-      return pathname === "/ipa";
-    }
-    if (href === ROUTES.DICTIONARY) {
-      return pathname === "/dictionary";
-    }
-    if (href === ROUTES.SPEAKING) {
-      return pathname === "/speaking" || pathname.startsWith("/speaking/");
-    }
-    if (href === ROUTES.GRAMMAR) {
-      return pathname === "/grammar" || pathname.startsWith("/grammar/");
-    }
-    return pathname === href;
-  };
-
-  const navItems = [
+  const groups: NavGroup[] = [
     {
-      label: t("nav.home"),
-      href: ROUTES.HOME,
-      icon: Home,
+      items: [
+        { label: t("nav.home"), href: ROUTES.HOME, icon: Home },
+        { label: t("nav.review"), href: ROUTES.FLASHCARDS_REVIEW, icon: RotateCw },
+        { label: t("nav.progress"), href: ROUTES.PROGRESS, icon: Flame },
+      ],
     },
     {
-      label: t("nav.flashcards"),
-      href: ROUTES.FLASHCARDS,
-      icon: Layers,
+      title: t("nav.groupFlashcards"),
+      items: [
+        { label: t("nav.flashcards"), href: ROUTES.FLASHCARDS, icon: Layers, nested: true },
+        { label: t("nav.createFlashcard"), href: ROUTES.FLASHCARDS_CREATE, icon: PlusCircle },
+      ],
     },
     {
-      label: t("nav.createFlashcard"),
-      href: ROUTES.FLASHCARDS_CREATE,
-      icon: PlusCircle,
+      title: t("nav.groupLearn"),
+      items: [
+        { label: t("nav.voa"), href: ROUTES.VOA, icon: Headphones, nested: true },
+        { label: t("nav.vocabulary"), href: ROUTES.VOCABULARY, icon: GraduationCap },
+        { label: t("nav.sentences"), href: ROUTES.SENTENCES, icon: MessageSquare },
+        { label: t("nav.grammar"), href: ROUTES.GRAMMAR, icon: Compass, nested: true },
+      ],
     },
     {
-      label: t("nav.review"),
-      href: ROUTES.FLASHCARDS_REVIEW,
-      icon: RotateCw,
+      title: t("nav.groupSpeak"),
+      items: [
+        { label: t("nav.speaking"), href: ROUTES.SPEAKING, icon: Mic, nested: true },
+        { label: t("nav.ipa"), href: ROUTES.IPA, icon: Volume2 },
+      ],
     },
     {
-      label: t("nav.progress"),
-      href: ROUTES.PROGRESS,
-      icon: Flame,
-    },
-    {
-      label: t("nav.voa"),
-      href: ROUTES.VOA,
-      icon: Headphones,
-    },
-    {
-      label: t("nav.vocabulary"),
-      href: ROUTES.VOCABULARY,
-      icon: GraduationCap,
-    },
-    {
-      label: t("nav.grammar"),
-      href: ROUTES.GRAMMAR,
-      icon: Compass,
-    },
-    {
-      label: t("nav.speaking"),
-      href: ROUTES.SPEAKING,
-      icon: Mic,
-    },
-    {
-      label: t("nav.sentences"),
-      href: ROUTES.SENTENCES,
-      icon: MessageSquare,
-    },
-    {
-      label: t("nav.ipa"),
-      href: ROUTES.IPA,
-      icon: Volume2,
-    },
-    {
-      label: t("nav.dictionary"),
-      href: ROUTES.DICTIONARY,
-      icon: Search,
+      title: t("nav.groupTools"),
+      items: [{ label: t("nav.dictionary"), href: ROUTES.DICTIONARY, icon: Search }],
     },
   ];
+  const settings: NavItem = { label: t("nav.settings"), href: ROUTES.SETTINGS, icon: Settings };
+
+  // Exact match, or a sub-page of a "nested" section. /flashcards/create and /flashcards/review have their own items.
+  const ownItems = new Set<string>([ROUTES.FLASHCARDS_CREATE, ROUTES.FLASHCARDS_REVIEW]);
+  const isActive = ({ href, nested }: NavItem) =>
+    pathname === href ||
+    (href === ROUTES.HOME && pathname === "/home") ||
+    (!!nested && pathname.startsWith(`${href}/`) && !ownItems.has(pathname));
+
+  const renderItem = (item: NavItem) => {
+    const active = isActive(item);
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        className={`${styles.navItem} ${active ? styles.navItemActive : ""}`}
+        aria-current={active ? "page" : undefined}
+        onClick={onCloseMobile}
+        title={isCollapsed ? item.label : undefined}
+      >
+        <Icon className={styles.navIcon} aria-hidden="true" />
+        <span className={styles.navLabel}>{item.label}</span>
+      </Link>
+    );
+  };
 
   return (
     <aside
-      className={`${styles.sidebar} ${
-        isCollapsed ? styles.sidebarCollapsed : ""
-      } ${isMobileOpen ? styles.sidebarMobileOpen : ""}`}
+      className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ""} ${
+        isMobileOpen ? styles.sidebarMobileOpen : ""
+      }`}
     >
-      {/* Mobile Close Button Header (only visible on mobile drawer) */}
+      {/* Mobile drawer header */}
       <div className={styles.mobileHeader}>
         <span className={styles.mobileTitle}>Octo Flashcard</span>
         {onCloseMobile && (
-          <button
-            type="button"
-            className={styles.closeMobileBtn}
-            onClick={onCloseMobile}
-            aria-label="Close sidebar"
-          >
-            <X className={styles.navIcon} />
+          <button type="button" className={styles.closeMobileBtn} onClick={onCloseMobile} aria-label="Đóng menu">
+            <X className={styles.navIcon} aria-hidden="true" />
           </button>
         )}
       </div>
 
-      {/* Navigation list */}
-      <nav className={styles.nav}>
-        {navItems.map((item) => {
-          const active = isNavActive(item.href);
-          const Icon = item.icon;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${active ? styles.navItemActive : ""}`}
-              onClick={onCloseMobile}
-              title={isCollapsed ? item.label : undefined}
-            >
-              {active && <div className={styles.activeIndicator} />}
-              <div className={styles.iconWrapper}>
-                <Icon className={styles.navIcon} />
-              </div>
-              <span className={styles.navLabel}>{item.label}</span>
-              {NUM_BY_HREF[item.href] && <span className={styles.navNum}>{NUM_BY_HREF[item.href]}</span>}
-            </Link>
-          );
-        })}
+      <nav className={styles.nav} aria-label="Điều hướng chính">
+        {groups.map((group, i) => (
+          <div key={group.title ?? i} className={styles.group} role="group" aria-label={group.title}>
+            {group.title && <p className={styles.groupTitle}>{group.title}</p>}
+            {group.items.map(renderItem)}
+          </div>
+        ))}
       </nav>
+
+      <div className={styles.footer}>{renderItem(settings)}</div>
     </aside>
   );
 }

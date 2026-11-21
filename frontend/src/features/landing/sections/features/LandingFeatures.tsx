@@ -21,7 +21,7 @@ export default function LandingFeatures() {
           <LeadIcon size={28} strokeWidth={1.5} />
           <h3 className={styles.leadTitle}>{lead.title}</h3>
           <p className={styles.leadDesc}>
-            {lead.desc} Đây là nơi những gì bạn gặp ở 7 module còn lại được giữ lại thành thẻ để ôn.
+            {lead.desc} Từ gặp ở 7 module còn lại được lưu thành thẻ chỉ với một chạm, rồi quay lại đúng lúc bạn sắp quên.
           </p>
           <span className={shared.textLink}>
             <span>Mở Flashcard</span>

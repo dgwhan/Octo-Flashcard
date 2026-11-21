@@ -6,7 +6,7 @@ import { STANDARDIZED_VOCABULARY } from "../data/vocabulary.data";
 import { VocabularyItem, FrameworkType } from "../types";
 import VocabularyFilters from "../components/VocabularyFilters";
 import WordCard from "../components/WordCard";
-import { naturalAudio } from "@/src/lib/audio/naturalAudio";
+import { voicePlayer } from "@/src/lib/voice/voice";
 
 export default function VocabularyPage() {
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
@@ -99,14 +99,14 @@ export default function VocabularyPage() {
 
   const playWord = async (word: string) => {
     if (playingWord === word) {
-      naturalAudio.stop();
+      voicePlayer.stop();
       setPlayingWord(null);
       return;
     }
 
     setPlayingWord(word);
     try {
-      await naturalAudio.play(word, undefined, 1.0);
+      await voicePlayer.play(word);
     } catch {
       // NaturalAudio handles internal fallback
     } finally {

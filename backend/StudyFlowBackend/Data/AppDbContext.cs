@@ -22,6 +22,7 @@ namespace StudyFlowBackend.Data
         public DbSet<Flashcard> Flashcards { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<UserGrammarProgress> GrammarProgresses { get; set; }
+        public DbSet<UserSettings> UserSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -154,6 +155,19 @@ namespace StudyFlowBackend.Data
                     .WithMany()
                     .HasForeignKey(cm => cm.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Cài đặt theo người dùng (1-1). API key được mã hoá, cột hint chỉ để hiển thị
+            modelBuilder.Entity<UserSettings>(entity =>
+            {
+                entity.HasKey(s => s.UserId);
+                entity.HasOne(s => s.User)
+                    .WithOne()
+                    .HasForeignKey<UserSettings>(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(s => s.GeminiApiKeyHint).HasMaxLength(20);
+                entity.Property(s => s.GeminiModel).HasMaxLength(64);
+                entity.Property(s => s.Voice).HasMaxLength(200);
             });
 
             // Cấu hình bảng tiến độ ngữ pháp UserGrammarProgress

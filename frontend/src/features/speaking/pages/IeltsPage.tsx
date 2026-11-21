@@ -3,16 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Timer, Loader2, RotateCcw, ArrowLeft, Sparkles } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
-import { speakingVoice } from "../lib/voice/voice";
+import { voicePlayer } from "@/src/lib/voice/voice";
 import { logStudySession } from "@/src/lib/studyLog";
 import { wordsPerMinute } from "../lib/compare";
-import { generate, parseJson } from "../lib/gemini";
+import { aiGenerate, parseJson } from "@/src/lib/ai";
+import { useUserSettings } from "@/src/lib/userSettings";
 import { CUE_CARDS, PART1_TOPICS, LIMITS } from "../data/ielts";
 import { SCORE_SYSTEM, scoreRequest } from "../lib/prompts";
 import type { IeltsPart, IeltsAnswer, IeltsScore, CueCard } from "../types";
 import { useSpeechCapture } from "../hooks/useSpeechCapture";
-import GeminiKeyPanel, { useGeminiConfig } from "../components/GeminiKeyPanel";
-import VoicePicker from "../components/VoicePicker";
+import { AiKeyNotice, VoicePicker } from "@/src/features/settings";
 import { MicButton, LiveTranscript, SpeechNotice, formatSeconds } from "../components/SpeechParts";
 import styles from "../speaking.module.css";
 
@@ -34,7 +34,7 @@ const PARTS: { part: IeltsPart; label: string; desc: string }[] = [
 const wpm = (a: IeltsAnswer) => wordsPerMinute(a.transcript, a.seconds);
 
 export default function IeltsPage() {
-  const config = useGeminiConfig();
+  const hasKey = useUserSettings().settings.hasGeminiKey;
   const [part, setPart] = useState<IeltsPart>(1);
   const [session, setSession] = useState<Session | null>(null);
   const [q, setQ] = useState(0);
@@ -133,12 +133,11 @@ export default function IeltsPage() {
   };
 
   const runScoring = async () => {
-    if (!config || !session) return;
+    if (!hasKey || !session) return;
     setScoring(true);
     setError("");
     try {
-      const raw = await generate({
-        config,
+      const raw = await aiGenerate({
         system: SCORE_SYSTEM,
         turns: scoreRequest(session.part, answers.filter(Boolean), wpm),
         json: true,
@@ -294,12 +293,12 @@ export default function IeltsPage() {
                 </p>
                 <p className={styles.sample} lang="en">
                   {score.sample.answer}
-                  <AudioButton player={speakingVoice} text={score.sample.answer} size="sm" variant="subtle" aria-label="Nghe câu trả lời mẫu" />
+                  <AudioButton player={voicePlayer} text={score.sample.answer} size="sm" variant="subtle" aria-label="Nghe câu trả lời mẫu" />
                 </p>
               </>
             )}
           </section>
-        ) : config ? (
+        ) : hasKey ? (
           <div className={styles.row}>
             <button type="button" className={styles.primaryBtn} onClick={runScoring} disabled={scoring || !done.length}>
               {scoring ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : <Sparkles size={15} aria-hidden="true" />}
@@ -312,7 +311,7 @@ export default function IeltsPage() {
             )}
           </div>
         ) : (
-          <GeminiKeyPanel purpose="Chấm band IELTS" />
+          <AiKeyNotice feature="Chấm band IELTS" />
         )}
         <VoicePicker />
 
