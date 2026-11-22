@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { Send, Loader2, RotateCcw, ArrowLeft, Check, X } from "lucide-react";
 import { AudioButton } from "@/src/components/ui/AudioButton";
 import { voicePlayer } from "@/src/lib/voice/voice";
-import SaveToDeckButton from "@/src/features/flashcards/components/SaveToDeckButton";
+import Link from "next/link";
+import { ROUTES } from "@/src/config/routes";
+import SavePhraseButton from "../components/SavePhraseButton";
 import { logStudySession } from "@/src/lib/studyLog";
 import { aiGenerate, parseJson, AiTurn as Turn } from "@/src/lib/ai";
 import { useUserSettings } from "@/src/lib/userSettings";
@@ -225,6 +227,16 @@ export default function RolePlayPage() {
                     <AudioButton player={voicePlayer} text={c.better} size="sm" variant="subtle" aria-label={`Nghe: ${c.better}`} />
                   </p>
                   <p className={styles.muted}>{c.explanation}</p>
+                  <SavePhraseButton
+                    phrase={{
+                      text: c.better,
+                      meaning: c.explanation,
+                      kind: "sentence",
+                      topic: scenario.topic,
+                      scenarioId: scenario.id,
+                      scenarioTitle: scenario.title,
+                    }}
+                  />
                 </li>
               ))}
             </ul>
@@ -239,12 +251,30 @@ export default function RolePlayPage() {
                 <li key={p.phrase}>
                   <span lang="en">{p.phrase}</span>
                   <span className={styles.muted}>{p.meaning}</span>
-                  <SaveToDeckButton front={p.phrase} back={p.meaning} label="Lưu" />
+                  <SavePhraseButton
+                    label="Lưu"
+                    phrase={{
+                      text: p.phrase,
+                      meaning: p.meaning,
+                      kind: "phrase",
+                      topic: scenario.topic,
+                      scenarioId: scenario.id,
+                      scenarioTitle: scenario.title,
+                    }}
+                  />
                 </li>
               ))}
             </ul>
           </>
         )}
+
+        <p className={styles.muted}>
+          Câu đã lưu nằm trong{" "}
+          <Link href={ROUTES.SPEAKING_PHRASEBOOK} className={styles.linkBtn}>
+            Sổ tay luyện nói
+          </Link>
+          , xếp theo chủ đề.
+        </p>
 
         <div className={styles.row}>
           <button type="button" className={styles.primaryBtn} onClick={() => begin(scenario)}>

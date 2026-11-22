@@ -39,6 +39,7 @@ Vì vậy phải viết **đúng dạng ngữ pháp** để câu ghép lại đ�
 | `id` | ASCII | Không ai (khóa nội bộ) | Chữ thường, liền nhau, không dấu, **duy nhất** (test sẽ báo nếu trùng). Ví dụ `carhire`, `aiedu` |
 | `title` | Tiếng Việt | Người học (thẻ chọn) | 2–6 từ, viết hoa chữ đầu. Ví dụ `Thuê xe ô tô` |
 | `level` | — | Người học + AI | Một trong `"A2" \| "B1" \| "B2" \| "C1"` |
+| `topic` | — | Người học (nhóm trong Sổ tay luyện nói) | Một `id` trong `TOPICS` ở đầu `scenarios.ts`: `food`, `travel`, `services`, `health`, `home`, `social`, `work`, `study`. Các câu người học lưu từ phần nhận xét của tình huống này sẽ được xếp vào chủ đề đó. Test báo lỗi nếu thiếu hoặc sai |
 | `goal` | Tiếng Việt | Người học | Một câu, kết thúc bằng dấu chấm, nêu 2–3 việc cụ thể phải làm được |
 | `aiRole` | Tiếng Anh | AI | Cụm danh từ có mạo từ hoặc tên riêng: `a ticket seller at a cinema`, `Alex, an international student at a welcome party`. Thêm tính cách để tạo độ khó: `a landlord who is reluctant to spend money on repairs` |
 | `learnerRole` | Tiếng Anh | AI | Cụm danh từ có mạo từ: `a passenger whose train was cancelled` |
@@ -76,6 +77,7 @@ Mẫu một phần tử:
     id: "carhire",
     title: "Thuê xe ô tô",
     level: "B1",
+    topic: "travel",
     goal: "Thuê xe trong 3 ngày, hỏi bảo hiểm, xăng và nơi trả xe.",
     aiRole: "an agent at a car rental desk",
     learnerRole: "a customer renting a car",
@@ -85,8 +87,12 @@ Mẫu một phần tử:
   },
 ```
 
-`id` đang có (tại thời điểm bàn giao, 40 tình huống):
-`cafe airport hotel directions supermarket taxi booking pharmacy cinema hairdresser postoffice doctor return party apartment luggage bank train gym travelagent carhire phoneplan roommate interview meeting complaint salary pitch support landlord debate deadline feedback insurance professor conference mediation investor aiedu radio`
+Danh sách `id` đang có: đọc trực tiếp `scenarios.ts` (đã có 90 tình huống khi cập nhật tài liệu này).
+
+**Chọn `topic`:** gọi món, ăn uống → `food`; sân bay, khách sạn, đi lại, du lịch → `travel`; mua sắm, ngân hàng, sửa chữa,
+dịch vụ khách hàng → `services`; khám bệnh, nha sĩ, thú y → `health`; thuê nhà, hàng xóm, bạn cùng phòng → `home`;
+làm quen, mời bạn bè → `social`; công sở, thương lượng, quản lý → `work`; trường học, tranh luận, thuyết trình học thuật
+→ `study`. Chỉ thêm chủ đề mới khi được yêu cầu: thêm vào kiểu `TopicId` trong `types.ts` và mảng `TOPICS`.
 
 ## 6. Thêm một cấp độ mới (chỉ khi được yêu cầu)
 
@@ -107,7 +113,7 @@ npx vitest run src/features/speaking
 ```
 
 Test `scenarios are complete` kiểm tra: đúng số lượng `N`, `id` không trùng, mỗi tình huống có đủ `opening`, `goal`,
-`aiRole`, `learnerGoal`, và prompt có chứa cấp độ. Test `scenario search` kiểm tra bộ lọc và tìm kiếm; nếu thêm tình huống
+`aiRole`, `learnerGoal`, `topic` hợp lệ, và prompt có chứa cấp độ. Test `scenario search` kiểm tra bộ lọc và tìm kiếm; nếu thêm tình huống
 khiến một kỳ vọng trong test đó sai (ví dụ `"đặt bàn"` giờ khớp thêm tình huống mới), hãy cập nhật kỳ vọng cho đúng
 chứ không xóa test.
 

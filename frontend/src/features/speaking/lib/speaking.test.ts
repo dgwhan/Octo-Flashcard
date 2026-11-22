@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { compareSpeech, normalizeWords, tipsFor, wordsPerMinute } from "./compare";
 import { splitSentences, SHADOW_SETS } from "../data/shadowing.data";
 import { SOUND_GROUPS, spokenForm } from "../data/pronunciation.data";
-import { SCENARIOS } from "../data/scenarios";
+import { SCENARIOS, TOPICS } from "../data/scenarios";
+import { groupByTopic, SavedPhrase } from "./phrasebook";
 import { searchScenarios } from "./searchScenarios";
 import { feedbackRequest, rolePlaySystem } from "./prompts";
 import { PART1_TOPICS, CUE_CARDS } from "../data/ielts";
@@ -79,6 +80,29 @@ describe("scenario search", () => {
   });
 });
 
+describe("phrasebook", () => {
+  const phrase = (id: string, topic: string): SavedPhrase => ({
+    id,
+    text: id,
+    meaning: "",
+    kind: "phrase",
+    topic,
+    scenarioId: "",
+    scenarioTitle: "",
+    createdAt: "",
+  });
+
+  it("groups by topic in TOPICS order, drops empty topics and puts unknown ones last", () => {
+    const groups = groupByTopic([phrase("a", "work"), phrase("b", "food"), phrase("c", "retired-topic"), phrase("d", "work")]);
+    expect(groups.map((g) => [g.topic, g.items.map((p) => p.id)])).toEqual([
+      ["food", ["b"]],
+      ["work", ["a", "d"]],
+      ["other", ["c"]],
+    ]);
+    expect(groupByTopic([])).toEqual([]);
+  });
+});
+
 describe("role-play and IELTS content", () => {
   it("scenarios are complete", () => {
     expect(SCENARIOS.length).toBe(90);
@@ -86,6 +110,7 @@ describe("role-play and IELTS content", () => {
     for (const s of SCENARIOS) {
       expect(s.opening && s.goal && s.aiRole && s.learnerGoal, s.id).toBeTruthy();
       expect(rolePlaySystem(s)).toContain(s.level);
+      expect(TOPICS.some((t) => t.id === s.topic), `${s.id}: topic "${s.topic}"`).toBe(true);
     }
     const req = feedbackRequest(SCENARIOS[0], [
       { role: "model", text: "Hi!" },

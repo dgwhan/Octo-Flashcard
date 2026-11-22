@@ -40,6 +40,7 @@ export const ROUTES = {
   SPEAKING_PRONUNCIATION: "/speaking/pronunciation",
   SPEAKING_ROLEPLAY: "/speaking/roleplay",
   SPEAKING_IELTS: "/speaking/ielts",
+  SPEAKING_PHRASEBOOK: "/speaking/phrasebook",
 
   // Lộ trình học tổng A1–C1
   ROADMAP: "/roadmap",

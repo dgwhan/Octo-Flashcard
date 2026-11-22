@@ -321,6 +321,62 @@ namespace StudyFlowBackend.Migrations
                     b.ToTable("FocusSessions");
                 });
 
+            modelBuilder.Entity("StudyFlowBackend.Models.SavedPhrase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Meaning")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("NormalizedText")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("ScenarioId")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("ScenarioTitle")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "NormalizedText")
+                        .IsUnique();
+
+                    b.ToTable("SavedPhrases");
+                });
+
             modelBuilder.Entity("StudyFlowBackend.Models.ScannedDocument", b =>
                 {
                     b.Property<Guid>("Id")
@@ -735,6 +791,17 @@ namespace StudyFlowBackend.Migrations
                 {
                     b.HasOne("StudyFlowBackend.Models.User", "User")
                         .WithMany("FocusSessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("StudyFlowBackend.Models.SavedPhrase", b =>
+                {
+                    b.HasOne("StudyFlowBackend.Models.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

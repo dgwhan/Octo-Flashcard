@@ -1,9 +1,13 @@
 /* Role-play */
 
+export type TopicId = "food" | "travel" | "services" | "health" | "home" | "social" | "work" | "study";
+
 export interface Scenario {
   id: string;
   title: string;
   level: "A2" | "B1" | "B2" | "C1";
+  /** Groups the scenario and the phrases saved from it (see TOPICS in data/scenarios.ts) */
+  topic: TopicId;
   /** Shown to the learner (Vietnamese) */
   goal: string;
   /** For the AI (English) */

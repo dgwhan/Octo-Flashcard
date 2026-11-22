@@ -8,3 +8,4 @@ export { default as ShadowingPage } from "./pages/ShadowingPage";
 export { default as PronunciationPage } from "./pages/PronunciationPage";
 export { default as RolePlayPage } from "./pages/RolePlayPage";
 export { default as IeltsPage } from "./pages/IeltsPage";
+export { default as PhrasebookPage } from "./pages/PhrasebookPage";

@@ -557,6 +557,15 @@
   font-weight: 600;
 }
 
+.phraseMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-small);
+  color: var(--color-text-secondary);
+}
+
 .filterBar {
   display: flex;
   flex-direction: column;

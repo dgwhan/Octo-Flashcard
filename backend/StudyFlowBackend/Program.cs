@@ -153,6 +153,7 @@ builder.Services.AddScoped<IGrammarService, GrammarService>();
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddHttpClient<IUserGeminiClient, UserGeminiClient>();
 builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
+builder.Services.AddScoped<ISavedPhraseService, SavedPhraseService>();
 builder.Services.AddHostedService<ReminderWorker>();
 builder.Services.AddHostedService<TrashCleanupService>();
 

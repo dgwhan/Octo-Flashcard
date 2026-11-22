@@ -23,6 +23,7 @@ namespace StudyFlowBackend.Data
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<UserGrammarProgress> GrammarProgresses { get; set; }
         public DbSet<UserSettings> UserSettings { get; set; }
+        public DbSet<SavedPhrase> SavedPhrases { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -168,6 +169,24 @@ namespace StudyFlowBackend.Data
                 entity.Property(s => s.GeminiApiKeyHint).HasMaxLength(20);
                 entity.Property(s => s.GeminiModel).HasMaxLength(64);
                 entity.Property(s => s.Voice).HasMaxLength(200);
+            });
+
+            // Sổ tay luyện nói: cụm từ / câu sửa lưu từ phần nhận xét hội thoại, tách khỏi flashcard
+            modelBuilder.Entity<SavedPhrase>(entity =>
+            {
+                entity.HasKey(p => p.Id);
+                entity.HasOne(p => p.User)
+                    .WithMany()
+                    .HasForeignKey(p => p.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(p => new { p.UserId, p.NormalizedText }).IsUnique();
+                entity.Property(p => p.Text).HasMaxLength(300);
+                entity.Property(p => p.NormalizedText).HasMaxLength(300);
+                entity.Property(p => p.Meaning).HasMaxLength(500);
+                entity.Property(p => p.Kind).HasMaxLength(10);
+                entity.Property(p => p.Topic).HasMaxLength(40);
+                entity.Property(p => p.ScenarioId).HasMaxLength(40);
+                entity.Property(p => p.ScenarioTitle).HasMaxLength(120);
             });
 
             // Cấu hình bảng tiến độ ngữ pháp UserGrammarProgress
