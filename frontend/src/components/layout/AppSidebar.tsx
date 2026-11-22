@@ -19,6 +19,7 @@ import {
   Flame,
   Mic,
   Settings,
+  Map,
 } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
@@ -53,6 +54,7 @@ export default function AppSidebar({ isCollapsed = false, isMobileOpen = false, 
       items: [
         { label: t("nav.home"), href: ROUTES.HOME, icon: Home },
         { label: t("nav.review"), href: ROUTES.FLASHCARDS_REVIEW, icon: RotateCw },
+        { label: t("nav.roadmap"), href: ROUTES.ROADMAP, icon: Map },
         { label: t("nav.progress"), href: ROUTES.PROGRESS, icon: Flame },
       ],
     },

@@ -22,6 +22,7 @@ export const vi: TranslationSchema = {
     createFlashcard: "Tạo bộ thẻ",
     review: "Ôn tập hôm nay",
     progress: "Tiến độ của tôi",
+    roadmap: "Lộ trình học",
     speaking: "Luyện nói",
     settings: "Cài đặt",
     groupFlashcards: "Flashcard",

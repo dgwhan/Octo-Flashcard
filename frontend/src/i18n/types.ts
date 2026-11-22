@@ -22,6 +22,7 @@ export interface TranslationSchema {
     createFlashcard: string;
     review: string;
     progress: string;
+    roadmap: string;
     speaking: string;
     settings: string;
     groupFlashcards: string;

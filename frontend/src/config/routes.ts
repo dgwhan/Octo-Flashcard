@@ -41,6 +41,9 @@ export const ROUTES = {
   SPEAKING_ROLEPLAY: "/speaking/roleplay",
   SPEAKING_IELTS: "/speaking/ielts",
 
+  // Lộ trình học tổng A1–C1
+  ROADMAP: "/roadmap",
+
   // Tiến độ học tập (streak, huy hiệu, lịch học)
   PROGRESS: "/progress",
 
@@ -63,6 +66,7 @@ export const ROUTE_PATH_MAP: Record<string, string> = {
   "/flashcards/create": "FLASHCARDS_CREATE",
   "/flashcards/review": "FLASHCARDS_REVIEW",
   "/progress": "PROGRESS",
+  "/roadmap": "ROADMAP",
   "/speaking": "SPEAKING",
   "/settings": "SETTINGS",
   "/voa": "VOA",

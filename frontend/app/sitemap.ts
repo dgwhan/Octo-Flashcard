@@ -9,6 +9,7 @@ import { SHADOW_SETS } from "@/src/features/speaking/data/shadowing.data";
 export default function sitemap(): MetadataRoute.Sitemap {
   const url = (path: string) => `${siteConfig.url}${path}`;
   const modules = [
+    ROUTES.ROADMAP,
     ROUTES.VOA,
     ROUTES.VOCABULARY,
     ROUTES.GRAMMAR,

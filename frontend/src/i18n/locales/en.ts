@@ -22,6 +22,7 @@ export const en: TranslationSchema = {
     createFlashcard: "New deck",
     review: "Review today",
     progress: "My progress",
+    roadmap: "Learning path",
     speaking: "Speaking",
     settings: "Settings",
     groupFlashcards: "Flashcards",
