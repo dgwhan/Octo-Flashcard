@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlashCardResponse } from "@/src/types/flashCard";
-import { authApi } from "@/src/features/auth/api/auth.api";
+import { useCurrentUser, useSignedIn } from "@/src/features/auth/hooks/useCurrentUser";
 import { flipCard, dealCard, goldTick } from "@/src/lib/motion";
 import { studyProgressKey } from "../lib/studyProgress";
 import StudyAuthGuard from "./study/StudyAuthGuard";
@@ -32,17 +32,12 @@ interface StudyProgressState {
 export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
   cards,
   deckId = "default-deck",
-  deckTitle,
   onCardMastered,
 }) => {
 
-  // Check user authentication
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const [currentUser, setCurrentUser] = useState<{
-    userId: string;
-    username: string;
-    email: string;
-  } | null>(null);
+  // Check user authentication (unknown counts as signed in, so the guard never flashes)
+  const isLoggedIn = useSignedIn() !== false;
+  const currentUser = useCurrentUser();
 
   // Card deck & study queue states
   const [deckCards, setDeckCards] = useState<FlashCardResponse[]>(cards);
@@ -58,29 +53,24 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
   const [masteredIds, setMasteredIds] = useState<Set<string>>(new Set());
   const [reviewIds, setReviewIds] = useState<Set<string>>(new Set());
 
-  // Determine user login status on mount
-  useEffect(() => {
-    const token = authApi.getStoredToken();
-    const user = authApi.getStoredUser();
-    setIsLoggedIn(!!token);
-    setCurrentUser(user);
-  }, []);
-
-  // Sync cards prop if changed
-  useEffect(() => {
+  // Restart the deck when the cards prop changes (adjusting state during render, not in an effect)
+  const [prevCards, setPrevCards] = useState(cards);
+  if (cards !== prevCards) {
+    setPrevCards(cards);
     setDeckCards(cards);
     setCurrentIndex(0);
     setIsFlipped(false);
     setIsCompleted(false);
-  }, [cards]);
+  }
 
   // Storage key scoped to user and deck
   const storageKey = useMemo(() => studyProgressKey(currentUser?.userId, deckId), [currentUser?.userId, deckId]);
 
-  // Load study progress per user from LocalStorage
-  useEffect(() => {
-    if (typeof window === "undefined" || !deckId) return;
-
+  // Load study progress per user from LocalStorage whenever the key changes.
+  // Reading storage during render is safe here: the viewer only mounts on the client, after the deck has loaded.
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  if (loadedKey !== storageKey && typeof window !== "undefined") {
+    setLoadedKey(storageKey);
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
@@ -91,7 +81,7 @@ export const FlashCardViewer: React.FC<FlashCardViewerProps> = ({
     } catch {
       // ignore parse errors
     }
-  }, [storageKey, deckId]);
+  }
 
   // Persist study progress per user to LocalStorage
   const persistProgress = useCallback(

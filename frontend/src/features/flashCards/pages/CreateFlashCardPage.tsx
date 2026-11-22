@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, ArrowLeft, Layers } from "lucide-react";
@@ -10,6 +10,8 @@ import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
 import AiCardsPanel from "../components/AiCardsPanel";
 import styles from "./CreateFlashCardPage.module.css";
+
+const noSubscribe = () => () => {};
 
 interface CardInput {
   question: string;
@@ -28,28 +30,6 @@ export const CreateFlashCardPage: React.FC = () => {
     }
   }, [router]);
 
-  // Pre-fill from query params (e.g. from Dictionary or VOA lessons)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      // Two link styles exist: ?word=&definition=&phonetic= (VOA, Dictionary) and ?front=&back= (Vocabulary)
-      const params = new URLSearchParams(window.location.search);
-      const word = params.get("word");
-      const phonetic = params.get("phonetic");
-      const front = params.get("front") || (word && phonetic ? `${word} [${phonetic}]` : word);
-      const back = params.get("back") ?? params.get("definition") ?? "";
-      if (front) {
-        setTitle(`Từ vựng mới: ${word || front}`);
-        setCards([
-          { question: front, answer: back },
-          { question: "", answer: "" },
-        ]);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
-
   const [title, setTitle] = useState("");
   const [cards, setCards] = useState<CardInput[]>([
     { question: "", answer: "" },
@@ -57,6 +37,27 @@ export const CreateFlashCardPage: React.FC = () => {
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pre-fill once from query params (e.g. from Dictionary or VOA lessons). The query string is read on the
+  // client only (null while server-rendering), and state is adjusted during render instead of in an effect.
+  const search = useSyncExternalStore(noSubscribe, () => window.location.search, () => null);
+  const [prefilled, setPrefilled] = useState(false);
+  if (search !== null && !prefilled) {
+    setPrefilled(true);
+    // Two link styles exist: ?word=&definition=&phonetic= (VOA, Dictionary) and ?front=&back= (Vocabulary)
+    const params = new URLSearchParams(search);
+    const word = params.get("word");
+    const phonetic = params.get("phonetic");
+    const front = params.get("front") || (word && phonetic ? `${word} [${phonetic}]` : word);
+    const back = params.get("back") ?? params.get("definition") ?? "";
+    if (front) {
+      setTitle(`Từ vựng mới: ${word || front}`);
+      setCards([
+        { question: front, answer: back },
+        { question: "", answer: "" },
+      ]);
+    }
+  }
 
   const handleAddCard = () => {
     setCards((prev) => [...prev, { question: "", answer: "" }]);
@@ -105,8 +106,8 @@ export const CreateFlashCardPage: React.FC = () => {
       });
 
       router.push(`/flashcards?setId=${created.id}`);
-    } catch (err: any) {
-      setError(err?.message || t("common.error"));
+    } catch (err) {
+      setError((err instanceof Error && err.message) || t("common.error"));
     } finally {
       setIsSubmitting(false);
     }

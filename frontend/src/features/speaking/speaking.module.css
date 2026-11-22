@@ -557,6 +557,12 @@
   font-weight: 600;
 }
 
+.filterBar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .chips {
   display: flex;
   flex-wrap: wrap;

@@ -3,7 +3,7 @@
 export interface Scenario {
   id: string;
   title: string;
-  level: "A2" | "B1" | "B2";
+  level: "A2" | "B1" | "B2" | "C1";
   /** Shown to the learner (Vietnamese) */
   goal: string;
   /** For the AI (English) */

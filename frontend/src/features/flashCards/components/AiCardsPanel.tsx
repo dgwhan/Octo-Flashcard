@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { apiClient } from "@/src/lib/api";
 import styles from "./AiCardsPanel.module.css";
@@ -9,6 +9,17 @@ import styles from "./AiCardsPanel.module.css";
 export const AI_SOURCE_KEY = "octo_ai_source";
 export const AI_MIN_CHARS = 40;
 export const AI_MAX_CHARS = 8000;
+
+const noSubscribe = () => () => {};
+/** The handoff text when opened with ?ai=1 ("" if missing), otherwise null. Client-only: null while server-rendering. */
+function readHandoff(): string | null {
+  if (new URLSearchParams(window.location.search).get("ai") !== "1") return null;
+  try {
+    return sessionStorage.getItem(AI_SOURCE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
 
 interface Props {
   onCards: (cards: { question: string; answer: string }[], title?: string) => void;
@@ -21,10 +32,13 @@ export default function AiCardsPanel({ onCards }: Props) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("ai") !== "1") return;
+  // Seed once from the handoff (adjusting state during render, not in an effect)
+  const handoff = useSyncExternalStore(noSubscribe, readHandoff, () => null);
+  const [seeded, setSeeded] = useState(false);
+  if (handoff !== null && !seeded) {
+    setSeeded(true);
     try {
-      const src = JSON.parse(sessionStorage.getItem(AI_SOURCE_KEY) || "null");
+      const src = JSON.parse(handoff || "null");
       if (src?.text) {
         setText(String(src.text).slice(0, AI_MAX_CHARS));
         setTitle(src.title);
@@ -33,7 +47,7 @@ export default function AiCardsPanel({ onCards }: Props) {
       // bad handoff: just open an empty panel
     }
     setOpen(true);
-  }, []);
+  }
 
   const len = text.trim().length;
 

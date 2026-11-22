@@ -8,12 +8,11 @@ import {
   Clock,
   FileText,
   Search,
-  Sparkles,
   ChevronRight,
   Filter,
 } from "lucide-react";
 import { VOA_LESSONS } from "../data/voa.data";
-import { VoaLevel, VoaLesson } from "../types";
+import { VoaLevel } from "../types";
 import { ROUTES } from "@/src/config/routes";
 
 export default function VoaLessonsPage() {

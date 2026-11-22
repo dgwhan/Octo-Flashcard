@@ -83,11 +83,21 @@ export function loadKokoro() {
   send({ type: "load" });
 }
 
-export function kokoroGenerate(text: string, voice: string, speed: number): Promise<Blob> {
+// One job at a time, in order: the worker shares a single CPU thread, so parallel jobs only make the
+// sentence the learner is waiting for finish later.
+let queue: Promise<unknown> = Promise.resolve();
+
+/** `signal`: abort to drop the job if it has not reached the worker yet (the learner moved on). */
+export function kokoroGenerate(text: string, voice: string, speed: number, signal?: AbortSignal): Promise<Blob> {
   loadKokoro();
-  const id = ++nextId;
-  return new Promise((resolve, reject) => {
-    pending.set(id, { resolve, reject });
-    send({ type: "generate", id, text, voice, speed });
+  const job = queue.then(() => {
+    if (signal?.aborted) throw new DOMException("aborted", "AbortError");
+    const id = ++nextId;
+    return new Promise<Blob>((resolve, reject) => {
+      pending.set(id, { resolve, reject });
+      send({ type: "generate", id, text, voice, speed });
+    });
   });
+  queue = job.catch(() => {});
+  return job;
 }

@@ -41,18 +41,25 @@ export default function VoaLessonPage({ lesson }: VoaLessonViewerProps) {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Reset player when switching lessons
+  // Reset player state when switching lessons (adjusting state during render)...
+  const lessonKey = `${lesson.slug}|${lesson.audioUrl}|${lesson.audioDurationSeconds}`;
+  const [prevLessonKey, setPrevLessonKey] = useState(lessonKey);
+  if (lessonKey !== prevLessonKey) {
+    setPrevLessonKey(lessonKey);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setLoadError(null);
+    setDuration(lesson.audioDurationSeconds || 600);
+  }
+
+  // ...and the <audio> element itself, which lives outside React state
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current.load();
     }
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setLoadError(null);
-    setDuration(lesson.audioDurationSeconds || 600);
-  }, [lesson.slug, lesson.audioUrl, lesson.audioDurationSeconds]);
+  }, [lessonKey]);
 
   const togglePlay = async () => {
     if (!audioRef.current) return;

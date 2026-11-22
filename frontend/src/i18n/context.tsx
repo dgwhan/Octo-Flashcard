@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useCallback, useMemo, useSyncExternalStore } from "react";
 import { Locale, TranslationSchema } from "./types";
 import { vi } from "./locales/vi";
 import { en } from "./locales/en";
@@ -18,6 +18,27 @@ const dictionaries: Record<Locale, TranslationSchema> = {
 
 const STORAGE_KEY = "octo_locale";
 const DEFAULT_LOCALE: Locale = "vi";
+const LOCALE_EVENT = "octo-locale-change";
+
+const subscribeLocale = (cb: () => void) => {
+  window.addEventListener("storage", cb);
+  window.addEventListener(LOCALE_EVENT, cb);
+  return () => {
+    window.removeEventListener("storage", cb);
+    window.removeEventListener(LOCALE_EVENT, cb);
+  };
+};
+
+/** Saved choice, else the browser language. The server renders DEFAULT_LOCALE. */
+function readLocale(): Locale {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "vi" || saved === "en") return saved;
+  } catch {
+    // localStorage disabled: fall back to the browser language
+  }
+  return navigator.language?.toLowerCase().startsWith("en") ? "en" : "vi";
+}
 
 const I18nContext = createContext<I18nContextValue>({
   locale: DEFAULT_LOCALE,
@@ -41,36 +62,20 @@ function getNestedValue(obj: Record<string, unknown>, path: string): string | nu
 }
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const locale = useSyncExternalStore(subscribeLocale, readLocale, () => DEFAULT_LOCALE);
 
   useEffect(() => {
-    try {
-      const savedLocale = localStorage.getItem(STORAGE_KEY) as Locale | null;
-      if (savedLocale && (savedLocale === "vi" || savedLocale === "en")) {
-        setLocaleState(savedLocale);
-        document.documentElement.lang = savedLocale;
-      } else {
-        const browserLang = navigator.language?.toLowerCase() || "";
-        const detectedLocale: Locale = browserLang.startsWith("en") ? "en" : "vi";
-        setLocaleState(detectedLocale);
-        document.documentElement.lang = detectedLocale;
-      }
-    } catch {
-      // Fallback in case localStorage is disabled
-    }
-    setIsInitialized(true);
-  }, []);
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const setLocale = useCallback((newLocale: Locale) => {
-    setLocaleState(newLocale);
     try {
       localStorage.setItem(STORAGE_KEY, newLocale);
       document.cookie = `${STORAGE_KEY}=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-      document.documentElement.lang = newLocale;
     } catch {
-      // Ignore storage errors
+      // shortcut: with storage blocked the choice cannot be kept, so the locale stays on the browser language
     }
+    window.dispatchEvent(new Event(LOCALE_EVENT));
   }, []);
 
   const t = useCallback(

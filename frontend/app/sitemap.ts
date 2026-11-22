@@ -3,7 +3,6 @@ import { siteConfig } from "@/src/config/seo";
 import { ROUTES } from "@/src/config/routes";
 import { GRAMMAR_ROADMAP_TOPICS } from "@/src/features/grammar/data";
 import { VOA_LESSONS } from "@/src/features/voa/data/voa.data";
-import { SHADOW_SETS } from "@/src/features/speaking/data/shadowing.data";
 
 // Public, indexable pages only: user flashcard sets and auth pages are left out on purpose.
 export default function sitemap(): MetadataRoute.Sitemap {

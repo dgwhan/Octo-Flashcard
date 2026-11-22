@@ -41,11 +41,20 @@ function kokoroVoice(pref: string): string | undefined {
   if (pref.startsWith("kokoro:")) return pref.slice(7);
   return pref ? undefined : KOKORO_DEFAULT;
 }
-const kokoroUrl = (voice: string, text: string, speed: number) =>
-  cachedUrl(`kokoro|${voice}|${speed}|${text}`, () => kokoroGenerate(text, voice, speed));
+const kokoroUrl = (voice: string, text: string, speed: number, signal?: AbortSignal) =>
+  cachedUrl(`kokoro|${voice}|${speed}|${text}`, () => kokoroGenerate(text, voice, speed, signal));
+
+/**
+ * Split into sentences so Kokoro can start speaking after the first one instead of after the whole reply.
+ * shortcut: "Mr." or "3.5" also end a sentence; the pause is harmless for short practice texts.
+ */
+export const splitSentences = (text: string): string[] =>
+  (text.match(/[^.!?…]+(?:[.!?…]+["'”’)\]]*|$)/g) ?? []).map((s) => s.trim()).filter(Boolean);
 
 let audio: HTMLAudioElement | null = null;
 let run = 0;
+// Aborted by stop(): Kokoro sentences of a reply nobody is listening to any more never reach the worker.
+let runAbort = new AbortController();
 
 function playUrl(url: string, speed: number, id: number): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -119,8 +128,22 @@ export const voicePlayer = {
     const kokoro = kokoroVoice(pref);
     if (kokoro) {
       try {
-        return await playUrl(await kokoroUrl(kokoro, clean, speed), 1, id); // Kokoro already spoke at `speed`
+        // Queue every sentence now (the worker runs them in order), play each as soon as it is ready.
+        const { signal } = runAbort;
+        const urls = splitSentences(clean).map((s) =>
+          kokoroUrl(kokoro, s, speed, signal).catch((err) =>
+            // a cached job from a play that was stopped (e.g. "replay" clicked during auto-play): queue it again
+            err?.name === "AbortError" && !signal.aborted ? kokoroUrl(kokoro, s, speed, signal) : Promise.reject(err)
+          )
+        );
+        urls.forEach((u) => u.catch(() => {})); // sentences left unplayed after stop() must not log unhandled rejections
+        for (const url of urls) {
+          if (id !== run) return;
+          await playUrl(await url, 1, id); // Kokoro already spoke at `speed`
+        }
+        return;
       } catch (err) {
+        if (id !== run) return; // stopped while a sentence was still being generated
         console.warn("[voicePlayer] Kokoro failed, using browser voice", err);
       }
     } else if (hasKey && !browserName && !pref.startsWith("kokoro:")) {
@@ -139,11 +162,13 @@ export const voicePlayer = {
     const speed = speedArg ?? getUserSettings().voiceSpeed;
     const clean = text.trim();
     const kokoro = clean && kokoroVoice(getVoicePref());
-    if (kokoro) kokoroUrl(kokoro, clean, speed).catch(() => {});
+    if (kokoro) for (const s of splitSentences(clean)) kokoroUrl(kokoro, s, speed).catch(() => {});
   },
 
   stop() {
     run++;
+    runAbort.abort();
+    runAbort = new AbortController();
     audio?.pause();
     audio = null;
     if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();

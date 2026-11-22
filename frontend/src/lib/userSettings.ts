@@ -140,9 +140,13 @@ export async function updateUserSettings(patch: Partial<Pick<UserSettings, "voic
   }
 }
 
+/** Strip what sneaks in when copying a key: spaces, line breaks, zero-width characters, wrapping quotes. */
+export const cleanApiKey = (raw: string) =>
+  raw.replace(/[\s​-‍⁠﻿]/g, "").replace(/^["'`]+|["'`]+$/g, "");
+
 /** The server checks the key with Google before storing it encrypted. */
 export async function saveGeminiKey(apiKey: string, model?: string) {
-  const s = await apiClient.put<UserSettings>("/settings/gemini-key", { apiKey: apiKey.trim(), model: model?.trim() || undefined });
+  const s = await apiClient.put<UserSettings>("/settings/gemini-key", { apiKey: cleanApiKey(apiKey), model: model?.trim() || undefined });
   emit({ status: "ready", settings: s });
 }
 

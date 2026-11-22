@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Plus, Trash2, Check, Layers } from "lucide-react";
+import { X, Plus, Check, Layers } from "lucide-react";
 import { FlashcardSet } from "@/src/types/flashCard";
 import { flashCardApi } from "../api/flashCard.api";
 import { useTranslation } from "@/src/i18n";
@@ -31,13 +31,17 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      setTitle(set.title);
+  // Reset the form each time the modal opens or gets another set (adjusting state during render)
+  const openSet = isOpen ? set : null;
+  const [prevOpenSet, setPrevOpenSet] = useState(openSet);
+  if (openSet !== prevOpenSet) {
+    setPrevOpenSet(openSet);
+    if (openSet) {
+      setTitle(openSet.title);
       setNewCards([]);
       setError(null);
     }
-  }, [isOpen, set]);
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -91,8 +95,8 @@ export const EditFlashcardSetModal: React.FC<EditFlashcardSetModalProps> = ({
 
       onUpdated(updated);
       onClose();
-    } catch (err: any) {
-      setError(err?.message || t("common.error"));
+    } catch (err) {
+      setError((err instanceof Error && err.message) || t("common.error"));
     } finally {
       setIsSaving(false);
     }

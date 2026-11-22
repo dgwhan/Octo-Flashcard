@@ -3,6 +3,7 @@ import { compareSpeech, normalizeWords, tipsFor, wordsPerMinute } from "./compar
 import { splitSentences, SHADOW_SETS } from "../data/shadowing.data";
 import { SOUND_GROUPS, spokenForm } from "../data/pronunciation.data";
 import { SCENARIOS } from "../data/scenarios";
+import { searchScenarios } from "./searchScenarios";
 import { feedbackRequest, rolePlaySystem } from "./prompts";
 import { PART1_TOPICS, CUE_CARDS } from "../data/ielts";
 import { parseJson, pcmToWav, extractPcm, trimTail } from "@/src/lib/ai";
@@ -67,9 +68,21 @@ describe("pronunciation groups", () => {
   });
 });
 
+describe("scenario search", () => {
+  it("filters by level and matches words without Vietnamese accents, in any order", () => {
+    expect(searchScenarios(SCENARIOS, "C1", "").every((s) => s.level === "C1")).toBe(true);
+    expect(searchScenarios(SCENARIOS, "", "thue can ho").map((s) => s.id)).toContain("apartment");
+    expect(searchScenarios(SCENARIOS, "", "interview").map((s) => s.id)).toContain("interview");
+    expect(searchScenarios(SCENARIOS, "", "đặt bàn").map((s) => s.id)).toEqual(["booking"]);
+    expect(searchScenarios(SCENARIOS, "A2", "phỏng vấn")).toEqual([]);
+    expect(searchScenarios(SCENARIOS, "", "   ")).toHaveLength(SCENARIOS.length);
+  });
+});
+
 describe("role-play and IELTS content", () => {
   it("scenarios are complete", () => {
-    expect(SCENARIOS.length).toBe(10);
+    expect(SCENARIOS.length).toBe(90);
+    expect(new Set(SCENARIOS.map((s) => s.id)).size).toBe(SCENARIOS.length);
     for (const s of SCENARIOS) {
       expect(s.opening && s.goal && s.aiRole && s.learnerGoal, s.id).toBeTruthy();
       expect(rolePlaySystem(s)).toContain(s.level);

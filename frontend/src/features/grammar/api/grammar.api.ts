@@ -1,13 +1,7 @@
-import { axiosInstance, getAuthToken } from "@/src/lib/api";
+import { apiClient, axiosInstance, getAuthToken } from "@/src/lib/api";
 import { UserGrammarProgress, GrammarRoadmapStats } from "../types";
 
 const LOCAL_STORAGE_KEY = "octo_grammar_progress_v1";
-
-interface BackendApiResponse<T> {
-  success: boolean;
-  message: string;
-  data?: T;
-}
 
 interface BackendRoadmapSummary {
   totalTopicsCount: number;
@@ -111,9 +105,9 @@ export const grammarService = {
     // Nếu đã đăng nhập, gọi API backend
     if (token) {
       try {
-        const response = await axiosInstance.get<BackendApiResponse<BackendRoadmapSummary>>("/grammar/progress");
-        if (response.data.success && response.data.data) {
-          const summary = response.data.data;
+        // The response interceptor already unwraps { success, data }, so this is the summary itself
+        const summary = await apiClient.get<BackendRoadmapSummary>("/grammar/progress");
+        if (summary?.progressList) {
           const map: Record<string, UserGrammarProgress> = {};
 
           summary.progressList.forEach((item) => {

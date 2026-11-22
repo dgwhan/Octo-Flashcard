@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useEffectEvent, useMemo, useSyncExternalStore } from "react";
 import { AlertCircle } from "lucide-react";
 import { dictionaryApi } from "../api/dictionary.api";
 import { DictionaryEntry } from "../types";
@@ -8,7 +8,36 @@ import SearchBar from "../components/SearchBar";
 import SearchHistory from "../components/SearchHistory";
 import EntryCard from "../components/EntryCard";
 
+const HISTORY_KEY = "_octo_dict_history";
+const SPEED_KEY = "_octo_dict_speed";
+const STORAGE_EVENT = "octo-dict-storage";
 
+// History and speed live in localStorage; read them through useSyncExternalStore so the server render
+// (no storage) and other open tabs stay consistent without copying them into state in an effect.
+const subscribeStorage = (cb: () => void) => {
+  window.addEventListener("storage", cb);
+  window.addEventListener(STORAGE_EVENT, cb);
+  return () => {
+    window.removeEventListener("storage", cb);
+    window.removeEventListener(STORAGE_EVENT, cb);
+  };
+};
+const readStorage = (key: string) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+// shortcut: if storage is blocked, a new speed or history entry is not kept even for this page view
+const writeStorage = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+  window.dispatchEvent(new Event(STORAGE_EVENT));
+};
 
 interface DictionaryViewProps {
   initialWord?: string;
@@ -22,84 +51,74 @@ export default function DictionaryPage({
   isCompact = false,
 }: DictionaryViewProps) {
   const [searchTerm, setSearchTerm] = useState(initialWord);
-  const [loading, setLoading] = useState(false);
-  const [entries, setEntries] = useState<DictionaryEntry[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useState<string[]>([]);
-  const [voiceSpeed, setVoiceSpeed] = useState<number>(1.0);
-
-  // Load history & speed preference from local storage
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+  // The lookup in flight (id changes on every search, so searching the same word again retries) and its result
+  const [request, setRequest] = useState<{ word: string; id: number } | null>(() =>
+    initialWord.trim() ? { word: initialWord.trim(), id: 1 } : null
+  );
+  const [result, setResult] = useState<{ id: number; entries?: DictionaryEntry[]; error?: string } | null>(null);
+  const current = request && result?.id === request.id ? result : null;
+  const loading = !!request && !current;
+  const entries = current?.entries ?? null;
+  const error = current?.error ?? null;
+  const historyRaw = useSyncExternalStore(subscribeStorage, () => readStorage(HISTORY_KEY), () => null);
+  const history = useMemo<string[]>(() => {
     try {
-      const saved = localStorage.getItem("_octo_dict_history");
-      if (saved) {
-        setHistory(JSON.parse(saved));
-      }
-      const savedSpeed = localStorage.getItem("_octo_dict_speed");
-      if (savedSpeed) {
-        const parsed = parseFloat(savedSpeed);
-        if (!isNaN(parsed) && parsed > 0) {
-          setVoiceSpeed(parsed);
-        }
-      }
+      const parsed = JSON.parse(historyRaw ?? "[]");
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
-      // ignore
+      return [];
     }
-  }, []);
+  }, [historyRaw]);
+  const speedRaw = useSyncExternalStore(subscribeStorage, () => readStorage(SPEED_KEY), () => null);
+  const voiceSpeed = parseFloat(speedRaw ?? "") > 0 ? parseFloat(speedRaw ?? "") : 1.0;
 
-  const handleSpeedChange = (newSpeed: number) => {
-    setVoiceSpeed(newSpeed);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("_octo_dict_speed", String(newSpeed));
-      } catch {
-        // ignore
-      }
-    }
-  };
+  const handleSpeedChange = (newSpeed: number) => writeStorage(SPEED_KEY, String(newSpeed));
 
   const saveToHistory = (word: string) => {
-    if (typeof window === "undefined") return;
-    try {
-      const updated = [word, ...history.filter((w) => w.toLowerCase() !== word.toLowerCase())].slice(0, 8);
-      setHistory(updated);
-      localStorage.setItem("_octo_dict_history", JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
+    const updated = [word, ...history.filter((w) => w.toLowerCase() !== word.toLowerCase())].slice(0, 8);
+    writeStorage(HISTORY_KEY, JSON.stringify(updated));
   };
 
-  const handleSearch = async (wordToSearch?: string) => {
-    const query = (wordToSearch ?? searchTerm).trim();
-    if (!query) return;
-
-    setLoading(true);
-    setError(null);
-    setEntries(null);
-
-    try {
-      const results = await dictionaryApi.lookup(query);
-      setEntries(results);
-      saveToHistory(query);
-      if (onSelectWord) onSelectWord(query);
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Không thể tra cứu từ điển lúc này. Vui lòng thử lại.");
-      }
-    } finally {
-      setLoading(false);
-    }
+  const handleSearch = (wordToSearch?: string) => {
+    const word = (wordToSearch ?? searchTerm).trim();
+    if (word) setRequest((r) => ({ word, id: (r?.id ?? 0) + 1 }));
   };
 
-  useEffect(() => {
+  // A new initialWord (QuickLookupModal reuses this view) fills the box and starts a lookup
+  const [prevInitialWord, setPrevInitialWord] = useState(initialWord);
+  if (initialWord !== prevInitialWord) {
+    setPrevInitialWord(initialWord);
     if (initialWord) {
       setSearchTerm(initialWord);
       handleSearch(initialWord);
     }
-  }, [initialWord]);
+  }
+
+  const onFound = useEffectEvent((word: string) => {
+    saveToHistory(word);
+    onSelectWord?.(word);
+  });
+  useEffect(() => {
+    if (!request) return;
+    let live = true;
+    dictionaryApi.lookup(request.word).then(
+      (found) => {
+        if (!live) return;
+        setResult({ id: request.id, entries: found });
+        onFound(request.word);
+      },
+      (err) => {
+        if (live)
+          setResult({
+            id: request.id,
+            error: err instanceof Error ? err.message : "Không thể tra cứu từ điển lúc này. Vui lòng thử lại.",
+          });
+      }
+    );
+    return () => {
+      live = false;
+    };
+  }, [request]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -119,8 +138,7 @@ export default function DictionaryPage({
         onSearch={() => handleSearch()}
         onClear={() => {
           setSearchTerm("");
-          setEntries(null);
-          setError(null);
+          setRequest(null);
         }}
       />
 

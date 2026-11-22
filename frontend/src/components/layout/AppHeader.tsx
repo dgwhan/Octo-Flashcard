@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Plus, LogOut, Menu, User, BookA } from "lucide-react";
+import { Search, LogOut, Menu, BookA } from "lucide-react";
 import { authApi } from "@/src/features/auth/api/auth.api";
 import { AuthModal, useCurrentUser } from "@/src/features/auth";
 import { QuickLookupModal } from "@/src/features/dictionary";
@@ -47,14 +47,6 @@ export default function AppHeader({ onToggleSidebar }: AppHeaderProps) {
     setIsDropdownOpen(false);
     authApi.logout();
     router.push(ROUTES.AUTH.LOGIN);
-  };
-
-  const handleAddFlashcardClick = () => {
-    if (!user) {
-      setIsAuthModalOpen(true);
-    } else {
-      router.push(ROUTES.FLASHCARDS_CREATE);
-    }
   };
 
   return (

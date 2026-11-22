@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, ButtonHTMLAttributes, forwardRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2 } from "lucide-react";
 import { voicePlayer } from "@/src/lib/voice/voice";
 import styles from "./AudioButton.module.css";
 

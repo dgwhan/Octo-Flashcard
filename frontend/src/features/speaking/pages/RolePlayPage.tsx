@@ -8,7 +8,8 @@ import SaveToDeckButton from "@/src/features/flashcards/components/SaveToDeckBut
 import { logStudySession } from "@/src/lib/studyLog";
 import { aiGenerate, parseJson, AiTurn as Turn } from "@/src/lib/ai";
 import { useUserSettings } from "@/src/lib/userSettings";
-import { SCENARIOS, MAX_TURNS } from "../data/scenarios";
+import { SCENARIOS, MAX_TURNS, LEVELS } from "../data/scenarios";
+import { searchScenarios } from "../lib/searchScenarios";
 import { rolePlaySystem, FEEDBACK_SYSTEM, feedbackRequest } from "../lib/prompts";
 import type { Scenario, RolePlayFeedback } from "../types";
 import { useSpeechCapture } from "../hooks/useSpeechCapture";
@@ -35,6 +36,8 @@ export default function RolePlayPage() {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [feedback, setFeedback] = useState<RolePlayFeedback | null>(null);
   const [startedAt, setStartedAt] = useState<Date | null>(null);
+  const [levelFilter, setLevelFilter] = useState<Scenario["level"] | "">("");
+  const [query, setQuery] = useState("");
   const abortRef = useRef<AbortController | null>(null);
   const logRef = useRef<HTMLOListElement>(null);
 
@@ -128,12 +131,42 @@ export default function RolePlayPage() {
 
   /* ---------- Scenario picker ---------- */
   if (!scenario) {
+    const shown = searchScenarios(SCENARIOS, levelFilter, query);
     return (
       <div className={styles.stack}>
         <AiKeyNotice feature="Hội thoại nhập vai" />
         <VoicePicker />
+        <div className={styles.filterBar}>
+          <label className={styles.field}>
+            <span className={styles.srOnly}>Tìm tình huống</span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Tìm tình huống: nhà hàng, phỏng vấn, interview…"
+            />
+          </label>
+          <div className={styles.chips} role="group" aria-label="Lọc theo cấp độ">
+            {(["", ...LEVELS] as const).map((l) => (
+              <button
+                key={l || "all"}
+                type="button"
+                className={styles.chip}
+                aria-pressed={levelFilter === l}
+                onClick={() => setLevelFilter(l)}
+              >
+                {l || "Tất cả"} ({searchScenarios(SCENARIOS, l, query).length})
+              </button>
+            ))}
+          </div>
+        </div>
+        {shown.length === 0 && (
+          <p className={styles.muted} role="status">
+            Không có tình huống nào khớp. Thử từ khóa khác hoặc chọn “Tất cả”.
+          </p>
+        )}
         <ul className={styles.setGrid}>
-          {SCENARIOS.map((s) => (
+          {shown.map((s) => (
             <li key={s.id}>
               <button type="button" className={styles.setCard} onClick={() => begin(s)} disabled={!hasKey}>
                 <span className={styles.setSource}>{s.level}</span>

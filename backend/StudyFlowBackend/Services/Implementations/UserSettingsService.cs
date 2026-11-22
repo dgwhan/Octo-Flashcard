@@ -17,7 +17,11 @@ namespace StudyFlowBackend.Services.Implementations
     public class UserSettingsService : IUserSettingsService
     {
         private const string ProtectorPurpose = "Octo.UserSettings.GeminiApiKey.v1";
-        private static readonly Regex KeyPattern = new(@"^[A-Za-z0-9_\-]{20,200}$", RegexOptions.Compiled);
+        // Printable ASCII without spaces: legacy "AIza…" keys and the newer "AQ.…" auth keys, and header-safe.
+        // Whether the key actually works is decided by the test call to Gemini, not by this pattern.
+        private static readonly Regex KeyPattern = new(@"^[\x21-\x7E]{20,300}$", RegexOptions.Compiled);
+        // Whitespace and zero-width characters that sneak in when copying from a web page
+        private static readonly Regex Invisible = new(@"[\s​-‍⁠﻿]", RegexOptions.Compiled);
         private static readonly Regex ModelPattern = new(@"^[a-z0-9][a-z0-9.\-]{2,60}$", RegexOptions.Compiled);
         private static readonly Regex VoicePattern = new(@"^((kokoro|gemini):[A-Za-z0-9_]{1,40}|browser:[^\u0000-\u001f]{1,150})?$", RegexOptions.Compiled);
 
@@ -71,8 +75,9 @@ namespace StudyFlowBackend.Services.Implementations
 
         public async Task<UserSettingsDto> SetGeminiKeyAsync(string userId, SetGeminiKeyDto dto, CancellationToken ct = default)
         {
-            var key = dto.ApiKey?.Trim() ?? string.Empty;
-            if (!KeyPattern.IsMatch(key)) throw new InvalidOperationException("API key không đúng định dạng.");
+            var key = Invisible.Replace(dto.ApiKey ?? string.Empty, string.Empty).Trim('"', '\'', '`');
+            if (!KeyPattern.IsMatch(key))
+                throw new InvalidOperationException("API key không đúng định dạng. Hãy sao chép lại toàn bộ key từ Google AI Studio.");
 
             var model = string.IsNullOrWhiteSpace(dto.Model) ? null : dto.Model.Trim();
             if (model != null && !ModelPattern.IsMatch(model)) throw new InvalidOperationException("Tên model không hợp lệ.");

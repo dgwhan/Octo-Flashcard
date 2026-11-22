@@ -73,3 +73,12 @@ describe("userSettings store", () => {
     expect(getUserSettings().voice).toBe("gemini:Kore");
   });
 });
+
+describe("cleanApiKey", () => {
+  it("keeps both key formats and strips what copying adds", async () => {
+    const { cleanApiKey } = await import("./userSettings");
+    expect(cleanApiKey("AIzaSyA-example_key1234567890abcdefgh")).toBe("AIzaSyA-example_key1234567890abcdefgh");
+    expect(cleanApiKey("  AQ.Ab8RN6Kexample.key-value_123\n")).toBe("AQ.Ab8RN6Kexample.key-value_123");
+    expect(cleanApiKey('"AQ.Ab8\u200BRN6K"')).toBe("AQ.Ab8RN6K");
+  });
+});

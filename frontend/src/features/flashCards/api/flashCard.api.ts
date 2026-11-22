@@ -14,7 +14,12 @@ export interface UpdateFlashcardSetPayload {
   }[];
 }
 
-function normalizeCard(raw: any, setId?: string): FlashcardItem {
+// What the API may send: the backend has used both question/answer and term/definition, name/title,
+// flashcards/flashCards over time.
+type RawCard = Partial<FlashcardItem>;
+type RawSet = Partial<Omit<FlashcardSet, "flashcards">> & { id: string; name?: string; flashcards?: RawCard[]; flashCards?: RawCard[] };
+
+function normalizeCard(raw: RawCard, setId?: string): FlashcardItem {
   const q = raw.question || raw.term || "";
   const a = raw.answer || raw.definition || "";
   return {
@@ -32,7 +37,7 @@ function normalizeCard(raw: any, setId?: string): FlashcardItem {
   };
 }
 
-function normalizeSet(raw: any): FlashcardSet {
+function normalizeSet(raw: RawSet): FlashcardSet {
   const rawCards = raw.flashcards || raw.flashCards || [];
   return {
     id: raw.id,
@@ -40,7 +45,7 @@ function normalizeSet(raw: any): FlashcardSet {
     targetDocumentId: raw.targetDocumentId || null,
     createdAt: raw.createdAt || new Date().toISOString(),
     flashcards: Array.isArray(rawCards)
-      ? rawCards.map((c: any) => normalizeCard(c, raw.id))
+      ? rawCards.map((c) => normalizeCard(c, raw.id))
       : [],
   };
 }
@@ -51,7 +56,7 @@ export const flashCardApi = {
    * Returns all flashcard sets of current user
    */
   async getAll(): Promise<FlashcardSet[]> {
-    const data = await apiClient.get<any[]>(API_ENDPOINTS.FLASHCARDS.GET_ALL);
+    const data = await apiClient.get<RawSet[]>(API_ENDPOINTS.FLASHCARDS.GET_ALL);
     if (Array.isArray(data)) {
       return data.map(normalizeSet);
     }
@@ -63,7 +68,7 @@ export const flashCardApi = {
    * Returns a specific flashcard set by id including all cards
    */
   async getById(id: string): Promise<FlashcardSet> {
-    const data = await apiClient.get<any>(
+    const data = await apiClient.get<RawSet>(
       API_ENDPOINTS.FLASHCARDS.GET_BY_ID(id)
     );
     return normalizeSet(data);
@@ -83,7 +88,7 @@ export const flashCardApi = {
       })),
     };
 
-    const created = await apiClient.post<any>(
+    const created = await apiClient.post<RawSet>(
       API_ENDPOINTS.FLASHCARDS.CREATE,
       payload
     );
@@ -103,7 +108,7 @@ export const flashCardApi = {
       })) || [],
     };
 
-    const updated = await apiClient.put<any>(`/flashcards/${id}`, payload);
+    const updated = await apiClient.put<RawSet>(`/flashcards/${id}`, payload);
     return normalizeSet(updated);
   },
 
@@ -112,7 +117,7 @@ export const flashCardApi = {
    * Adds a single flashcard item to an existing set
    */
   async addItem(setId: string, item: { question: string; answer: string }): Promise<FlashcardItem> {
-    const res = await apiClient.post<any>(`/flashcards/${setId}/items`, {
+    const res = await apiClient.post<RawCard>(`/flashcards/${setId}/items`, {
       question: item.question,
       answer: item.answer,
     });
@@ -125,7 +130,7 @@ export const flashCardApi = {
    */
   /** Save a card's FSRS schedule (PUT /flashcards/{setId}/items/{cardId}/review). */
   async updateReview(setId: string, cardId: string, review: { due: Date; reviewState: string }): Promise<FlashcardItem> {
-    const res = await apiClient.put<any>(`/flashcards/${setId}/items/${cardId}/review`, {
+    const res = await apiClient.put<RawCard>(`/flashcards/${setId}/items/${cardId}/review`, {
       due: review.due.toISOString(),
       reviewState: review.reviewState,
     });

@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft, Pencil, Plus, Layers, Lock, LogIn } from "lucide-react";
+import { ArrowLeft, Pencil, Lock } from "lucide-react";
 import { FlashcardSet } from "@/src/types/flashCard";
 import { flashCardApi } from "../api/flashCard.api";
 import { FlashCardViewer } from "../components/FlashCardViewer";
-import { authApi } from "@/src/features/auth/api/auth.api";
+import { useSignedIn } from "@/src/features/auth/hooks/useCurrentUser";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
 import { EditFlashcardSetModal } from "../components/EditFlashcardSetModal";
@@ -22,20 +22,13 @@ export const FlashcardStudyDetailPage: React.FC = () => {
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthRequired, setIsAuthRequired] = useState(false);
+  const signedIn = useSignedIn();
+  const isAuthRequired = signedIn === false;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
+    if (!signedIn || !setId) return;
     let isMounted = true;
-    const token = authApi.getStoredToken();
-
-    if (!token) {
-      setIsAuthRequired(true);
-      setIsLoading(false);
-      return;
-    }
-
-    if (!setId) return;
 
     const loadSet = async () => {
       try {
@@ -44,9 +37,9 @@ export const FlashcardStudyDetailPage: React.FC = () => {
           setSet(data);
           setError(null);
         }
-      } catch (err: any) {
+      } catch (err) {
         if (isMounted) {
-          setError(err?.message || "Không thể tải thông tin bộ Flashcard.");
+          setError((err instanceof Error && err.message) || "Không thể tải thông tin bộ Flashcard.");
         }
       } finally {
         if (isMounted) setIsLoading(false);
@@ -58,7 +51,7 @@ export const FlashcardStudyDetailPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [setId]);
+  }, [signedIn, setId]);
 
   const handleSetUpdated = (updatedSet: FlashcardSet) => {
     setSet(updatedSet);

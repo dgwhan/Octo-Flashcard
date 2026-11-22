@@ -12,7 +12,6 @@ export interface AuthModalProps {
   title?: string;
   description?: string;
   redirectUrl?: string;
-  initialMode?: "login" | "register";
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -21,7 +20,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   title,
   description,
   redirectUrl = "/flashcards/create",
-  initialMode = "login",
 }) => {
   const { t } = useTranslation();
 

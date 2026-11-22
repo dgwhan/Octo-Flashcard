@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Lock, Award } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import { apiClient, getAuthToken } from "@/src/lib/api";
+import { apiClient } from "@/src/lib/api";
+import { useSignedIn } from "@/src/features/auth/hooks/useCurrentUser";
 import { SuckerRow } from "@/src/components/ui";
 import { flashCardApi } from "@/src/features/flashcards/api/flashCard.api";
 import { dueCount } from "@/src/features/flashcards/lib/reviewQueue";
@@ -44,14 +45,13 @@ const fmtDay = (k: string) => new Date(`${k}T00:00:00`).toLocaleDateString("vi-V
 const value = <T,>(r: PromiseSettledResult<T>) => (r.status === "fulfilled" ? r.value : null);
 
 export default function ProgressPage({ grammarTopicIds }: { grammarTopicIds: string[] }) {
-  const [phase, setPhase] = useState<"loading" | "auth" | "ready">("loading");
+  const signedIn = useSignedIn();
+  const [loaded, setLoaded] = useState(false);
+  const phase = signedIn === false ? "auth" : loaded ? "ready" : "loading";
   const [data, setData] = useState<Data | null>(null);
 
   useEffect(() => {
-    if (!getAuthToken()) {
-      setPhase("auth");
-      return;
-    }
+    if (!signedIn) return;
     const today = new Date();
     const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
     // Each section loads on its own so one failing API doesn't blank the page
@@ -73,9 +73,9 @@ export default function ProgressPage({ grammarTopicIds }: { grammarTopicIds: str
         due: deck ? dueCount(deck) : null,
         grammar: value(grammar)?.stats ?? null,
       });
-      setPhase("ready");
+      setLoaded(true);
     });
-  }, [grammarTopicIds]);
+  }, [signedIn, grammarTopicIds]);
 
   return (
     <div className={styles.page}>

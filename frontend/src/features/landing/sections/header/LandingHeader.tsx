@@ -56,7 +56,7 @@ export default function LandingHeader() {
                 Đăng nhập
               </button>
             )}
-            <Link href={ROUTES.FLASHCARDS} className={`${shared.primaryBtn} ${styles.desktopOnly}`}>
+            <Link href={ROUTES.PROGRESS} className={`${shared.primaryBtn} ${styles.desktopOnly}`}>
               <span>Vào học</span>
               <ArrowRight size={16} />
             </Link>

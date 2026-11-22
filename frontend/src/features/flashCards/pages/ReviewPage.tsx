@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { RotateCw, Lock, ArrowRight } from "lucide-react";
 import { ROUTES } from "@/src/config/routes";
-import { getAuthToken } from "@/src/lib/api";
+import { useSignedIn } from "@/src/features/auth/hooks/useCurrentUser";
 import { logStudySession } from "@/src/lib/studyLog";
 import { flipCard, dealCard } from "@/src/lib/motion";
 import { SuckerRow } from "@/src/components/ui";
@@ -19,7 +19,9 @@ type Phase = "loading" | "auth" | "error" | "empty" | "review" | "done";
 const REQUEUE_WITHIN_MS = 20 * 60 * 1000;
 
 export default function ReviewPage() {
-  const [phase, setPhase] = useState<Phase>("loading");
+  const signedIn = useSignedIn();
+  const [loadPhase, setPhase] = useState<Phase>("loading");
+  const phase: Phase = signedIn === false ? "auth" : loadPhase;
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [pos, setPos] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -33,10 +35,7 @@ export default function ReviewPage() {
   const innerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (!getAuthToken()) {
-      setPhase("auth");
-      return;
-    }
+    if (!signedIn) return;
     flashCardApi
       .getAll()
       .then((sets) => {
@@ -46,7 +45,7 @@ export default function ReviewPage() {
         setPhase(q.length ? "review" : "empty");
       })
       .catch(() => setPhase("error"));
-  }, []);
+  }, [signedIn]);
 
   const current = queue[pos];
 

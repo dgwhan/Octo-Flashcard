@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -19,10 +20,16 @@ namespace StudyFlowBackend.Services.Implementations
         // Newest first; a key without access to one gets 404 and falls through to the next.
         private static readonly string[] TtsModels =
         {
+            "gemini-3.1-flash-lite",
             "gemini-3.8-flash-tts",
-            "gemini-3.1-flash-tts-preview",
             "gemini-2.5-flash-preview-tts",
         };
+
+        // Chat replies (role-play) need speed, not deep reasoning: ask for the lowest thinking level the model
+        // accepts. Models differ (3.8 Flash rejects "minimal", 2.5 models take no level at all), so try them in
+        // order and remember per model what worked. null = the model's default.
+        private static readonly string?[] ChatThinkingLevels = { "minimal", "low", null };
+        private static readonly ConcurrentDictionary<string, int> ChatThinkingStart = new();
 
         private readonly HttpClient _http;
         private readonly ILogger<UserGeminiClient> _logger;
@@ -42,17 +49,46 @@ namespace StudyFlowBackend.Services.Implementations
             double temperature,
             CancellationToken ct = default)
         {
-            var generationConfig = new Dictionary<string, object> { ["temperature"] = temperature };
-            if (json) generationConfig["responseMimeType"] = "application/json";
-
-            var body = new
+            object Body(string? thinkingLevel)
             {
-                systemInstruction = new { parts = new[] { new { text = system } } },
-                contents = turns.Select(t => new { role = t.Role, parts = new[] { new { text = t.Text } } }),
-                generationConfig,
-            };
+                var generationConfig = new Dictionary<string, object> { ["temperature"] = temperature };
+                if (json) generationConfig["responseMimeType"] = "application/json";
+                if (thinkingLevel != null) generationConfig["thinkingConfig"] = new { thinkingLevel };
+                return new
+                {
+                    systemInstruction = new { parts = new[] { new { text = system } } },
+                    contents = turns.Select(t => new { role = t.Role, parts = new[] { new { text = t.Text } } }),
+                    generationConfig,
+                };
+            }
 
-            using var doc = await PostAsync(apiKey, model, body, ct);
+            JsonDocument doc;
+            if (json)
+            {
+                // Scoring and feedback (JSON) keep the model's default thinking: quality matters more than speed there.
+                doc = await PostAsync(apiKey, model, Body(null), ct);
+            }
+            else
+            {
+                var i = ChatThinkingStart.GetValueOrDefault(model);
+                while (true)
+                {
+                    try
+                    {
+                        doc = await PostAsync(apiKey, model, Body(ChatThinkingLevels[i]), ct);
+                        ChatThinkingStart[model] = i;
+                        break;
+                    }
+                    catch (GeminiProxyException ex) when (
+                        ex.StatusCode == 400 && i < ChatThinkingLevels.Length - 1 &&
+                        ex.Message.Contains("thinking", StringComparison.OrdinalIgnoreCase))
+                    {
+                        i++;
+                    }
+                }
+            }
+
+            using var _ = doc;
             var text = string.Concat(Parts(doc.RootElement)
                 .Select(p => p.TryGetProperty("text", out var t) ? t.GetString() : null));
             if (string.IsNullOrWhiteSpace(text))
@@ -159,7 +195,9 @@ namespace StudyFlowBackend.Services.Implementations
             if (status == 400 && message.Contains("api key", StringComparison.OrdinalIgnoreCase))
                 return new GeminiProxyException(400, "API key không hợp lệ. Kiểm tra lại key trong Google AI Studio.");
             if (status == 401 || status == 403)
-                return new GeminiProxyException(400, "Key không có quyền dùng Gemini API (hoặc API chưa được bật cho project).");
+                return new GeminiProxyException(400,
+                    "Google không chấp nhận key này (hoặc Gemini API chưa được bật cho project). " +
+                    "Nếu key bắt đầu bằng \"AQ.\" mà vẫn lỗi, hãy tạo key dạng \"AIza…\" trong Google Cloud Console.");
             if (status == 404) return new GeminiProxyException(404, "Không tìm thấy model này. Kiểm tra lại tên model trong Cài đặt.");
             if (status == 429) return new GeminiProxyException(429, "Key đã hết hạn mức tạm thời. Đợi một lúc rồi thử lại.");
             if (status >= 500) return new GeminiProxyException(502, "Máy chủ Google AI đang lỗi, thử lại sau.");

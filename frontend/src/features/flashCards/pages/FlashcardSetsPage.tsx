@@ -12,11 +12,11 @@ import {
   Play,
   Lock,
   LogIn,
-  CheckCircle2,
 } from "lucide-react";
 import { FlashcardSet } from "@/src/types/flashCard";
 import { flashCardApi } from "../api/flashCard.api";
 import { authApi } from "@/src/features/auth/api/auth.api";
+import { useSignedIn } from "@/src/features/auth/hooks/useCurrentUser";
 import { ROUTES } from "@/src/config/routes";
 import { useTranslation } from "@/src/i18n";
 import { EditFlashcardSetModal } from "../components/EditFlashcardSetModal";
@@ -32,7 +32,8 @@ export const FlashcardSetsPage: React.FC = () => {
   const [sets, setSets] = useState<FlashcardSet[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthRequired, setIsAuthRequired] = useState(false);
+  const signedIn = useSignedIn();
+  const isAuthRequired = signedIn === false;
 
   // Edit / Add Items Modal state
   const [editingSet, setEditingSet] = useState<FlashcardSet | null>(null);
@@ -40,14 +41,8 @@ export const FlashcardSetsPage: React.FC = () => {
 
   // 1. Kiểm tra đăng nhập và nạp danh sách bộ flashcard
   useEffect(() => {
+    if (!signedIn) return;
     let isMounted = true;
-    const token = authApi.getStoredToken();
-
-    if (!token) {
-      setIsAuthRequired(true);
-      setIsLoading(false);
-      return;
-    }
 
     const loadSets = async () => {
       try {
@@ -67,7 +62,7 @@ export const FlashcardSetsPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [signedIn]);
 
   // Filter sets by search query
   const filteredSets = useMemo(() => {
@@ -91,7 +86,7 @@ export const FlashcardSetsPage: React.FC = () => {
   };
 
   // Handle Delete Set
-  const handleDeleteSet = async (id: string, title: string) => {
+  const handleDeleteSet = async (id: string) => {
     if (!window.confirm(t("flashcards.deleteConfirm"))) {
       return;
     }
@@ -331,7 +326,7 @@ export const FlashcardSetsPage: React.FC = () => {
                     <button
                       type="button"
                       className={`${styles.btnIconAction} ${styles.btnDangerAction}`}
-                      onClick={() => handleDeleteSet(set.id, set.title)}
+                      onClick={() => handleDeleteSet(set.id)}
                       title={t("flashcards.deleteSet")}
                     >
                       <Trash2 size={16} />
