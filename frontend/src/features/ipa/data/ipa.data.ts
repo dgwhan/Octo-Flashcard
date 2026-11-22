@@ -2,7 +2,8 @@ import { IpaPhoneme } from "../types";
 
 /**
  * 44 standard International Phonetic Alphabet (IPA) sounds in English
- * With public domain audio references from Wikimedia Commons (upload.wikimedia.org)
+ * Recordings of each sound from Wikimedia Commons (mp3 transcodes so Safari plays them too); diphthongs have
+ * no isolated recordings, so they carry a `ttsHint` spelling for the browser voice instead.
  * and detailed Vietnamese pronunciation mechanics.
  */
 export const IPA_PHONEMES: IpaPhoneme[] = [
@@ -14,7 +15,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_long",
     vietnameseGuide: "Kéo dài miệng sang hai bên như đang cười nhẹ, đầu lưỡi nâng lên chạm gần ngạc cứng. Âm phát ra dài và căng.",
     mouthShape: "Miệng bè rộng, lưỡi nâng cao về phía trước",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Close_front_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/91/Close_front_unrounded_vowel.ogg/Close_front_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "sheep", ipa: "/ʃiːp/", highlight: "ee" },
       { word: "eagle", ipa: "/ˈiːɡl/", highlight: "ea" },
@@ -28,7 +29,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Miệng mở tự nhiên, hơi ngắn và dứt khoát. Âm phát ra trung gian giữa 'i' và 'ê' trong tiếng Việt.",
     mouthShape: "Khẩu hình hơi mở, lưỡi hơi hạ so với âm /iː/",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Near-close_near-front_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/4/4c/Near-close_near-front_unrounded_vowel.ogg/Near-close_near-front_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "ship", ipa: "/ʃɪp/", highlight: "i" },
       { word: "fit", ipa: "/fɪt/", highlight: "i" },
@@ -42,7 +43,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Môi hơi tròn hướng ra ngoài nhẹ, phát âm âm 'u' ngắn, dứt khoát và thả lỏng cơ miệng.",
     mouthShape: "Môi hơi tròn, lưỡi co nhẹ về phía sau",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Near-close_near-back_rounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d5/Near-close_near-back_rounded_vowel.ogg/Near-close_near-back_rounded_vowel.ogg.mp3",
     examples: [
       { word: "good", ipa: "/ɡʊd/", highlight: "oo" },
       { word: "put", ipa: "/pʊt/", highlight: "u" },
@@ -56,7 +57,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_long",
     vietnameseGuide: "Môi chu tròn hẹp như huýt sáo, giữ hơi phát âm ngân dài và căng cơ môi.",
     mouthShape: "Môi chu tròn chặt, cuống lưỡi nâng cao về phía vòm mềm",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/5/50/Close_back_rounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/5d/Close_back_rounded_vowel.ogg/Close_back_rounded_vowel.ogg.mp3",
     examples: [
       { word: "shoot", ipa: "/ʃuːt/", highlight: "oo" },
       { word: "blue", ipa: "/bluː/", highlight: "ue" },
@@ -70,7 +71,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Mở miệng rộng vừa phải (rộng hơn /ɪ/), phát âm âm 'e' dứt khoát và rõ ràng.",
     mouthShape: "Miệng mở tự nhiên, lưỡi nằm ở giữa khoang miệng",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/6/69/Open-mid_front_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/71/Open-mid_front_unrounded_vowel.ogg/Open-mid_front_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "bed", ipa: "/bed/", highlight: "e" },
       { word: "ten", ipa: "/ten/", highlight: "e" },
@@ -84,7 +85,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Âm phổ biến nhất trong tiếng Anh (âm ơ ngắn). Thả lỏng hoàn toàn cơ miệng và lưỡi, phát âm rất nhẹ và ngắn.",
     mouthShape: "Miệng thả lỏng trung tính hoàn toàn",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Mid-central_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d9/Mid-central_vowel.ogg/Mid-central_vowel.ogg.mp3",
     examples: [
       { word: "teacher", ipa: "/ˈtiːtʃər/", highlight: "er" },
       { word: "ago", ipa: "/əˈɡəʊ/", highlight: "a" },
@@ -98,7 +99,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_long",
     vietnameseGuide: "Âm ơ dài. Miệng mở vừa phải, đầu lưỡi hơi cong nhẹ lên trên (đặc biệt trong giọng Anh-Mỹ), ngân dài.",
     mouthShape: "Môi mở hờ, lưỡi giữ ở vị trí trung tâm hoặc hơi uốn",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/0/00/Open-mid_central_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/01/Open-mid_central_unrounded_vowel.ogg/Open-mid_central_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "bird", ipa: "/bɜːd/", highlight: "ir" },
       { word: "turn", ipa: "/tɜːn/", highlight: "ur" },
@@ -112,7 +113,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_long",
     vietnameseGuide: "Âm o dài. Môi tròn, hạ cằm xuống, phát âm âm 'o' sâu trong cổ họng và ngân dài.",
     mouthShape: "Môi tròn đều, cuống lưỡi hạ thấp",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/d/dc/Open-mid_back_rounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/02/Open-mid_back_rounded_vowel.ogg/Open-mid_back_rounded_vowel.ogg.mp3",
     examples: [
       { word: "door", ipa: "/dɔːr/", highlight: "oor" },
       { word: "talk", ipa: "/tɔːk/", highlight: "al" },
@@ -126,7 +127,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Âm a bẹt. Mở rộng miệng hết cỡ về chiều dọc lẫn chiều ngang, hạ hàm dưới sâu, phát âm giữa 'a' và 'e'.",
     mouthShape: "Miệng mở rộng tối đa, lưỡi hạ phẳng chạm chân răng dưới",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Near-open_front_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c9/Near-open_front_unrounded_vowel.ogg/Near-open_front_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "cat", ipa: "/kæt/", highlight: "a" },
       { word: "apple", ipa: "/ˈæpl/", highlight: "a" },
@@ -140,7 +141,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Âm ă. Mở miệng vừa phải, phát âm giống như âm 'á' trong tiếng Việt nhưng dứt khoát và ngắn.",
     mouthShape: "Hàm mở tự nhiên hơn /ə/, lưỡi hơi lùi về sau",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Open-mid_back_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/92/Open-mid_back_unrounded_vowel.ogg/Open-mid_back_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "up", ipa: "/ʌp/", highlight: "u" },
       { word: "cup", ipa: "/kʌp/", highlight: "u" },
@@ -154,7 +155,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_long",
     vietnameseGuide: "Âm a dài. Mở rộng khoang miệng sâu như đi khám răng bác sĩ bảo nói 'A', hạ hàm và ngân dài âm a trầm.",
     mouthShape: "Miệng mở to sâu, lưỡi hạ thấp tối đa",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a6/Open_back_unrounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e5/Open_back_unrounded_vowel.ogg/Open_back_unrounded_vowel.ogg.mp3",
     examples: [
       { word: "car", ipa: "/kɑːr/", highlight: "ar" },
       { word: "heart", ipa: "/hɑːt/", highlight: "ear" },
@@ -168,7 +169,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "monophthong_short",
     vietnameseGuide: "Âm o ngắn. Môi tròn nhẹ, hạ cằm, phát âm âm 'o' thật nhanh, dứt khoát không kéo dài.",
     mouthShape: "Môi hơi tròn, hàm dưới hơi hạ",
-    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c0/Open_back_rounded_vowel.ogg",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0a/Open_back_rounded_vowel.ogg/Open_back_rounded_vowel.ogg.mp3",
     examples: [
       { word: "on", ipa: "/ɒn/", highlight: "o" },
       { word: "clock", ipa: "/klɒk/", highlight: "o" },
@@ -184,6 +185,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu từ âm /ɪ/ rồi lướt mượt mà sang âm schwa /ə/.",
     mouthShape: "Môi mở hẹp sang mở tự nhiên",
+    ttsHint: "ee-uh",
     examples: [
       { word: "here", ipa: "/hɪər/", highlight: "ere" },
       { word: "near", ipa: "/nɪər/", highlight: "ear" },
@@ -197,6 +199,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu từ âm /e/ rồi khép miệng nhẹ dần chuyển sang âm /ɪ/ (giống âm 'ây' nhưng sang trọng).",
     mouthShape: "Miệng mở vừa chuyển sang bè ngang",
+    ttsHint: "ay",
     examples: [
       { word: "wait", ipa: "/weɪt/", highlight: "ai" },
       { word: "play", ipa: "/pleɪ/", highlight: "ay" },
@@ -210,6 +213,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu từ âm /ʊ/ tròn môi rồi thả lỏng lướt sang âm /ə/.",
     mouthShape: "Môi tròn chuyển sang thả lỏng",
+    ttsHint: "oo-uh",
     examples: [
       { word: "tourist", ipa: "/ˈtʊərɪst/", highlight: "our" },
       { word: "pure", ipa: "/pjʊər/", highlight: "ure" },
@@ -223,6 +227,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu bằng âm tròn môi /ɔː/ rồi mở sang bè ngang nhẹ thành /ɪ/ (như âm 'oi').",
     mouthShape: "Môi tròn mở sang dẹt ngang",
+    ttsHint: "oy",
     examples: [
       { word: "boy", ipa: "/bɔɪ/", highlight: "oy" },
       { word: "coin", ipa: "/kɔɪn/", highlight: "oi" },
@@ -236,6 +241,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu bằng vị trí thả lỏng /ə/ rồi chu tròn dần môi về /ʊ/ (âm 'âu').",
     mouthShape: "Miệng thả lỏng thu dần thành chu tròn",
+    ttsHint: "oh",
     examples: [
       { word: "show", ipa: "/ʃəʊ/", highlight: "ow" },
       { word: "go", ipa: "/ɡəʊ/", highlight: "o" },
@@ -249,6 +255,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu từ âm /e/ mở vừa rồi lướt êm dịu sang âm /ə/.",
     mouthShape: "Miệng mở vừa chuyển sang thả lỏng",
+    ttsHint: "eh-uh",
     examples: [
       { word: "hair", ipa: "/heər/", highlight: "air" },
       { word: "care", ipa: "/keər/", highlight: "are" },
@@ -262,6 +269,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu từ miệng mở rộng /ɑː/ rồi khép dần và kéo sang hai bên thành /ɪ/ (âm 'ai').",
     mouthShape: "Miệng mở to thu dần về vị trí hẹp ngang",
+    ttsHint: "eye",
     examples: [
       { word: "my", ipa: "/maɪ/", highlight: "y" },
       { word: "time", ipa: "/taɪm/", highlight: "i" },
@@ -275,6 +283,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "diphthong",
     vietnameseGuide: "Bắt đầu từ miệng mở rộng /ɑː/ rồi chu tròn nhanh về /ʊ/ (âm 'ao').",
     mouthShape: "Miệng mở to chuyển nhanh sang chu tròn nhỏ",
+    ttsHint: "ow",
     examples: [
       { word: "cow", ipa: "/kaʊ/", highlight: "ow" },
       { word: "now", ipa: "/naʊ/", highlight: "ow" },
@@ -290,6 +299,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Âm bật hơi không rung dây thanh. Mím chặt hai môi chặn luồng khí rồi bật mạnh ra ngoài.",
     mouthShape: "Hai môi mím chặt rồi bật mở dứt khoát",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/51/Voiceless_bilabial_plosive.ogg/Voiceless_bilabial_plosive.ogg.mp3",
     examples: [
       { word: "pen", ipa: "/pen/", highlight: "p" },
       { word: "stop", ipa: "/stɒp/", highlight: "p" },
@@ -303,6 +313,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Đầu lưỡi chạm nướu răng trên chặn luồng khí, sau đó hạ đầu lưỡi bật luồng hơi mạnh ra.",
     mouthShape: "Đầu lưỡi chặn gờ lợi trên rồi bật hơi",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/02/Voiceless_alveolar_plosive.ogg/Voiceless_alveolar_plosive.ogg.mp3",
     examples: [
       { word: "tea", ipa: "/tiː/", highlight: "t" },
       { word: "cat", ipa: "/kæt/", highlight: "t" },
@@ -316,6 +327,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Âm 'ch' bật hơi mạnh. Chu môi nhẹ, đầu lưỡi chạm ngạc cứng rồi bật bung hơi ra ngoài, không rung thanh quản.",
     mouthShape: "Môi hơi chu tròn, lưỡi bật khỏi ngạc cứng",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/97/Voiceless_palato-alveolar_affricate.ogg/Voiceless_palato-alveolar_affricate.ogg.mp3",
     examples: [
       { word: "cheese", ipa: "/tʃiːz/", highlight: "ch" },
       { word: "watch", ipa: "/wɒtʃ/", highlight: "tch" },
@@ -329,6 +341,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Cuống lưỡi nâng lên chạm ngạc mềm chặn khí rồi hạ xuống đẩy bật hơi mạnh ra ngoài.",
     mouthShape: "Cuống lưỡi bật khỏi ngạc mềm",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e3/Voiceless_velar_plosive.ogg/Voiceless_velar_plosive.ogg.mp3",
     examples: [
       { word: "cat", ipa: "/kæt/", highlight: "c" },
       { word: "key", ipa: "/kiː/", highlight: "k" },
@@ -342,6 +355,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Răng cửa trên chạm nhẹ vào lòng môi dưới, đẩy luồng khí ma sát thoát ra qua kẽ răng.",
     mouthShape: "Răng trên cắn nhẹ môi dưới, thổi hơi",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/33/Voiceless_labiodental_fricative.ogg/Voiceless_labiodental_fricative.ogg.mp3",
     examples: [
       { word: "fish", ipa: "/fɪʃ/", highlight: "f" },
       { word: "coffee", ipa: "/ˈkɒfi/", highlight: "ff" },
@@ -355,6 +369,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Đặt đầu lưỡi ở giữa hai hàm răng, thổi luồng hơi nhẹ thoát qua khe giữa răng và lưỡi, không rung thanh quản.",
     mouthShape: "Đầu lưỡi kẹp nhẹ giữa hai hàm răng, thổi khí",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/8/80/Voiceless_dental_fricative.ogg/Voiceless_dental_fricative.ogg.mp3",
     examples: [
       { word: "think", ipa: "/θɪŋk/", highlight: "th" },
       { word: "bath", ipa: "/bɑːθ/", highlight: "th" },
@@ -368,6 +383,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Hai hàm răng khép nhẹ, đẩy luồng hơi xì sắc nét qua kẽ răng như tiếng xì hơi.",
     mouthShape: "Răng khép gần nhau, khóe miệng kéo ngang",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/a/ac/Voiceless_alveolar_sibilant.ogg/Voiceless_alveolar_sibilant.ogg.mp3",
     examples: [
       { word: "see", ipa: "/siː/", highlight: "s" },
       { word: "bus", ipa: "/bʌs/", highlight: "s" },
@@ -381,6 +397,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Môi chu tròn hướng ra phía trước (như ra hiệu suỵt im lặng), thổi luồng hơi dày qua thân lưỡi cong.",
     mouthShape: "Môi chu tròn đưa về phía trước, thổi hơi dày",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/cc/Voiceless_palato-alveolar_sibilant.ogg/Voiceless_palato-alveolar_sibilant.ogg.mp3",
     examples: [
       { word: "shall", ipa: "/ʃæl/", highlight: "sh" },
       { word: "fish", ipa: "/fɪʃ/", highlight: "sh" },
@@ -396,6 +413,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Vị trí môi giống /p/ nhưng rung mạnh dây thanh quản ở cổ họng khi mở môi.",
     mouthShape: "Hai môi mím lại, bật ra đồng thời rung thanh quản",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/2/2c/Voiced_bilabial_plosive.ogg/Voiced_bilabial_plosive.ogg.mp3",
     examples: [
       { word: "boat", ipa: "/bəʊt/", highlight: "b" },
       { word: "baby", ipa: "/ˈbeɪbi/", highlight: "b" },
@@ -409,6 +427,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Vị trí lưỡi giống /t/ nhưng rung mạnh dây thanh quản khi đầu lưỡi rời nướu răng trên.",
     mouthShape: "Đầu lưỡi chạm nướu trên bật ra kèm rung giọng",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/01/Voiced_alveolar_plosive.ogg/Voiced_alveolar_plosive.ogg.mp3",
     examples: [
       { word: "dog", ipa: "/dɒɡ/", highlight: "d" },
       { word: "door", ipa: "/dɔːr/", highlight: "d" },
@@ -422,6 +441,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Vị trí khẩu hình giống /tʃ/ nhưng rung mạnh cổ họng khi phát âm (như âm 'gi' dày rung).",
     mouthShape: "Môi chu nhẹ, bật hơi có rung thanh quản",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e6/Voiced_palato-alveolar_affricate.ogg/Voiced_palato-alveolar_affricate.ogg.mp3",
     examples: [
       { word: "June", ipa: "/dʒuːn/", highlight: "J" },
       { word: "age", ipa: "/eɪdʒ/", highlight: "ge" },
@@ -435,6 +455,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Vị trí cuống lưỡi giống /k/ nhưng tạo độ rung rõ rệt tại cổ họng.",
     mouthShape: "Cuống lưỡi hạ xuống kèm độ rung âm vang",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/1/12/Voiced_velar_plosive_02.ogg/Voiced_velar_plosive_02.ogg.mp3",
     examples: [
       { word: "go", ipa: "/ɡəʊ/", highlight: "g" },
       { word: "green", ipa: "/ɡriːn/", highlight: "gr" },
@@ -448,6 +469,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Răng cửa trên chạm nhẹ môi dưới giống /f/, đẩy hơi ma sát đồng thời rung mạnh cổ họng.",
     mouthShape: "Răng trên tiếp xúc môi dưới, rung âm",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/8/85/Voiced_labiodental_fricative.ogg/Voiced_labiodental_fricative.ogg.mp3",
     examples: [
       { word: "video", ipa: "/ˈvɪdiəʊ/", highlight: "v" },
       { word: "love", ipa: "/lʌv/", highlight: "ve" },
@@ -461,6 +483,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Vị trí đặt lưỡi giữa 2 hàm răng giống /θ/, nhưng phát ra âm thanh rung trầm ở cổ họng.",
     mouthShape: "Đầu lưỡi kẹp giữa hai răng, đẩy hơi kèm rung giọng",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/6/6a/Voiced_dental_fricative.ogg/Voiced_dental_fricative.ogg.mp3",
     examples: [
       { word: "this", ipa: "/ðɪs/", highlight: "th" },
       { word: "mother", ipa: "/ˈmʌðər/", highlight: "th" },
@@ -474,6 +497,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Vị trí giống /s/ nhưng rung dây thanh mạnh như tiếng ong vo ve.",
     mouthShape: "Răng khép gần nhau, rung thanh âm",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Voiced_alveolar_sibilant.ogg/Voiced_alveolar_sibilant.ogg.mp3",
     examples: [
       { word: "zoo", ipa: "/zuː/", highlight: "z" },
       { word: "easy", ipa: "/ˈiːzi/", highlight: "s" },
@@ -487,6 +511,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Khẩu hình giống /ʃ/ (chu môi hướng trước) nhưng rung thanh quản tạo âm dày và êm.",
     mouthShape: "Môi chu tròn, thổi khí kèm độ rung cổ họng",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/30/Voiced_palato-alveolar_sibilant.ogg/Voiced_palato-alveolar_sibilant.ogg.mp3",
     examples: [
       { word: "television", ipa: "/ˈtelɪvɪʒn/", highlight: "si" },
       { word: "casual", ipa: "/ˈkæʒuəl/", highlight: "s" },
@@ -500,6 +525,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Âm mũi hữu thanh. Hai môi mím kín, luồng hơi thoát ra qua đường mũi kèm rung giọng.",
     mouthShape: "Môi mím kín hoàn toàn, hơi thoát qua mũi",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/a/a9/Bilabial_nasal.ogg/Bilabial_nasal.ogg.mp3",
     examples: [
       { word: "man", ipa: "/mæn/", highlight: "m" },
       { word: "time", ipa: "/taɪm/", highlight: "m" },
@@ -513,6 +539,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Âm mũi hữu thanh. Đầu lưỡi chạm nướu răng trên chặn khoang miệng, hơi thoát qua mũi.",
     mouthShape: "Đầu lưỡi chặn kín ngạc trên, hơi lên mũi",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/2/29/Alveolar_nasal.ogg/Alveolar_nasal.ogg.mp3",
     examples: [
       { word: "now", ipa: "/naʊ/", highlight: "n" },
       { word: "sun", ipa: "/sʌn/", highlight: "n" },
@@ -526,6 +553,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Âm mũi hữu thanh (âm ng). Cuống lưỡi nâng lên chạm ngạc mềm, hơi thoát toàn bộ qua mũi.",
     mouthShape: "Cuống lưỡi chặn ngạc mềm, hơi qua mũi",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/39/Velar_nasal.ogg/Velar_nasal.ogg.mp3",
     examples: [
       { word: "sing", ipa: "/sɪŋ/", highlight: "ng" },
       { word: "song", ipa: "/sɒŋ/", highlight: "ng" },
@@ -539,6 +567,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_unvoiced",
     vietnameseGuide: "Mở miệng tự nhiên, thở một luồng hơi nhẹ nhàng từ họng ra như tiếng thở dài.",
     mouthShape: "Miệng mở tự nhiên, luồng hơi nhẹ từ cuống họng",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/da/Voiceless_glottal_fricative.ogg/Voiceless_glottal_fricative.ogg.mp3",
     examples: [
       { word: "hat", ipa: "/hæt/", highlight: "h" },
       { word: "hot", ipa: "/hɒt/", highlight: "h" },
@@ -552,6 +581,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Đầu lưỡi chạm nướu răng trên, luồng hơi thoát ra hai bên cạnh lưỡi kèm rung âm.",
     mouthShape: "Đầu lưỡi đặt gờ lợi trên, hơi ra hai bên rìa lưỡi",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/b/bc/Alveolar_lateral_approximant.ogg/Alveolar_lateral_approximant.ogg.mp3",
     examples: [
       { word: "leg", ipa: "/leɡ/", highlight: "l" },
       { word: "light", ipa: "/laɪt/", highlight: "l" },
@@ -565,6 +595,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Môi hơi chu nhẹ, đầu lưỡi cong về phía vòm họng nhưng không chạm vòm, tạo âm 'r' trầm rung.",
     mouthShape: "Đầu lưỡi cong lên hướng vòm miệng, không tiếp xúc",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/1/1f/Alveolar_approximant.ogg/Alveolar_approximant.ogg.mp3",
     examples: [
       { word: "red", ipa: "/red/", highlight: "r" },
       { word: "run", ipa: "/rʌn/", highlight: "r" },
@@ -578,6 +609,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Chu tròn môi nhỏ như sắp huýt sáo rồi mở nhanh sang nguyên âm tiếp theo, kèm rung giọng.",
     mouthShape: "Môi chu tròn nhỏ rồi giãn mở nhanh",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Voiced_labio-velar_approximant.ogg/Voiced_labio-velar_approximant.ogg.mp3",
     examples: [
       { word: "wet", ipa: "/wet/", highlight: "w" },
       { word: "water", ipa: "/ˈwɔːtər/", highlight: "w" },
@@ -591,6 +623,7 @@ export const IPA_PHONEMES: IpaPhoneme[] = [
     category: "consonant_voiced",
     vietnameseGuide: "Nâng thân lưỡi lên gần ngạc cứng như âm /iː/ rồi lướt nhanh sang âm sau (như âm 'd' trong tiếng miền Nam).",
     mouthShape: "Lưng lưỡi nâng cao về phía vòm cứng",
+    audioUrl: "https://upload.wikimedia.org/wikipedia/commons/transcoded/e/e8/Palatal_approximant.ogg/Palatal_approximant.ogg.mp3",
     examples: [
       { word: "yes", ipa: "/jes/", highlight: "y" },
       { word: "yellow", ipa: "/ˈjeləʊ/", highlight: "y" },

@@ -18,6 +18,8 @@ export interface IpaPhoneme {
   category: PhonemeCategory;
   vietnameseGuide: string;
   mouthShape: string;
-  audioUrl?: string; // Public domain / Wikimedia Commons audio
+  audioUrl?: string; // Recording of the sound itself (Wikimedia Commons)
+  /** Spelling a browser voice pronounces as this sound, used when there is no recording (diphthongs) */
+  ttsHint?: string;
   examples: IpaExample[];
 }

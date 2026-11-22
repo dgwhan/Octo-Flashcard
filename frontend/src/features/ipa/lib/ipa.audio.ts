@@ -1,50 +1,50 @@
 /**
- * Audio service for IPA chart
- * Utilizes public domain audio from Wikimedia Commons / public CDN,
- * with reliable Web Speech Synthesis API fallback.
+ * Audio for the IPA chart: the recording of the sound itself (Wikimedia Commons). Diphthongs have no isolated
+ * recording, so the browser voice says their `ttsHint` spelling ("ay" for /eɪ/). The example word is only a
+ * last resort when neither exists, never the default.
  */
 
 let currentAudio: HTMLAudioElement | null = null;
 
+interface PlayablePhoneme {
+  symbol: string;
+  audioUrl?: string;
+  ttsHint?: string;
+  examples?: { word: string }[];
+}
+
 export const ipaAudio = {
-  playPhoneme(phoneme: { symbol: string; audioUrl?: string; examples?: { word: string }[] }, onEnd?: () => void): void {
+  playPhoneme(phoneme: PlayablePhoneme, onEnd?: () => void): void {
     if (typeof window === "undefined") return;
 
     if (currentAudio) {
       currentAudio.pause();
-      currentAudio.currentTime = 0;
       currentAudio = null;
     }
 
-    if (phoneme.audioUrl) {
-      const audio = new Audio(phoneme.audioUrl);
-      currentAudio = audio;
+    let fellBack = false;
+    const fallback = () => {
+      if (fellBack) return; // onerror and play().catch can both fire for one failure
+      fellBack = true;
+      currentAudio = null;
+      this.speakWord(phoneme.ttsHint ?? phoneme.examples?.[0]?.word ?? phoneme.symbol, onEnd);
+    };
 
-      audio.onended = () => {
-        currentAudio = null;
-        if (onEnd) onEnd();
-      };
+    if (!phoneme.audioUrl) return fallback();
 
-      audio.onerror = () => {
-        // Fallback to Web Speech API with first example word
-        const sampleWord = phoneme.examples?.[0]?.word || phoneme.symbol;
-        this.speakWord(sampleWord, onEnd);
-      };
-
-      audio.play().catch(() => {
-        const sampleWord = phoneme.examples?.[0]?.word || phoneme.symbol;
-        this.speakWord(sampleWord, onEnd);
-      });
-      return;
-    }
-
-    const sampleWord = phoneme.examples?.[0]?.word || phoneme.symbol;
-    this.speakWord(sampleWord, onEnd);
+    const audio = new Audio(phoneme.audioUrl);
+    currentAudio = audio;
+    audio.onended = () => {
+      currentAudio = null;
+      onEnd?.();
+    };
+    audio.onerror = fallback;
+    audio.play().catch(fallback);
   },
 
   speakWord(word: string, onEnd?: () => void): void {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      if (onEnd) onEnd();
+      onEnd?.();
       return;
     }
 
@@ -53,17 +53,11 @@ export const ipaAudio = {
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.lang = "en-US";
       utterance.rate = 0.85;
-
-      utterance.onend = () => {
-        if (onEnd) onEnd();
-      };
-      utterance.onerror = () => {
-        if (onEnd) onEnd();
-      };
-
+      utterance.onend = () => onEnd?.();
+      utterance.onerror = () => onEnd?.();
       window.speechSynthesis.speak(utterance);
     } catch {
-      if (onEnd) onEnd();
+      onEnd?.();
     }
   },
 };
